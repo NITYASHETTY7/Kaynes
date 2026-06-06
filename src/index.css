@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme tokens (RGB triplets so Tailwind's /<alpha> works) ───────────── */
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+  /* surfaces (dark → light = darkest..lightest) */
+  --s-900: 9 12 18;
+  --s-800: 14 20 30;
+  --s-700: 21 30 44;
+  --s-600: 30 42 60;
+  --s-500: 44 60 84;
+  /* neutral text (light on dark) */
+  --n-100: 241 245 249;
+  --n-200: 226 232 240;
+  --n-300: 203 213 225;
+  --n-400: 148 163 184;
+  --n-500: 100 116 139;
+  --n-600: 71 85 105;
+  --n-700: 51 65 85;
+  /* primary heading colour */
+  --fg: 255 255 255;
+  /* brand accents */
+  --argo-cyan: 34 211 238;
+  --argo-violet: 139 122 255;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  /* surfaces become light, with stronger separation for contrast */
+  --s-900: 233 238 244; /* page background */
+  --s-800: 255 255 255; /* cards / header / sidebar */
+  --s-700: 241 245 249; /* hover / tracks */
+  --s-600: 209 217 227; /* borders */
+  --s-500: 180 191 204; /* stronger borders */
+  /* neutral text inverts → dark text on light */
+  --n-100: 15 23 42;
+  --n-200: 30 41 59;
+  --n-300: 51 65 85;
+  --n-400: 71 85 105;
+  --n-500: 100 116 139;
+  --n-600: 148 163 184;
+  --n-700: 203 213 225;
+  --fg: 15 23 42;
+  /* darker accents so they read on white */
+  --argo-cyan: 8 145 178;
+  --argo-violet: 109 92 230;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: rgb(var(--s-900));
+  color: rgb(var(--n-200));
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Thin themed scrollbars. */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgb(var(--s-500));
+  border-radius: 4px;
+}
+
+/* Range slider accent. */
+input[type='range'] {
+  accent-color: rgb(var(--argo-cyan));
+}
