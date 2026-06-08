@@ -9,7 +9,7 @@ import {
   needsFirmwareUpdate,
   FIRMWARE_LATEST,
 } from '../data/devices'
-import { type Role } from './Login'
+import { type UserRole as Role } from '../context/AppContext'
 import Gauge from './Gauge'
 import Sparkline from './Sparkline'
 import CaptureThumb from './CaptureThumb'

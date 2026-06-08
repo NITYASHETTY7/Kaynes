@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { type Device, type MediaItem } from '../data/devices'
-import { type Role } from './Login'
+import { type UserRole as Role } from '../context/AppContext'
 import CaptureThumb from './CaptureThumb'
 
 interface Props {
