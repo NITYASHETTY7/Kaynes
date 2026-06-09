@@ -10,6 +10,11 @@ export function generateUUID() {
   });
 }
 
+export function getDeviceIdFromSerial(serial: string): number {
+  const match = serial.match(/\d+$/);
+  return match ? parseInt(match[0], 10) : Math.floor(Math.random() * 1000);
+}
+
 // Types
 export type UserRole = 'admin' | 'inspector' | 'operator';
 export type UserStatus = 'active' | 'inactive';
@@ -202,26 +207,26 @@ interface AppContextType {
 }
 
 // Initial default seed values in compliant UUID formats
-const DEFAULT_TENANTS: Tenant[] = [
+export const DEFAULT_TENANTS: Tenant[] = [
   { id: '00000000-0000-0000-0000-000000000001', name: 'Kaynes Technology Ltd', subscription: 'Enterprise', status: 'active', created_at: new Date().toISOString() },
   { id: '00000000-0000-0000-0000-000000000002', name: 'Mirai Labs', subscription: 'Starter', status: 'active', created_at: new Date().toISOString() },
 ];
 
-const DEFAULT_PLANTS: Plant[] = [
+export const DEFAULT_PLANTS: Plant[] = [
   { id: '00000000-0000-0000-0000-000000000002', tenantId: '00000000-0000-0000-0000-000000000001', name: 'Mysuru Plant 2', location: 'Karnataka, India', capacity: '1.2M units/yr', manager: 'S. Ranganath', created_at: new Date().toISOString() },
   { id: '00000000-0000-0000-0000-000000000102', tenantId: '00000000-0000-0000-0000-000000000001', name: 'Bangalore Facility 3', location: 'Karnataka, India', capacity: '800k units/yr', manager: 'R. Kulkarni', created_at: new Date().toISOString() },
   { id: '00000000-0000-0000-0000-000000000103', tenantId: '00000000-0000-0000-0000-000000000001', name: 'Chennai Aerospace', location: 'Tamil Nadu, India', capacity: '200k units/yr', manager: 'K. Srinivasan', created_at: new Date().toISOString() },
   { id: '00000000-0000-0000-0000-000000000104', tenantId: '00000000-0000-0000-0000-000000000002', name: 'Tokyo Central R&D', location: 'Tokyo, Japan', capacity: '100k units/yr', manager: 'Y. Tanaka', created_at: new Date().toISOString() },
 ];
 
-const DEFAULT_USERS: User[] = [
+export const DEFAULT_USERS: User[] = [
   { id: '00000000-0000-0000-0000-000000000201', email: 'admin@kaynes.com', name: 'Kaynes Fleet Admin', passwordHash: 'admin123', role: 'admin', tenantId: '00000000-0000-0000-0000-000000000001', plantId: null, status: 'active', isDeleted: false, created_at: new Date().toISOString() },
   { id: '00000000-0000-0000-0000-000000000202', email: 'inspector@kaynes.com', name: 'QA Inspector Mysuru', passwordHash: 'inspector123', role: 'inspector', tenantId: '00000000-0000-0000-0000-000000000001', plantId: '00000000-0000-0000-0000-000000000002', status: 'active', isDeleted: false, created_at: new Date().toISOString() },
   { id: '00000000-0000-0000-0000-000000000203', email: 'operator@kaynes.com', name: 'Line-A Solder Operator', passwordHash: 'operator123', role: 'operator', tenantId: '00000000-0000-0000-0000-000000000001', plantId: '00000000-0000-0000-0000-000000000002', status: 'active', isDeleted: false, created_at: new Date().toISOString() },
   { id: '00000000-0000-0000-0000-000000000204', email: 'demo@kaynes.com', name: 'Demo Account', passwordHash: 'demo123', role: 'admin', tenantId: '00000000-0000-0000-0000-000000000001', plantId: null, status: 'active', isDeleted: false, created_at: new Date().toISOString() },
 ];
 
-const DEFAULT_ASSETS: Asset[] = [
+export const DEFAULT_ASSETS: Asset[] = [
   {
     id: '00000000-0000-0000-0000-000000000301',
     plantId: '00000000-0000-0000-0000-000000000002',
@@ -276,7 +281,7 @@ const DEFAULT_ASSETS: Asset[] = [
   }
 ];
 
-const DEFAULT_NOTIFICATIONS: AppNotification[] = [
+export const DEFAULT_NOTIFICATIONS: AppNotification[] = [
   { id: '00000000-0000-0000-0000-000000000501', severity: 'critical', title: 'Imminent Power Cut Alert', message: 'Line-A Inspector Glasses (ARGO-AG2-0042) is at 8% battery with cell temperature at 47°C.', acknowledged: false, created_at: new Date().toISOString() },
   { id: '00000000-0000-0000-0000-000000000502', severity: 'warning', title: 'Storage Near Full', message: 'Aerospace QA-1 (ARGO-AG2-0007) storage is at 96% capacity. Offload captures to avoid loss.', acknowledged: false, created_at: new Date(Date.now() - 600000).toISOString() },
 ];
@@ -344,7 +349,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [images, setImages] = useState<ImageItem[]>(() => {
     const raw = localStorage.getItem('kaynes.images');
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        const hasOldFormat = parsed.some((img: any) => img.id.startsWith('AG2-') || img.id.includes('-img'));
+        if (!hasOldFormat) {
+          return parsed;
+        }
+        localStorage.removeItem('kaynes.images');
+        localStorage.removeItem('kaynes.ai_results');
+      } catch (e) {
+        console.error("Error parsing cached images", e);
+      }
+    }
 
     const seeded: ImageItem[] = [];
     DEVICES.forEach((d) => {
@@ -377,8 +394,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     return [
       {
-        id: 'ai-res-1',
-        imageId: 'AG2-0042-img1',
+        id: '00000000-0000-0000-0000-000000000601',
+        imageId: '00000000-0000-0000-0000-000000000401',
         defectDetected: true,
         classification: 'PCB Solder Defect',
         confidence: 94.5,
@@ -393,8 +410,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         created_at: new Date().toISOString()
       },
       {
-        id: 'ai-res-2',
-        imageId: 'AG2-0042-img2',
+        id: '00000000-0000-0000-0000-000000000602',
+        imageId: '00000000-0000-0000-0000-000000000402',
         defectDetected: false,
         classification: 'Connector Seating Check',
         confidence: 98.7,
@@ -546,7 +563,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (devErr) throw devErr;
       if (dbDevices && dbDevices.length > 0) {
         setDevices(dbDevices.map(d => ({
-          id: d.id || Math.floor(Math.random() * 1000),
+          id: getDeviceIdFromSerial(d.serial),
           serial: d.serial,
           name: d.name,
           site: d.site || 'Unknown',
@@ -583,10 +600,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           firmware: d.firmware,
           storage_used_gb: d.storageUsedGb,
           storage_total_gb: d.storageTotalGb,
-          uptime_hrs: d.uptimeHrs,
+          uptime_hrs: Math.round(d.uptimeHrs),
           plant_id: d.plantId,
           asset_id: d.assetId,
-          logs: d.logs
+          logs: d.logs,
+          captures: d.captures
         }));
         await supabase.from('devices').insert(toInsert).throwOnError();
       }
@@ -1107,7 +1125,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const uploadImage = async (img: Omit<ImageItem, 'id' | 'created_at' | 'isArchived' | 'status'>) => {
-    const id = `img-${Date.now()}`;
+    const id = generateUUID();
     const newImage: ImageItem = { ...img, id, isArchived: false, status: 'pending', created_at: new Date().toISOString() };
     
     if (isSupabaseConnected && supabase) {
@@ -1143,8 +1161,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
     setImages(prev => prev.map(img => img.id === id ? { ...img, isArchived: true } : img));
   };
-
-  // AI Processing Pipeline
+  // AI Processing Pipeline
   const runAIProcessing = async (imageId: string, filters: string[]) => {
     // Mark as pending
     setImages(prev => prev.map(img => img.id === imageId ? { ...img, status: 'pending' } : img));
@@ -1152,14 +1169,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await supabase.from('images').update({ status: 'pending' }).eq('id', imageId);
     }
 
-    await new Promise(r => setTimeout(r, 2200)); // Pipeline latency
-
     const targetImage = images.find(i => i.id === imageId);
     const label = targetImage?.label || 'Target Frame';
     
-    const isSolder = label.toLowerCase().includes('solder') || label.toLowerCase().includes('pcb') || (targetImage?.tags.includes('solder') || false);
-    const isTurbine = label.toLowerCase().includes('turbine') || label.toLowerCase().includes('blade') || (targetImage?.tags.includes('turbine') || false);
-
     let defectDetected = false;
     let classification = 'Standard Visual Quality Check';
     let confidence = 89.4;
@@ -1168,29 +1180,91 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     let recommendation = 'No anomalies detected. Asset operating inside nominal specifications.';
     let boxes: BoundingBox[] = [];
 
-    if (isSolder) {
-      defectDetected = Math.random() > 0.35;
-      classification = 'PCB Solder-Joint Diagnostic';
-      if (defectDetected) {
-        confidence = 94.2;
-        severity = 'critical';
-        healthScore = 45;
-        recommendation = 'Critical solder bridge detected in reflow channels. Immediate heat chamber calibration is advised to prevent cold solder bridges.';
-        boxes = [
-          { x: 120, y: 150, w: 90, h: 80, label: 'Solder Bridge', confidence: 94.2 }
-        ];
-      }
-    } else if (isTurbine) {
-      defectDetected = Math.random() > 0.45;
-      classification = 'Aerospace Rotor Scanner';
-      if (defectDetected) {
-        confidence = 91.8;
-        severity = 'warning';
-        healthScore = 72;
-        recommendation = 'Micro-fractures detected along turbine rotor root. Schedule ultrasonic crack check on next downtime window.';
-        boxes = [
-          { x: 220, y: 120, w: 100, h: 40, label: 'Surface Fracture', confidence: 91.8 }
-        ];
+    if (targetImage) {
+      try {
+        let base64Data = null;
+        let mimeType = null;
+        if (targetImage.url.startsWith('blob:') || targetImage.url.startsWith('data:')) {
+          try {
+            const blobRes = await fetch(targetImage.url);
+            const blob = await blobRes.blob();
+            mimeType = blob.type;
+            base64Data = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const res = reader.result as string;
+                resolve(res.split(',')[1]);
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+          } catch (e) {
+            console.error("Error reading image bytes:", e);
+          }
+        }
+
+        const res = await fetch('/api/analyze-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageUrl: targetImage.url,
+            base64Data,
+            mimeType,
+            label: targetImage.label,
+            tags: targetImage.tags
+          })
+        });
+        
+        if (res.ok) {
+          const analysis = await res.json();
+          defectDetected = analysis.defectDetected;
+          classification = analysis.classification;
+          confidence = analysis.confidence;
+          severity = analysis.severity;
+          healthScore = analysis.healthScore;
+          recommendation = analysis.recommendation;
+          boxes = analysis.boundingBoxes || [];
+        } else {
+          throw new Error("Analysis request failed");
+        }
+      } catch (err) {
+        console.warn("Fallback to local analysis:", err);
+        const cleanLabel = label.toLowerCase();
+        const cleanTags = (targetImage.tags || []).map(t => t.toLowerCase());
+
+        const hasSolderKeyword = cleanLabel.includes('solder') || cleanLabel.includes('pcb') || cleanLabel.includes('reflow') || cleanLabel.includes('board') || cleanLabel.includes('oven');
+        const hasTurbineKeyword = cleanLabel.includes('turbine') || cleanLabel.includes('blade') || cleanLabel.includes('rotor') || cleanLabel.includes('engine') || cleanLabel.includes('aerospace');
+
+        const isLogoOrGeneric = cleanLabel.includes('logo') || cleanLabel.includes('penguin') || cleanLabel.includes('tux') || cleanLabel.includes('avatar') || (cleanLabel.includes('test') && !hasSolderKeyword);
+
+        const isSolder = !isLogoOrGeneric && (hasSolderKeyword || (cleanTags.includes('solder') && !hasTurbineKeyword));
+        const isTurbine = !isLogoOrGeneric && (hasTurbineKeyword || (cleanTags.includes('turbine') && !hasSolderKeyword));
+
+        if (isSolder) {
+          defectDetected = Math.random() > 0.35;
+          classification = 'PCB Solder-Joint Diagnostic';
+          if (defectDetected) {
+            confidence = 94.2;
+            severity = 'critical';
+            healthScore = 45;
+            recommendation = 'Critical solder bridge detected in reflow channels. Immediate heat chamber calibration is advised to prevent cold solder bridges.';
+            boxes = [
+              { x: 120, y: 150, w: 90, h: 80, label: 'Solder Bridge', confidence: 94.2 }
+            ];
+          }
+        } else if (isTurbine) {
+          defectDetected = Math.random() > 0.45;
+          classification = 'Aerospace Rotor Scanner';
+          if (defectDetected) {
+            confidence = 91.8;
+            severity = 'warning';
+            healthScore = 72;
+            recommendation = 'Micro-fractures detected along turbine rotor root. Schedule ultrasonic crack check on next downtime window.';
+            boxes = [
+              { x: 220, y: 120, w: 100, h: 40, label: 'Surface Fracture', confidence: 91.8 }
+            ];
+          }
+        }
       }
     }
 

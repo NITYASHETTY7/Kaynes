@@ -11,8 +11,10 @@ function devApiPlugin() {
     async configureServer(server: { middlewares: Connect.Server }) {
       // Imported lazily so a syntax error in a handler doesn't crash startup.
       const { default: analyze } = await import('./api/analyze.js')
+      const { default: analyzeImage } = await import('./api/analyze-image.js')
       const routes: Record<string, (req: any, res: any) => unknown> = {
         '/api/analyze': analyze,
+        '/api/analyze-image': analyzeImage,
       }
       for (const [path, handler] of Object.entries(routes)) {
         server.middlewares.use(path, (req: IncomingMessage, res: ServerResponse) => {

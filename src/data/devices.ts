@@ -84,16 +84,16 @@ const HERO_DEVICES: Device[] = [
     historicalBattery: [62, 55, 48, 42, 36, 30, 24, 19, 15, 12, 10, 8],
     uptimeHrs: 6.2,
     captures: [
-      mediaImg('AG2-0042-img1', 'PCB solder-joint inspection', '4 min ago', 4.2, 4201, [
+      mediaImg('00000000-0000-0000-0000-000000000401', 'PCB solder-joint inspection', '4 min ago', 4.2, 4201, [
         'pcb',
         'solder',
         'defect-review',
       ]),
-      mediaImg('AG2-0042-img2', 'Connector seating check', '22 min ago', 3.6, 4202, [
+      mediaImg('00000000-0000-0000-0000-000000000402', 'Connector seating check', '22 min ago', 3.6, 4202, [
         'connector',
         'assembly-qa',
       ]),
-      mediaVid('AG2-0042-vid1', 'Remote-assist: rework cell', '1 h ago', 88.0, 142, 4203, [
+      mediaVid('00000000-0000-0000-0000-000000000403', 'Remote-assist: rework cell', '1 h ago', 88.0, 142, 4203, [
         'remote-assist',
         'rework',
       ]),
@@ -127,12 +127,12 @@ const HERO_DEVICES: Device[] = [
     historicalBattery: [80, 74, 69, 63, 58, 54, 50, 46, 42, 39, 36, 34],
     uptimeHrs: 4.1,
     captures: [
-      mediaImg('AG2-0007-img1', 'Turbine blade surface scan', '12 min ago', 5.1, 707, [
+      mediaImg('00000000-0000-0000-0000-000000000404', 'Turbine blade surface scan', '12 min ago', 5.1, 707, [
         'turbine',
         'surface-defect',
         'aerospace',
       ]),
-      mediaImg('AG2-0007-img2', 'Fastener torque-mark audit', '40 min ago', 3.9, 708, [
+      mediaImg('00000000-0000-0000-0000-000000000405', 'Fastener torque-mark audit', '40 min ago', 3.9, 708, [
         'fastener',
         'safety-audit',
       ]),
@@ -165,11 +165,11 @@ const HERO_DEVICES: Device[] = [
     historicalBattery: [98, 95, 92, 90, 88, 86, 84, 82, 80, 79, 77, 76],
     uptimeHrs: 2.5,
     captures: [
-      mediaImg('AG2-0015-img1', 'Wiring-harness continuity check', '8 min ago', 3.2, 1501, [
+      mediaImg('00000000-0000-0000-0000-000000000406', 'Wiring-harness continuity check', '8 min ago', 3.2, 1501, [
         'wiring-harness',
         'continuity',
       ]),
-      mediaVid('AG2-0015-vid1', 'Assembly walkthrough', '35 min ago', 64.0, 96, 1502, [
+      mediaVid('00000000-0000-0000-0000-000000000407', 'Assembly walkthrough', '35 min ago', 64.0, 96, 1502, [
         'assembly',
         'training-data',
       ]),
@@ -201,7 +201,7 @@ const HERO_DEVICES: Device[] = [
     historicalBattery: [90, 86, 83, 80, 77, 74, 71, 68, 66, 64, 62, 61],
     uptimeHrs: 3.3,
     captures: [
-      mediaImg('AG2-0023-img1', 'Reflow oven output sample', '15 min ago', 4.0, 2301, [
+      mediaImg('00000000-0000-0000-0000-000000000408', 'Reflow oven output sample', '15 min ago', 4.0, 2301, [
         'reflow',
         'smt',
         'sample-capture',
@@ -234,7 +234,7 @@ const HERO_DEVICES: Device[] = [
     historicalBattery: [44, 40, 35, 30, 24, 18, 12, 7, 3, 1, 0, 0],
     uptimeHrs: 0,
     captures: [
-      mediaImg('AG2-0031-img1', 'Prototype enclosure fit-check', '3 h ago', 3.4, 3101, [
+      mediaImg('00000000-0000-0000-0000-000000000409', 'Prototype enclosure fit-check', '3 h ago', 3.4, 3101, [
         'prototype',
         'mechanical',
       ]),
@@ -267,11 +267,11 @@ const HERO_DEVICES: Device[] = [
     historicalBattery: [100, 99, 98, 96, 95, 94, 93, 92, 91, 90, 89, 88],
     uptimeHrs: 1.4,
     captures: [
-      mediaImg('AG2-0019-img1', 'Walkway obstruction audit', '6 min ago', 3.7, 1901, [
+      mediaImg('00000000-0000-0000-0000-000000000410', 'Walkway obstruction audit', '6 min ago', 3.7, 1901, [
         'safety-audit',
         'compliance',
       ]),
-      mediaImg('AG2-0019-img2', 'PPE compliance snapshot', '28 min ago', 3.1, 1902, [
+      mediaImg('00000000-0000-0000-0000-000000000411', 'PPE compliance snapshot', '28 min ago', 3.1, 1902, [
         'ppe',
         'safety-audit',
       ]),
@@ -359,6 +359,14 @@ function pick<T>(rng: () => number, arr: T[]): T {
   return arr[Math.floor(rng() * arr.length)]
 }
 
+function rngUUID(rng: () => number): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (rng() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 function makeCaptures(rng: () => number, idBase: string, n: number): MediaItem[] {
   const out: MediaItem[] = []
   for (let i = 0; i < n; i++) {
@@ -370,11 +378,12 @@ function makeCaptures(rng: () => number, idBase: string, n: number): MediaItem[]
     const mins = 4 + Math.floor(rng() * 600)
     const when = mins < 60 ? `${mins} min ago` : `${Math.floor(mins / 60)} h ago`
     const seed = Math.floor(rng() * 100000)
+    const uuid = rngUUID(rng)
     if (isVid) {
       const dur = 20 + Math.floor(rng() * 160)
-      out.push(mediaVid(`${idBase}-v${i}`, label, when, +(dur * 0.6).toFixed(1), dur, seed, tags))
+      out.push(mediaVid(uuid, label, when, +(dur * 0.6).toFixed(1), dur, seed, tags))
     } else {
-      out.push(mediaImg(`${idBase}-i${i}`, label, when, +(2.5 + rng() * 3.5).toFixed(1), seed, tags))
+      out.push(mediaImg(uuid, label, when, +(2.5 + rng() * 3.5).toFixed(1), seed, tags))
     }
   }
   return out
