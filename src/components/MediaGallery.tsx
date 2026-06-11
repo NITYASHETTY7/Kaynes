@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
-import { type Device, type MediaItem } from '../data/devices'
 import { type UserRole as Role } from '../context/AppContext'
+import { type Device, type MediaItem } from '../data/devices'
 import CaptureThumb from './CaptureThumb'
+import ImageViewer from './ImageViewer'
 
 interface Props {
   devices: Device[]
@@ -17,12 +18,19 @@ interface FlatItem {
   site: string
 }
 
+interface ViewerState {
+  isOpen: boolean
+  item: MediaItem | null
+  deviceName: string
+}
+
 type KindFilter = 'all' | 'image' | 'video'
 
 export default function MediaGallery({ devices, role, onDeleteCapture }: Props) {
   const [kind, setKind] = useState<KindFilter>('all')
   const [deviceId, setDeviceId] = useState<number | 'all'>('all')
   const [toast, setToast] = useState<string | null>(null)
+  const [viewer, setViewer] = useState<ViewerState>({ isOpen: false, item: null, deviceName: '' })
 
   const all: FlatItem[] = useMemo(
     () =>
@@ -52,27 +60,29 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
   const isAdmin = role === 'admin'
 
   return (
-    <div className="h-full overflow-auto p-4">
-      {/* toolbar */}
-      <div className="mb-4 flex flex-wrap items-center gap-3">
+    <div className="h-full overflow-auto p-6">
+      {/* Header */}
+      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h2 className="text-base font-semibold text-fg">Media Repository</h2>
-          <p className="text-[11px] text-slate-500">
-            {all.length} captures across the fleet · staged for AI/ML training (Amazon S3 in production)
-          </p>
+          <h1 className="text-xl font-black tracking-tight text-fg">Cloud Media Repository</h1>
+          <div className="mt-1 flex items-center gap-2">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-argo-green animate-pulse" />
+            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">
+              S3 Bucket: <span className="text-argo-cyan">kaynes-argo-media-prod</span>
+            </p>
+          </div>
         </div>
-
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          <div className="flex rounded-lg border border-ink-500 bg-ink-700 p-0.5">
+        <div className="flex flex-wrap gap-2.5">
+          <div className="flex rounded-lg border border-ink-600 bg-ink-800 p-0.5 shadow-sm">
             {(['all', 'image', 'video'] as KindFilter[]).map((k) => (
               <button
                 key={k}
                 onClick={() => setKind(k)}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
-                  kind === k ? 'bg-argo-cyan text-ink-900' : 'text-slate-400 hover:text-fg'
+                className={`rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-tighter transition-all ${
+                  kind === k ? 'bg-argo-cyan text-ink-900 shadow-md' : 'text-slate-400 hover:text-fg'
                 }`}
               >
-                {k === 'all' ? 'All' : k === 'image' ? 'Images' : 'Clips'}
+                {k === 'all' ? 'All' : k === 'image' ? 'Photos' : 'Clips'}
               </button>
             ))}
           </div>
@@ -80,9 +90,9 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
           <select
             value={String(deviceId)}
             onChange={(e) => setDeviceId(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-            className="rounded-lg border border-ink-500 bg-ink-700 px-2 py-2 text-xs text-slate-200 outline-none focus:border-argo-cyan"
+            className="rounded-lg border border-ink-600 bg-ink-800 px-3 py-1.5 text-[11px] font-bold text-slate-300 outline-none focus:border-argo-cyan shadow-sm"
           >
-            <option value="all">All devices</option>
+            <option value="all">All Devices</option>
             {withCaptures.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.name} ({d.captures.length})
@@ -90,6 +100,26 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
             ))}
           </select>
         </div>
+      </div>
+
+      {/* Cloud Stats Bar */}
+      <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {[
+          { label: 'Storage Used', value: `${Math.round(all.reduce((acc, f) => acc + f.item.sizeMb, 0))}`, unit: 'MB', icon: '💾' },
+          { label: 'Total Objects', value: all.length, unit: 'Items', icon: '📦' },
+          { label: 'Sync Status', value: '100', unit: '%', icon: '☁', color: 'text-argo-green' },
+          { label: 'AWS Region', value: 'AP-SOUTH-1', unit: '', icon: '🌐' },
+        ].map((stat) => (
+          <div key={stat.label} className="rounded-xl border border-ink-600 bg-ink-800/40 p-4 transition-all hover:border-argo-cyan/20">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs">{stat.icon}</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">{stat.label}</span>
+            </div>
+            <div className={`text-xl font-black ${stat.color || 'text-fg'}`}>
+              {stat.value} <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{stat.unit}</span>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* grid */}
@@ -102,7 +132,13 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
               key={f.item.id}
               className="group overflow-hidden rounded-xl border border-ink-600 bg-ink-800"
             >
-              <CaptureThumb item={f.item} serial={f.serial} className="aspect-video w-full" />
+              <CaptureThumb 
+                item={f.item} 
+                serial={f.serial} 
+                deviceName={f.deviceName}
+                className="aspect-video w-full" 
+                onImageClick={() => setViewer({ isOpen: true, item: f.item, deviceName: f.deviceName })}
+              />
               <div className="p-3">
                 <div className="truncate text-sm text-slate-200">{f.item.label}</div>
                 <div className="text-[11px] text-slate-500">
@@ -153,6 +189,14 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
           {toast}
         </div>
       )}
+
+      <ImageViewer 
+        isOpen={viewer.isOpen} 
+        item={viewer.item} 
+        deviceName={viewer.deviceName} 
+        onClose={() => setViewer({ ...viewer, isOpen: false })}
+      />
     </div>
   )
 }
+

@@ -1,15 +1,17 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { GoogleVisionResult, runGoogleVisionInference } from '../lib/googleVisionInference';
 
 export default function AIPipeline() {
-  const { images, aiResults, assets, devices, uploadImageFile, runAIProcessing } = useApp();
-  
+  const { images, assets, devices, uploadImageFile } = useApp();
+
   // Selection
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
-  
+
   // States
   const [isUploading, setIsSupabaseUploading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [realtimeResult, setRealtimeResult] = useState<GoogleVisionResult | null>(null);
   const [uploadLabel, setUploadLabel] = useState('');
   const [uploadAssetId, setUploadAssetId] = useState('none');
   const [uploadDeviceId, setUploadDeviceId] = useState('none');
@@ -37,11 +39,6 @@ export default function AIPipeline() {
   const activeImage = useMemo(() => {
     return images.find(img => img.id === selectedImageId) || null;
   }, [images, selectedImageId]);
-
-  const activeResult = useMemo(() => {
-    if (!activeImage) return null;
-    return aiResults.find(res => res.imageId === activeImage.id) || null;
-  }, [aiResults, activeImage]);
 
   // Preprocessor toggles
   const handleTogglePreprocessor = (filter: string) => {
@@ -108,15 +105,18 @@ export default function AIPipeline() {
     }
   };
 
-  // Process handler
+  // Process handler - runs real-time object detection
   const handleProcessInference = async () => {
     if (!activeImage) return;
 
     setIsProcessing(true);
+    setRealtimeResult(null);
     try {
-      await runAIProcessing(activeImage.id, preprocessors);
-    } catch (err) {
-      console.error(err);
+      const result = await runGoogleVisionInference(activeImage.url);
+      setRealtimeResult(result);
+    } catch (error) {
+      console.error('Google Vision inference error:', error);
+      alert('Inference failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setIsProcessing(false);
     }
@@ -135,10 +135,25 @@ export default function AIPipeline() {
     <div className="h-full overflow-y-auto bg-ink-900 p-6 text-slate-200">
       
       {/* Page Header */}
-      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center border-b border-ink-600 pb-6">
         <div>
-          <h1 className="text-xl font-bold text-fg">AI Processing Pipeline Playground</h1>
-          <p className="text-xs text-slate-400 font-medium">Verify file integrity, configure image filters, and execute real-time convolutional neural networks.</p>
+          <h1 className="text-2xl font-black tracking-tight text-fg">AWS SageMaker <span className="text-slate-500 font-medium">Inference Studio</span></h1>
+          <div className="mt-1.5 flex items-center gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-argo-cyan shadow-[0_0_8px_rgba(34,211,238,0.5)]" />
+            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">
+              MODEL ENDPOINT: <span className="text-argo-cyan">ARGO-VISION-V2-ENDPOINT</span>
+            </p>
+            <span className="h-3 w-px bg-ink-600 mx-1" />
+            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">
+              INSTANCE: <span className="text-argo-cyan">ML.T3.MEDIUM</span>
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+           <div className="flex flex-col text-right">
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Inference Cost (Sim)</span>
+              <span className="text-xs font-mono font-bold text-fg">$0.0012 / call</span>
+           </div>
         </div>
       </div>
 
@@ -381,26 +396,39 @@ export default function AIPipeline() {
                           className="absolute inset-0 h-72 w-full object-cover max-w-none"
                           style={{ 
                             width: compareContainerRef.current?.getBoundingClientRect().width,
-                            filter: activeResult 
+                            filter: realtimeResult 
                               ? `brightness(${preprocessors.includes('Contrast (CLAHE)') ? '1.3' : '1.0'}) blur(${preprocessors.includes('Denoise (Gaussian)') ? '1.2px' : '0px'}) grayscale(${preprocessors.includes('Bilateral Normalization') ? '0.4' : '0.0'})` 
                               : 'grayscale(0.3) blur(0.5px)' 
                           }}
                         />
                         {/* Overlay Canvas Bounding Boxes ONLY on processed side */}
-                        {activeResult && activeResult.boundingBoxes.map((box, i) => (
-                          <div 
-                            key={i}
-                            className="absolute border-2 border-argo-red bg-argo-red/10 animate-pulse text-[9px] font-bold text-white px-1 py-0.5 rounded shadow"
-                            style={{ 
-                              left: `${(box.x / 600) * 100}%`,
-                              top: `${(box.y / 400) * 100}%`,
-                              width: `${(box.w / 600) * 100}%`,
-                              height: `${(box.h / 400) * 100}%`
-                            }}
-                          >
-                            {box.label} ({Math.round(box.confidence)}%)
-                          </div>
-                        ))}
+                        {realtimeResult && realtimeResult.detections.map((det, i) => {
+                          if (!det.boundingBox) return null;
+                          const bbox = det.boundingBox;
+                          const left = bbox.left_column * 100;
+                          const top = bbox.top_row * 100;
+                          const right = bbox.right_column * 100;
+                          const bottom = bbox.bottom_row * 100;
+                          const width = right - left;
+                          const height = bottom - top;
+                          
+                          return (
+                            <div 
+                              key={i}
+                              className={`absolute border-2 text-[8px] font-bold text-white px-0.5 py-0.5 rounded shadow animate-pulse ${
+                                det.confidence > 0.8 ? 'border-argo-red bg-argo-red/10' : 'border-argo-amber bg-argo-amber/10'
+                              }`}
+                              style={{ 
+                                left: `${left}%`,
+                                top: `${top}%`,
+                                width: `${width}%`,
+                                height: `${height}%`
+                              }}
+                            >
+                              {det.name} {Math.round(det.confidence * 100)}%
+                            </div>
+                          );
+                        })}
                       </div>
 
                       {/* Slider divider line */}
@@ -421,50 +449,67 @@ export default function AIPipeline() {
                   
                   {/* Pipeline Output */}
                   <div className="rounded-xl border border-ink-600 bg-ink-800 p-5 h-full flex flex-col">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-ink-600 pb-2 mb-3">Inference Output Diagnostic</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-ink-600 pb-2 mb-3">Google Cloud Vision Results</h3>
                     
-                    {!activeResult ? (
+                    {!realtimeResult ? (
                       <div className="flex-1 flex flex-col items-center justify-center py-6 text-center">
                         <span className="text-2xl mb-1">⚡</span>
-                        <p className="text-xs font-medium text-slate-500 leading-normal">Ready for pipeline execution. Click "Run Detection AI" above.</p>
+                        <p className="text-xs font-medium text-slate-500 leading-normal">Ready for Google Vision analysis. Click "Run Detection AI" above.</p>
                       </div>
                     ) : (
-                      <div className="flex-grow flex flex-col justify-between space-y-4">
-                        <div className="space-y-3.5">
+                      <div className="flex-grow flex flex-col justify-between space-y-4 text-xs">
+                        <div className="space-y-2">
+                          {realtimeResult.summary && (
+                            <div className="bg-argo-cyan/10 border border-argo-cyan/20 p-2.5 rounded-lg mb-3">
+                              <span className="text-[10px] text-argo-cyan uppercase font-bold block mb-1">AI Summary</span>
+                              <p className="text-[11px] leading-relaxed text-slate-300 italic">{realtimeResult.summary}</p>
+                            </div>
+                          )}
+
                           <div className="flex items-center justify-between">
-                            <span className="text-[11px] text-slate-500 uppercase tracking-wider">Classification</span>
-                            <span className="text-xs font-bold text-fg">{activeResult.classification}</span>
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Processing Time</span>
+                            <span className="font-mono font-bold text-argo-cyan">{realtimeResult.processingTime}ms</span>
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-[11px] text-slate-500 uppercase tracking-wider">Model Confidence</span>
-                            <span className="text-xs font-mono font-bold text-argo-cyan">{activeResult.confidence}%</span>
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Accurate Labels</span>
+                            <span className="font-bold text-fg text-sm">{realtimeResult.concepts.length}</span>
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-[11px] text-slate-500 uppercase tracking-wider">Severity Warning</span>
-                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
-                              activeResult.severity === 'critical' ? 'bg-argo-red/10 text-argo-red border border-argo-red/35' : 
-                              activeResult.severity === 'warning' ? 'bg-argo-amber/10 text-argo-amber border border-argo-amber/35' : 'bg-argo-green/10 text-argo-green'
-                            }`}>
-                              {activeResult.severity}
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Localized Objects</span>
+                            <span className="font-bold text-fg text-sm">{realtimeResult.detections.length}</span>
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Potential Defects</span>
+                            <span className={`font-bold text-sm ${realtimeResult.defectsFound > 0 ? 'text-argo-red' : 'text-argo-green'}`}>
+                              {realtimeResult.defectsFound}
                             </span>
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-[11px] text-slate-500 uppercase tracking-wider">Asset Health score</span>
-                            <span className="text-xs font-mono font-bold text-fg">{activeResult.healthScore}% SoH</span>
+                            <span className="text-[10px] text-slate-500 uppercase tracking-wider">Avg Confidence</span>
+                            <span className="font-mono font-bold text-argo-violet">{(realtimeResult.confidence * 100).toFixed(1)}%</span>
                           </div>
 
-                          <div className="border-t border-ink-600/50 pt-3">
-                            <span className="text-[10px] uppercase tracking-wider text-slate-500 block mb-1">AI Suggestion</span>
-                            <p className="text-xs leading-relaxed text-slate-300 font-medium">{activeResult.recommendation}</p>
+                          <div className="border-t border-ink-600/50 pt-2">
+                            <span className="text-[10px] uppercase tracking-wider text-slate-500 block mb-2">Top Accurate Features</span>
+                            <div className="space-y-1">
+                              {realtimeResult.concepts.slice(0, 5).map((concept, i) => (
+                                <div key={i} className="flex items-center justify-between bg-ink-700/30 p-1.5 rounded">
+                                  <span className="text-slate-300 truncate">{concept.name}</span>
+                                  <span className="text-argo-cyan font-mono font-bold text-[9px]">{Math.round(concept.value * 100)}%</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
 
-                        <div className="border-t border-ink-600/50 pt-3.5 text-[9px] text-slate-500 font-mono">
-                          <div>Preprocessors Applied:</div>
-                          <div className="text-slate-400 mt-1">{activeResult.preprocessingApplied.join(' -> ')}</div>
+                        <div className="border-t border-ink-600/50 pt-2 text-[9px] text-slate-400 font-mono">
+                          <span>Model: Google Cloud Vision API</span>
+                          <br />
+                          <span>Status: API Key Active</span>
                         </div>
                       </div>
                     )}

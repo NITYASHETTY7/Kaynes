@@ -367,7 +367,7 @@ function rngUUID(rng: () => number): string {
   });
 }
 
-function makeCaptures(rng: () => number, idBase: string, n: number): MediaItem[] {
+function makeCaptures(rng: () => number, n: number): MediaItem[] {
   const out: MediaItem[] = []
   for (let i = 0; i < n; i++) {
     const isVid = rng() < 0.25
@@ -449,7 +449,7 @@ function generateDevices(target: number): Device[] {
       : 'Continue normal operation.'
 
     const serial = `ARGO-AG2-${String(id).padStart(4, '0')}`
-    const captures = makeCaptures(rng, serial, Math.floor(rng() * 4))
+    const captures = makeCaptures(rng, 2 + Math.floor(rng() * 5)) // Increased: 2-6 captures per device
 
     out.push({
       id,
