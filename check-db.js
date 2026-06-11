@@ -6,7 +6,7 @@ const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function checkDB() {
-  const tables = ['ai_results', 'images', 'devices', 'assets', 'plants', 'profiles', 'tenants'];
+  const tables = ['ai_results', 'images', 'devices', 'assets', 'plants', 'profiles', 'tenants', 'notifications'];
   
   for (const table of tables) {
     const { data, error } = await supabase.from(table).select('*', { count: 'exact', head: true });

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import Gauge from './Gauge';
+import { motion } from 'framer-motion';
 
 export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, param?: any) => void }) {
   const { assets, plants, devices, notifications, aiResults } = useApp();
@@ -35,13 +36,16 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
       return matchesSearch && matchesStatus;
     });
   }, [assets, searchQuery, statusFilter]);
-
   return (
-    <div className="h-full overflow-y-auto bg-ink-900 p-6 text-slate-200">
+    <div className="h-full overflow-y-auto p-6 text-slate-200">
       {/* ── Title block ─────────────────────────────────── */}
-      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center"
+      >
         <div>
-          <h1 className="text-xl font-bold text-fg">Operations Command Dashboard</h1>
+          <h1 className="text-2xl font-bold text-fg font-display tracking-tight">Operations Command Dashboard</h1>
           <p className="text-xs text-slate-400">Real-time predictive diagnostics and asset fleet telemetry.</p>
         </div>
         <div className="flex gap-2.5">
@@ -52,54 +56,64 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
             🧠 Run AI Inference
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── KPI Grid ────────────────────────────────────── */}
-      <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-5">
-        <div className="rounded-xl border border-ink-600 bg-ink-800 p-4 transition-all hover:border-argo-cyan/40">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-5"
+      >
+        <div className="rounded-2xl border border-white/5 bg-ink-800/40 p-4 shadow-glass-inner backdrop-blur-md transition-all hover:border-argo-cyan/40 hover:-translate-y-1">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Total Assets</span>
           <div className="mt-2 flex items-baseline justify-between">
             <span className="text-2xl font-bold text-fg">{totalAssets}</span>
             <span className="text-xs text-argo-cyan">Active</span>
           </div>
         </div>
-        <div className="rounded-xl border border-ink-600 bg-ink-800 p-4 transition-all hover:border-argo-cyan/40">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Total Plants</span>
+        <div className="rounded-2xl border border-white/5 bg-ink-800/40 p-4 shadow-glass-inner backdrop-blur-md transition-all hover:border-argo-cyan/40 hover:-translate-y-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-display">Total Plants</span>
           <div className="mt-2 flex items-baseline justify-between">
             <span className="text-2xl font-bold text-fg">{totalPlants}</span>
             <span className="text-xs text-slate-400">Sites</span>
           </div>
         </div>
-        <div className="rounded-xl border border-ink-600 bg-ink-800 p-4 transition-all hover:border-argo-cyan/40">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Active Devices</span>
+        <div className="rounded-2xl border border-white/5 bg-ink-800/40 p-4 shadow-glass-inner backdrop-blur-md transition-all hover:border-argo-cyan/40 hover:-translate-y-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-display">Active Devices</span>
           <div className="mt-2 flex items-baseline justify-between">
             <span className="text-2xl font-bold text-fg">{activeDevices}</span>
             <span className="text-xs text-argo-green">Online</span>
           </div>
         </div>
-        <div className="rounded-xl border border-ink-600 bg-ink-800 p-4 transition-all hover:border-argo-red/40">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Critical Alerts</span>
+        <div className="rounded-2xl border border-white/5 bg-ink-800/40 p-4 shadow-glass-inner backdrop-blur-md transition-all hover:border-argo-red/40 hover:-translate-y-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-display">Critical Alerts</span>
           <div className="mt-2 flex items-baseline justify-between">
             <span className="text-2xl font-bold text-argo-red">{criticalAlerts}</span>
             <span className="text-xs text-argo-red animate-pulse">Pending</span>
           </div>
         </div>
-        <div className="rounded-xl border border-ink-600 bg-ink-800 p-4 transition-all hover:border-argo-violet/40">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">AI Predictions</span>
+        <div className="rounded-2xl border border-white/5 bg-ink-800/40 p-4 shadow-glass-inner backdrop-blur-md transition-all hover:border-argo-violet/40 hover:-translate-y-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-display">AI Predictions</span>
           <div className="mt-2 flex items-baseline justify-between">
             <span className="text-2xl font-bold text-argo-violet">{totalPredictions}</span>
             <span className="text-xs text-slate-400">Inferences</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Main Panel Split ────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="grid grid-cols-1 gap-6 lg:grid-cols-3"
+      >
         {/* Analytics Gauges & AI Predictions (Left/Center Column) */}
         <div className="space-y-6 lg:col-span-2">
           {/* Diagnostic Charts */}
-          <div className="rounded-xl border border-ink-600 bg-ink-800 p-5">
-            <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-400">AI Inference Health Insights</h2>
+          <div className="rounded-2xl border border-white/5 bg-ink-800/40 p-5 shadow-glass-inner backdrop-blur-md">
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-400 font-display">AI Inference Health Insights</h2>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
               <div className="flex flex-col items-center justify-center p-4">
                 <div className="h-28 w-28">
@@ -144,9 +158,9 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
           </div>
 
           {/* Quick Assets Explorer */}
-          <div className="rounded-xl border border-ink-600 bg-ink-800 p-5">
+          <div className="rounded-2xl border border-white/5 bg-ink-800/40 p-5 shadow-glass-inner backdrop-blur-md">
             <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Industrial Assets Quick Watch</h2>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-display">Industrial Assets Quick Watch</h2>
               <div className="flex flex-wrap gap-2">
                 <input
                   type="text"
@@ -225,8 +239,8 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
         {/* Real-time Predictions & Alerts Feed (Right Column) */}
         <div className="space-y-6">
           {/* Recent AI Inferences */}
-          <div className="rounded-xl border border-ink-600 bg-ink-800 p-5">
-            <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Live AI Inference Stream</h2>
+          <div className="rounded-2xl border border-white/5 bg-ink-800/40 p-5 shadow-glass-inner backdrop-blur-md">
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-400 font-display">Live AI Inference Stream</h2>
             <div className="space-y-3">
               {recentPredictions.length === 0 ? (
                 <p className="text-xs text-slate-500 text-center py-4">No AI results generated yet.</p>
@@ -254,9 +268,9 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
           </div>
 
           {/* Critical Telemetry Alerts */}
-          <div className="rounded-xl border border-ink-600 bg-ink-800 p-5">
+          <div className="rounded-2xl border border-white/5 bg-ink-800/40 p-5 shadow-glass-inner backdrop-blur-md">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Operational Alerts</h2>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-display">Operational Alerts</h2>
               <button 
                 onClick={() => onNavigate('alerts')}
                 className="text-[10px] text-argo-cyan hover:underline"
@@ -283,7 +297,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
 import {
   type Device,
   type MediaItem,
@@ -31,6 +32,19 @@ interface Diagnostic {
   source: string
 }
 
+const staggerVars: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+  }
+}
+
+const childVars: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+}
+
 function MetricCard({
   index,
   title,
@@ -43,18 +57,18 @@ function MetricCard({
   children: React.ReactNode
 }) {
   return (
-    <div className="rounded-xl border border-ink-600 bg-ink-800/60 p-4">
+    <motion.div variants={childVars} className="rounded-2xl border border-white/5 bg-ink-800/40 p-4 shadow-glass-inner">
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-ink-700 text-[11px] text-argo-cyan">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-ink-700/80 text-[11px] text-argo-cyan font-bold shadow-glow-cyan">
             {index}
           </span>
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-display">{title}</h4>
         </div>
         {action}
       </div>
       {children}
-    </div>
+    </motion.div>
   )
 }
 
@@ -133,11 +147,25 @@ export default function DeviceDrawer({
   }
 
   return (
-    <>
-      <div className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="fixed right-0 top-0 z-40 flex h-full w-full max-w-lg animate-slideIn flex-col border-l border-ink-600 bg-ink-900 shadow-2xl">
+    <AnimatePresence>
+      {device && (
+        <>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-30 bg-ink-900/60 backdrop-blur-sm" 
+            onClick={onClose} 
+          />
+          <motion.div 
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed right-0 top-0 z-40 flex h-full w-full max-w-lg flex-col border-l border-white/10 bg-ink-900/80 backdrop-blur-2xl shadow-2xl"
+          >
         {/* header */}
-        <div className="flex items-start justify-between border-b border-ink-600 p-5">
+        <div className="flex items-start justify-between border-b border-white/5 p-5 bg-ink-800/20">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: color }} />
@@ -190,12 +218,18 @@ export default function DeviceDrawer({
         </div>
 
         {/* body */}
-        <div className="flex-1 space-y-3 overflow-y-auto p-5">
+        <motion.div 
+          variants={staggerVars}
+          initial="hidden"
+          animate="show"
+          className="flex-1 space-y-4 overflow-y-auto p-5"
+        >
           {/* alert banner */}
           {(d.status === 'critical' || d.status === 'warning') && (
-            <div
-              className="rounded-xl border p-4"
-              style={{ borderColor: `${color}66`, background: `${color}12` }}
+            <motion.div
+              variants={childVars}
+              className="rounded-2xl border p-4 shadow-glass-inner"
+              style={{ borderColor: `${color}40`, background: `${color}10` }}
             >
               <div className="flex items-center gap-2 text-sm font-semibold" style={{ color }}>
                 <span className="animate-pulse">●</span>{' '}
@@ -205,7 +239,7 @@ export default function DeviceDrawer({
               <p className="mt-2 rounded-md bg-ink-900/50 px-2 py-1.5 text-[11px] text-slate-300">
                 ⚡ An SNS notification would be dispatched to on-call operators (production).
               </p>
-            </div>
+            </motion.div>
           )}
 
           {/* 1. Battery */}
@@ -363,7 +397,7 @@ export default function DeviceDrawer({
           </MetricCard>
 
           {/* 7. AI diagnostic */}
-          <div className="rounded-xl border border-argo-cyan/30 bg-argo-cyan/[0.04] p-4">
+          <motion.div variants={childVars} className="rounded-2xl border border-argo-cyan/30 bg-argo-cyan/[0.04] p-4 shadow-glow-cyan shadow-glass-inner">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-argo-cyan">
                 ✦ AI Device Diagnostic
@@ -403,17 +437,26 @@ export default function DeviceDrawer({
                 </p>
               )
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+      </>
+    )}
 
-        {/* toast */}
+      {/* toast */}
+      <AnimatePresence>
         {toast && (
-          <div className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 animate-fadeIn rounded-lg bg-ink-700 px-4 py-2 text-xs text-slate-100 shadow-lg ring-1 ring-ink-500">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="pointer-events-none fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-ink-800/80 backdrop-blur-md px-5 py-2.5 text-xs font-semibold text-slate-100 shadow-2xl ring-1 ring-white/10"
+          >
             {toast}
-          </div>
+          </motion.div>
         )}
-      </div>
-    </>
+      </AnimatePresence>
+    </AnimatePresence>
   )
 }
 

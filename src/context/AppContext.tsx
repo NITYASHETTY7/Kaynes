@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { DEVICES, type Device } from '../data/devices';
+import { type Device } from '../data/devices';
 import { supabase } from '../lib/supabaseClient';
 
 // Helper to generate RFC4122-compliant UUIDs for Supabase PostgreSQL compatibility
@@ -204,6 +204,8 @@ interface AppContextType {
   // System States
   isSupabaseConnected: boolean;
   isSyncing: boolean;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 // Initial default seed values in compliant UUID formats
@@ -292,6 +294,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isSupabaseConnected, setIsSupabaseConnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
 
+  // Theme
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('kaynes.theme');
+    return (saved as 'light' | 'dark') || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('kaynes.theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+
   // Current user session
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
@@ -302,133 +317,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   });
 
-  // Local state fallbacks
-  const [users, setUsers] = useState<User[]>(() => {
-    const raw = localStorage.getItem('kaynes.users');
-    return raw ? JSON.parse(raw) : DEFAULT_USERS;
-  });
-
-  const [tenants, setTenants] = useState<Tenant[]>(() => {
-    const raw = localStorage.getItem('kaynes.tenants');
-    return raw ? JSON.parse(raw) : DEFAULT_TENANTS;
-  });
-
-  const [plants, setPlants] = useState<Plant[]>(() => {
-    const raw = localStorage.getItem('kaynes.plants');
-    return raw ? JSON.parse(raw) : DEFAULT_PLANTS;
-  });
-
-  const [assets, setAssets] = useState<Asset[]>(() => {
-    const raw = localStorage.getItem('kaynes.assets');
-    return raw ? JSON.parse(raw) : DEFAULT_ASSETS;
-  });
-
-  const [devices, setDevices] = useState<ExtendedDevice[]>(() => {
-    const raw = localStorage.getItem('kaynes.devices');
-    if (raw) return JSON.parse(raw);
-    
-    return DEVICES.map((d) => {
-      let plantId: string | null = null;
-      let assetId: string | null = null;
-      if (d.id === 42) { plantId = '00000000-0000-0000-0000-000000000002'; assetId = '00000000-0000-0000-0000-000000000301'; }
-      else if (d.id === 7) { plantId = '00000000-0000-0000-0000-000000000103'; assetId = '00000000-0000-0000-0000-000000000302'; }
-      else if (d.id === 15) { plantId = '00000000-0000-0000-0000-000000000102'; assetId = '00000000-0000-0000-0000-000000000303'; }
-      else if (d.id === 31) { plantId = '00000000-0000-0000-0000-000000000104'; }
-
-      return {
-        ...d,
-        plantId,
-        assetId,
-        logs: [
-          { id: `l-${d.id}-1`, timestamp: '10 min ago', level: 'info', message: 'Device initialized successfully.' },
-          { id: `l-${d.id}-2`, timestamp: '5 min ago', level: 'info', message: 'Linked successfully to network stream.' }
-        ] as DeviceLog[]
-      };
-    });
-  });
-
-  const [images, setImages] = useState<ImageItem[]>(() => {
-    const raw = localStorage.getItem('kaynes.images');
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw);
-        const hasOldFormat = parsed.some((img: any) => img.id.startsWith('AG2-') || img.id.includes('-img'));
-        if (!hasOldFormat) {
-          return parsed;
-        }
-        localStorage.removeItem('kaynes.images');
-        localStorage.removeItem('kaynes.ai_results');
-      } catch (e) {
-        console.error("Error parsing cached images", e);
-      }
-    }
-
-    const seeded: ImageItem[] = [];
-    DEVICES.forEach((d) => {
-      d.captures.forEach((c) => {
-        if (c.kind === 'image') {
-          let assetId = d.id === 42 ? 'asset-1' : d.id === 7 ? 'asset-2' : d.id === 15 ? 'asset-3' : null;
-
-          seeded.push({
-            id: c.id,
-            assetId,
-            deviceId: d.id,
-            url: `https://picsum.photos/seed/${c.seed}/600/400`,
-            label: c.label,
-            capturedAt: c.capturedAt,
-            sizeMb: c.sizeMb,
-            tags: c.tags,
-            isArchived: false,
-            status: 'processed',
-            created_at: new Date().toISOString()
-          });
-        }
-      });
-    });
-    return seeded;
-  });
-
-  const [aiResults, setAiResults] = useState<AIResult[]>(() => {
-    const raw = localStorage.getItem('kaynes.ai_results');
-    if (raw) return JSON.parse(raw);
-
-    return [
-      {
-        id: '00000000-0000-0000-0000-000000000601',
-        imageId: '00000000-0000-0000-0000-000000000401',
-        defectDetected: true,
-        classification: 'PCB Solder Defect',
-        confidence: 94.5,
-        severity: 'critical',
-        healthScore: 42,
-        recommendation: 'Check heater temperatures in nozzle chamber 4; clean solder wave reflow channel and re-evaluate Solder Line A.',
-        preprocessingApplied: ['Resize', 'Denoise (Gaussian)', 'Contrast (CLAHE)'],
-        boundingBoxes: [
-          { x: 120, y: 150, w: 90, h: 80, label: 'Solder Bridge', confidence: 94.5 },
-          { x: 310, y: 110, w: 70, h: 60, label: 'Cold Solder Joint', confidence: 81.2 }
-        ],
-        created_at: new Date().toISOString()
-      },
-      {
-        id: '00000000-0000-0000-0000-000000000602',
-        imageId: '00000000-0000-0000-0000-000000000402',
-        defectDetected: false,
-        classification: 'Connector Seating Check',
-        confidence: 98.7,
-        severity: 'normal',
-        healthScore: 100,
-        recommendation: 'No defects detected. Assembly matches specification.',
-        preprocessingApplied: ['Resize', 'Normalize'],
-        boundingBoxes: [],
-        created_at: new Date().toISOString()
-      }
-    ];
-  });
-
-  const [notifications, setNotifications] = useState<AppNotification[]>(() => {
-    const raw = localStorage.getItem('kaynes.notifications');
-    return raw ? JSON.parse(raw) : DEFAULT_NOTIFICATIONS;
-  });
+  // No local state fallbacks - DB only
+  const [users, setUsers] = useState<User[]>([]);
+  const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [plants, setPlants] = useState<Plant[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [devices, setDevices] = useState<ExtendedDevice[]>([]);
+  const [images, setImages] = useState<ImageItem[]>([]);
+  const [aiResults, setAiResults] = useState<AIResult[]>([]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
   // Save session to localStorage
   useEffect(() => {
@@ -455,10 +352,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           status: t.status || 'active',
           created_at: t.created_at
         })));
-      } else {
-        // Seed Supabase with default tenants
-        await supabase.from('tenants').insert(DEFAULT_TENANTS).throwOnError();
-        setTenants(DEFAULT_TENANTS);
       }
 
       // 2. Plants
@@ -474,18 +367,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           manager: p.manager || '',
           created_at: p.created_at
         })));
-      } else {
-        const toInsert = DEFAULT_PLANTS.map(p => ({
-          id: p.id,
-          tenant_id: p.tenantId,
-          name: p.name,
-          location: p.location,
-          capacity: p.capacity,
-          manager: p.manager,
-          created_at: p.created_at
-        }));
-        await supabase.from('plants').insert(toInsert).throwOnError();
-        setPlants(DEFAULT_PLANTS);
       }
 
       // 3. Profiles
@@ -504,21 +385,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           isDeleted: u.is_deleted || false,
           created_at: u.created_at
         })));
-      } else {
-        const toInsert = DEFAULT_USERS.map(u => ({
-          id: u.id,
-          email: u.email,
-          name: u.name,
-          password_hash: u.passwordHash,
-          role: u.role,
-          tenant_id: u.tenantId,
-          plant_id: u.plantId,
-          status: u.status,
-          is_deleted: u.isDeleted,
-          created_at: u.created_at
-        }));
-        await supabase.from('profiles').insert(toInsert).throwOnError();
-        setUsers(DEFAULT_USERS);
       }
 
       // 4. Assets
@@ -539,23 +405,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           timeline: a.timeline || [],
           created_at: a.created_at
         })));
-      } else {
-        const toInsert = DEFAULT_ASSETS.map(a => ({
-          id: a.id,
-          plant_id: a.plantId,
-          name: a.name,
-          serial_number: a.serialNumber,
-          health_score: a.healthScore,
-          status: a.status,
-          category: a.category,
-          last_serviced: a.lastServiced,
-          image_url: a.imageUrl,
-          history: a.history,
-          timeline: a.timeline,
-          created_at: a.created_at
-        }));
-        await supabase.from('assets').insert(toInsert).throwOnError();
-        setAssets(DEFAULT_ASSETS);
       }
 
       // 5. Devices
@@ -586,27 +435,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           assetId: d.asset_id,
           logs: d.logs || []
         })));
-      } else {
-        // Insert device seeds
-        const toInsert = devices.map(d => ({
-          serial: d.serial,
-          name: d.name,
-          status: d.status,
-          connection: d.connection,
-          battery: d.battery,
-          battery_health: d.batteryHealth,
-          signal: d.signal,
-          temperature_c: d.temperatureC,
-          firmware: d.firmware,
-          storage_used_gb: d.storageUsedGb,
-          storage_total_gb: d.storageTotalGb,
-          uptime_hrs: Math.round(d.uptimeHrs),
-          plant_id: d.plantId,
-          asset_id: d.assetId,
-          logs: d.logs,
-          captures: d.captures
-        }));
-        await supabase.from('devices').insert(toInsert).throwOnError();
       }
 
       // 6. Images
@@ -626,24 +454,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           status: img.status || 'processed',
           created_at: img.created_at
         })));
-      } else {
-        const toInsert = images.map(img => {
-          const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(img.id);
-          const isAssetValidUUID = img.assetId ? /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(img.assetId) : false;
-          
-          return {
-            id: isValidUUID ? img.id : generateUUID(),
-            asset_id: isAssetValidUUID ? img.assetId : null,
-            device_id: img.deviceId,
-            url: img.url,
-            label: img.label,
-            size_mb: img.sizeMb,
-            tags: img.tags,
-            status: img.status,
-            created_at: img.created_at
-          };
-        });
-        await supabase.from('images').insert(toInsert).throwOnError();
       }
 
       // 7. AI Results
@@ -663,26 +473,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           boundingBoxes: res.bounding_boxes || [],
           created_at: res.created_at
         })));
-      } else {
-        const toInsert = aiResults.map(res => {
-          const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(res.id);
-          const isImgValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(res.imageId);
-          
-          return {
-            id: isValidUUID ? res.id : generateUUID(),
-            image_id: isImgValidUUID ? res.imageId : '00000000-0000-0000-0000-000000000401',
-            defect_detected: res.defectDetected,
-            classification: res.classification,
-            confidence: res.confidence,
-            severity: res.severity,
-            health_score: res.healthScore,
-            recommendation: res.recommendation,
-            preprocessing_applied: res.preprocessingApplied,
-            bounding_boxes: res.boundingBoxes,
-            created_at: res.created_at
-          };
-        });
-        await supabase.from('ai_results').insert(toInsert).throwOnError();
       }
 
       // 8. Notifications
@@ -697,20 +487,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           acknowledged: n.acknowledged || false,
           created_at: n.created_at
         })));
-      } else {
-        await supabase.from('notifications').insert(notifications.map(n => ({
-          id: n.id,
-          severity: n.severity,
-          title: n.title,
-          message: n.message,
-          acknowledged: n.acknowledged,
-          created_at: n.created_at
-        }))).throwOnError();
       }
 
       setIsSupabaseConnected(true);
     } catch (e) {
-      console.error('Failed to sync with Supabase tables, falling back to local Storage:', e);
+      console.error('Failed to sync with Supabase tables. Strict DB mode is enforced:', e);
       setIsSupabaseConnected(false);
     } finally {
       setIsSyncing(false);
@@ -726,16 +507,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Local state save as redundancy
-  useEffect(() => { if (!isSupabaseConnected) { localStorage.setItem('kaynes.users', JSON.stringify(users)); } }, [users, isSupabaseConnected]);
-  useEffect(() => { if (!isSupabaseConnected) { localStorage.setItem('kaynes.tenants', JSON.stringify(tenants)); } }, [tenants, isSupabaseConnected]);
-  useEffect(() => { if (!isSupabaseConnected) { localStorage.setItem('kaynes.plants', JSON.stringify(plants)); } }, [plants, isSupabaseConnected]);
-  useEffect(() => { if (!isSupabaseConnected) { localStorage.setItem('kaynes.assets', JSON.stringify(assets)); } }, [assets, isSupabaseConnected]);
-  useEffect(() => { if (!isSupabaseConnected) { localStorage.setItem('kaynes.devices', JSON.stringify(devices)); } }, [devices, isSupabaseConnected]);
-  useEffect(() => { if (!isSupabaseConnected) { localStorage.setItem('kaynes.images', JSON.stringify(images)); } }, [images, isSupabaseConnected]);
-  useEffect(() => { if (!isSupabaseConnected) { localStorage.setItem('kaynes.ai_results', JSON.stringify(aiResults)); } }, [aiResults, isSupabaseConnected]);
-  useEffect(() => { if (!isSupabaseConnected) { localStorage.setItem('kaynes.notifications', JSON.stringify(notifications)); } }, [notifications, isSupabaseConnected]);
-
+  // Local state save removed per strict DB requirements
   // Auth Operations
   const login = async (email: string, passwordHash: string) => {
     const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase() && !u.isDeleted);
@@ -1413,7 +1185,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       acknowledgeNotification,
       clearNotifications,
       isSupabaseConnected,
-      isSyncing
+      isSyncing,
+      theme,
+      toggleTheme
     }}>
       {children}
     </AppContext.Provider>

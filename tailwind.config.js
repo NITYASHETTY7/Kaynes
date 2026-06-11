@@ -35,7 +35,14 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Outfit', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+      boxShadow: {
+        'glow-cyan': '0 0 20px 0px rgba(var(--argo-cyan) / 0.15)',
+        'glow-cyan-strong': '0 0 30px 0px rgba(var(--argo-cyan) / 0.3)',
+        'glow-violet': '0 0 20px 0px rgba(var(--argo-violet) / 0.15)',
+        'glass-inner': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
       },
       keyframes: {
         pulseRing: {

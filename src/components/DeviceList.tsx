@@ -5,6 +5,8 @@ import {
   batteryColor,
   storagePct,
 } from '../data/devices'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
+import { Wifi, Bluetooth, WifiOff, MapPin, Camera, Clock } from 'lucide-react'
 
 export type FleetView = 'grid' | 'table'
 
@@ -51,27 +53,48 @@ function BatteryBar({ pct }: { pct: number }) {
 function ConnIcon({ d }: { d: Device }) {
   const label = d.connection
   const c = d.connection === 'Offline' ? '#64748b' : d.connection === 'Wi-Fi' ? '#22d3ee' : '#8b7aff'
+  const Icon = d.connection === 'Wi-Fi' ? Wifi : d.connection === 'BLE' ? Bluetooth : WifiOff
+  
   return (
-    <span className="inline-flex items-center gap-1 text-[11px]" style={{ color: c }}>
-      {d.connection === 'Wi-Fi' ? '⩕' : d.connection === 'BLE' ? '✸' : '⊘'} {label}
+    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium" style={{ color: c }}>
+      <Icon size={12} /> {label}
     </span>
   )
+}
+
+const containerVars: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  }
+}
+
+const itemVars: Variants = {
+  hidden: { opacity: 0, y: 15, scale: 0.95 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } }
 }
 
 // ── Card grid (primary "My Devices" view) ──────────────────────────────────
 function Grid({ devices, onSelect }: Omit<Props, 'view'>) {
   return (
-    <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <motion.div 
+      variants={containerVars} 
+      initial="hidden" 
+      animate="show" 
+      className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+    >
       {devices.map((d) => {
         const color = STATUS_COLOR[d.status]
         return (
-          <button
+          <motion.button
+            variants={itemVars}
             key={d.id}
             onClick={() => onSelect(d)}
-            className={`group relative flex flex-col overflow-hidden rounded-xl border bg-ink-800 p-4 pl-5 text-left transition-all hover:-translate-y-0.5 hover:shadow-lg ${
+            className={`group relative flex flex-col overflow-hidden rounded-[1.25rem] border bg-ink-800/40 backdrop-blur-xl p-5 text-left transition-all hover:-translate-y-1 hover:shadow-lg ${
               d.status === 'offline' ? 'opacity-80 hover:opacity-100' : ''
             }`}
-            style={{ borderColor: `${color}55` }}
+            style={{ borderColor: `${color}40`, boxShadow: `0 4px 20px -2px ${color}10` }}
           >
             {/* status accent bar + faint tint */}
             <span className="absolute left-0 top-0 h-full w-1.5" style={{ background: color }} />
@@ -82,16 +105,17 @@ function Grid({ devices, onSelect }: Omit<Props, 'view'>) {
               }}
             />
 
-            <div className="relative mb-3 flex items-start justify-between">
-              <div className="min-w-0">
-                <div className="truncate font-medium text-slate-100">{d.name}</div>
-                <div className="font-mono text-[11px] text-slate-500">{d.serial}</div>
+            <div className="relative mb-4 flex items-start justify-between">
+              <div className="min-w-0 pr-2">
+                <div className="truncate font-bold text-fg font-display">{d.name}</div>
+                <div className="font-mono text-[11px] text-slate-400 mt-0.5">{d.serial}</div>
               </div>
               <StatusPill d={d} />
             </div>
 
-            <div className="relative mb-3 flex items-center gap-1.5 text-[11px] text-slate-500">
-              <span>📍 {d.site}</span>
+            <div className="relative mb-4 flex items-center gap-1.5 text-[11px] text-slate-400">
+              <MapPin size={12} className="opacity-70" />
+              <span>{d.site}</span>
             </div>
 
             <div className="relative mt-auto flex items-center justify-between">
@@ -99,15 +123,21 @@ function Grid({ devices, onSelect }: Omit<Props, 'view'>) {
               <ConnIcon d={d} />
             </div>
 
-            <div className="relative mt-2 flex items-center justify-between border-t border-ink-600 pt-2 text-[11px] text-slate-500">
-              <span>👁 {d.captures.length} captures</span>
-              <span>Last seen {d.lastSeen}</span>
+            <div className="relative mt-3 flex items-center justify-between border-t border-white/5 pt-3 text-[11px] text-slate-400 font-medium">
+              <span className="flex items-center gap-1.5"><Camera size={12} className="opacity-70" /> {d.captures.length} captures</span>
+              <span className="flex items-center gap-1.5"><Clock size={12} className="opacity-70" /> {d.lastSeen}</span>
             </div>
-          </button>
+            
+            {/* Hover Glow */}
+            <div 
+              className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none"
+              style={{ boxShadow: `inset 0 0 20px 0 ${color}15, inset 0 0 0 1px ${color}30` }}
+            />
+          </motion.button>
         )
       })}
       {devices.length === 0 && <EmptyState />}
-    </div>
+    </motion.div>
   )
 }
 
@@ -193,9 +223,22 @@ function EmptyState() {
 }
 
 export default function DeviceList({ devices, view, onSelect }: Props) {
-  return view === 'grid' ? (
-    <Grid devices={devices} onSelect={onSelect} />
-  ) : (
-    <Table devices={devices} onSelect={onSelect} />
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={view}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2 }}
+        className="h-full"
+      >
+        {view === 'grid' ? (
+          <Grid devices={devices} onSelect={onSelect} />
+        ) : (
+          <Table devices={devices} onSelect={onSelect} />
+        )}
+      </motion.div>
+    </AnimatePresence>
   )
 }

@@ -1,4 +1,5 @@
 // Tiny inline area sparkline (pure SVG) for historical telemetry.
+import { motion } from 'framer-motion'
 interface SparklineProps {
   data: number[] // values 0–100
   width?: number
@@ -27,19 +28,36 @@ export default function Sparkline({
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="block w-full">
       <defs>
+        <filter id="glow-sparkline">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
         <linearGradient id="spark-fill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.35" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <polygon points={area} fill="url(#spark-fill)" />
-      <polyline
+      <motion.polygon 
+        points={area} 
+        fill="url(#spark-fill)" 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 0.2 }}
+      />
+      <motion.polyline
         points={line}
         fill="none"
         stroke={color}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        filter="url(#glow-sparkline)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.5, ease: "easeInOut" }}
       />
     </svg>
   )

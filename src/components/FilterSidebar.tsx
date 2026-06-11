@@ -54,10 +54,10 @@ function Check({
 
 export default function FilterSidebar({ filters, setFilters, resultCount }: Props) {
   return (
-    <aside className="hidden w-60 shrink-0 flex-col overflow-y-auto border-r border-ink-600 bg-ink-800 md:flex">
-      <div className="flex items-center justify-between px-4 pt-4">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Filters</h2>
-        <span className="rounded-full bg-ink-700 px-2 py-0.5 text-[11px] text-argo-cyan">
+    <aside className="hidden w-60 shrink-0 flex-col overflow-y-auto border-r border-white/5 bg-ink-900/60 backdrop-blur-2xl md:flex">
+      <div className="flex items-center justify-between px-4 pt-4 mb-2">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-display">Filters</h2>
+        <span className="rounded-full bg-ink-700/80 px-2 py-0.5 text-[11px] text-argo-cyan font-semibold shadow-glow-cyan">
           {resultCount} devices
         </span>
       </div>

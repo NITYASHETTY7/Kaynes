@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { Routes, Route, Navigate, NavLink, useLocation, useNavigate, useParams, Outlet, useOutletContext } from 'react-router-dom'
 import { useApp } from './context/AppContext'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
@@ -16,10 +17,31 @@ import FilterSidebar from './components/FilterSidebar'
 import AlertsFeed from './components/AlertsFeed'
 import { DEFAULT_FILTERS, applyFilters, type Filters } from './lib/filters'
 
-type Theme = 'dark' | 'light'
-type SidebarItem = 'dashboard' | 'plants' | 'assets' | 'fleet' | 'ai-pipeline' | 'users' | 'alerts' | 'reports'
-
 export default function App() {
+  const { currentUser } = useApp();
+
+  // Auth Guard
+  if (!currentUser) return <Login />;
+
+  return (
+    <Routes>
+      <Route path="/" element={<AppLayout />}>
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="dashboard" element={<DashboardWrapper />} />
+        <Route path="plants" element={<TenantsPlants />} />
+        <Route path="assets" element={<AssetsWrapper />} />
+        <Route path="assets/:id" element={<AssetsWrapper />} />
+        <Route path="fleet" element={<FleetWrapper />} />
+        <Route path="ai-pipeline" element={<AIPipeline />} />
+        <Route path="users" element={<Users />} />
+        <Route path="alerts" element={<AlertsWrapper />} />
+        <Route path="reports" element={<Reports />} />
+      </Route>
+    </Routes>
+  )
+}
+
+function AppLayout() {
   const { 
     currentUser, 
     logout, 
@@ -28,36 +50,14 @@ export default function App() {
     deleteImage, 
     notifications, 
     isSupabaseConnected, 
-    isSyncing 
+    isSyncing,
+    theme,
+    toggleTheme
   } = useApp();
 
-  // Tab & UI View States
-  const [activeMenu, setActiveMenu] = useState<SidebarItem>('dashboard');
-  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
-
-  // Fleet View specific states
-  const [fleetViewMode, setFleetViewMode] = useState<FleetView>('grid');
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
-  const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
-  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('theme') as Theme) || 'dark');
-
-  // Change theme side-effect
-  useMemo(() => {
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  // Devices calculations for original fleet view
-  const filteredDevices = useMemo(() => applyFilters(devices, filters), [devices, filters]);
-  const selectedDevice = useMemo(() => devices.find((d) => d.id === selectedDeviceId) ?? null, [devices, selectedDeviceId]);
-
-  // Handle navigation requests from cards/dashboard
-  const handleNavigate = (menu: string, param?: any) => {
-    setActiveMenu(menu as SidebarItem);
-    if (menu === 'assets' && typeof param === 'string') {
-      setSelectedAssetId(param);
-    }
-  };
+  const location = useLocation();
+  const isAdmin = currentUser?.role === 'admin';
+  const unacknowledgedCount = notifications.filter(n => !n.acknowledged).length;
 
   const renameDevice = (id: number, name: string) => {
     updateDevice(id, { name });
@@ -67,16 +67,11 @@ export default function App() {
     deleteImage(mediaId);
   };
 
-  // Auth Guard
-  if (!currentUser) return <Login />;
-
-  const isAdmin = currentUser.role === 'admin';
-  const unacknowledgedCount = notifications.filter(n => !n.acknowledged).length;
+  const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
+  const selectedDevice = useMemo(() => devices.find((d) => d.id === selectedDeviceId) ?? null, [devices, selectedDeviceId]);
 
   return (
     <div className="flex h-screen flex-col bg-ink-900 text-slate-200 overflow-hidden font-sans">
-      
-      {/* ── Top Header ────────────────────────────────────────── */}
       <header className="z-30 flex flex-wrap items-center gap-4 border-b border-ink-600 bg-ink-800 px-5 py-3">
         <div className="flex items-center gap-2.5">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-argo-cyan/15 text-argo-cyan text-lg font-bold">
@@ -90,30 +85,25 @@ export default function App() {
               <span>Kaynes Technology</span>
               <span className="h-1 w-1 bg-ink-500 rounded-full" />
               <span className={isSupabaseConnected ? 'text-argo-green' : 'text-argo-amber'}>
-                {isSupabaseConnected ? '● Cloud Connected' : '⊚ Local Storage Fallback'}
+                {isSupabaseConnected ? '● Cloud Connected' : '⊚ Disconnected'}
               </span>
               {isSyncing && <span className="animate-spin text-argo-cyan">↻</span>}
             </p>
           </div>
         </div>
 
-        {/* Right Header Panel */}
         <div className="ml-auto flex items-center gap-3">
           <div className="hidden text-right xl:block">
-            <span className="text-xs font-semibold text-fg block">{currentUser.name}</span>
-            <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">{currentUser.role} Account</span>
+            <span className="text-xs font-semibold text-fg block">{currentUser?.name}</span>
+            <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">{currentUser?.role} Account</span>
           </div>
-          
-          {/* Theme Toggle */}
           <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            onClick={toggleTheme}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-ink-500 bg-ink-700 text-slate-300 transition-colors hover:text-fg"
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {theme === 'dark' ? '☀' : '🌙'}
           </button>
-          
-          {/* Logout Button */}
           <button
             onClick={logout}
             className="rounded-lg border border-ink-500 bg-ink-700 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-fg"
@@ -123,32 +113,26 @@ export default function App() {
         </div>
       </header>
 
-      {/* ── Main Workspace Body ───────────────────────────────── */}
       <div className="flex flex-1 min-h-0">
-        
-        {/* ── Left Sidebar Navigation ─────────────────────────── */}
         <aside className="z-20 w-16 sm:w-60 border-r border-ink-600 bg-ink-800 flex flex-col justify-between py-4">
           <div className="space-y-1 px-2.5">
             {[
-              { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
-              { id: 'plants', label: 'Plants & Tenants', icon: '🏭', adminOnly: true },
-              { id: 'assets', label: 'Industrial Assets', icon: '📦' },
-              { id: 'fleet', label: 'Argo Glasses Fleet', icon: '🛰' },
-              { id: 'ai-pipeline', label: 'AI Inference Lab', icon: '🧠' },
-              { id: 'users', label: 'Staff Identity', icon: '👥', adminOnly: true },
-              { id: 'alerts', label: 'Alarms Feed', icon: '🔔', badge: unacknowledgedCount },
-              { id: 'reports', label: 'Audit & Reports', icon: '📊' },
+              { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: '🏠' },
+              { id: 'plants', path: '/plants', label: 'Plants & Tenants', icon: '🏭', adminOnly: true },
+              { id: 'assets', path: '/assets', label: 'Industrial Assets', icon: '📦' },
+              { id: 'fleet', path: '/fleet', label: 'Argo Glasses Fleet', icon: '🛰' },
+              { id: 'ai-pipeline', path: '/ai-pipeline', label: 'AI Inference Lab', icon: '🧠' },
+              { id: 'users', path: '/users', label: 'Staff Identity', icon: '👥', adminOnly: true },
+              { id: 'alerts', path: '/alerts', label: 'Alarms Feed', icon: '🔔', badge: unacknowledgedCount },
+              { id: 'reports', path: '/reports', label: 'Audit & Reports', icon: '📊' },
             ].map((item) => {
               if (item.adminOnly && !isAdmin) return null;
-              const isActive = activeMenu === item.id;
+              const isActive = location.pathname.startsWith(item.path);
               
               return (
-                <button
+                <NavLink
                   key={item.id}
-                  onClick={() => {
-                    setActiveMenu(item.id as SidebarItem);
-                    if (item.id === 'assets') setSelectedAssetId(null);
-                  }}
+                  to={item.path}
                   className={`w-full flex items-center justify-center sm:justify-start gap-3 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${
                     isActive 
                       ? 'bg-argo-cyan text-ink-900 shadow-md' 
@@ -165,7 +149,7 @@ export default function App() {
                       {item.badge}
                     </span>
                   )}
-                </button>
+                </NavLink>
               );
             })}
           </div>
@@ -175,92 +159,96 @@ export default function App() {
           </div>
         </aside>
 
-        {/* ── Main Panel Viewer ───────────────────────────────── */}
         <main className="relative flex-1 flex flex-col min-h-0 bg-ink-900">
-          
-          {/* SECTION: DASHBOARD */}
-          {activeMenu === 'dashboard' && <Dashboard onNavigate={handleNavigate} />}
-
-          {/* SECTION: PLANTS & TENANTS */}
-          {activeMenu === 'plants' && <TenantsPlants />}
-
-          {/* SECTION: ASSETS */}
-          {activeMenu === 'assets' && (
-            <Assets 
-              selectedAssetId={selectedAssetId} 
-              onClearSelect={() => setSelectedAssetId(null)} 
-            />
-          )}
-
-          {/* SECTION: ORIGINAL ARGO GLASSES FLEET VIEW */}
-          {activeMenu === 'fleet' && (
-            <div className="flex h-full min-h-0">
-              <FilterSidebar 
-                filters={filters} 
-                setFilters={setFilters} 
-                resultCount={filteredDevices.length} 
-              />
-              <div className="flex-grow relative flex flex-col min-h-0 bg-ink-900 p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Fleet Monitoring View</h2>
-                  <div className="flex rounded-lg border border-ink-500 bg-ink-700 p-0.5">
-                    {(['grid', 'table'] as FleetView[]).map((m) => (
-                      <button
-                        key={m}
-                        onClick={() => setFleetViewMode(m)}
-                        className={`rounded-md px-3 py-1 text-xs font-semibold capitalize transition-colors ${
-                          fleetViewMode === m ? 'bg-argo-cyan text-ink-900' : 'text-slate-400 hover:text-fg'
-                        }`}
-                      >
-                        {m}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex-1 min-h-0 overflow-y-auto">
-                  <DeviceList 
-                    devices={filteredDevices} 
-                    view={fleetViewMode} 
-                    onSelect={(d) => setSelectedDeviceId(d.id)} 
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* SECTION: AI PIPELINE PLAYGROUND */}
-          {activeMenu === 'ai-pipeline' && <AIPipeline />}
-
-          {/* SECTION: STAFF IDENTITY CRUD */}
-          {activeMenu === 'users' && <Users />}
-
-          {/* SECTION: NOTIFICATIONS/ALARMS FEED */}
-          {activeMenu === 'alerts' && (
-            <div className="h-full overflow-y-auto p-4">
-              <AlertsFeed 
-                devices={devices} 
-                onOpenDevice={(id) => {
-                  setSelectedDeviceId(id);
-                  setActiveMenu('fleet');
-                }} 
-              />
-            </div>
-          )}
-
-          {/* SECTION: REPORTS EXPORT */}
-          {activeMenu === 'reports' && <Reports />}
-
+          <Outlet context={{ setSelectedDeviceId }} />
         </main>
       </div>
 
-      {/* ── Original Slide Drawer overlay for Fleet Glasses Details ── */}
       <DeviceDrawer
         device={selectedDevice}
-        role={currentUser.role as any}
+        role={currentUser?.role as any}
         onClose={() => setSelectedDeviceId(null)}
         onRename={renameDevice}
         onDeleteCapture={deleteCapture}
       />
     </div>
   )
+}
+
+function DashboardWrapper() {
+  const navigate = useNavigate();
+  return <Dashboard onNavigate={(tab, param) => {
+    if (tab === 'assets' && param) {
+      navigate(`/assets/${param}`);
+    } else {
+      navigate(`/${tab}`);
+    }
+  }} />;
+}
+
+function AssetsWrapper() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  return <Assets selectedAssetId={id || null} onClearSelect={() => navigate('/assets')} />;
+}
+
+function FleetWrapper() {
+  const { devices } = useApp();
+  const [fleetViewMode, setFleetViewMode] = useState<FleetView>('grid');
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const { setSelectedDeviceId } = useOutletContext<{ setSelectedDeviceId: (id: number | null) => void }>();
+
+  const filteredDevices = useMemo(() => applyFilters(devices, filters), [devices, filters]);
+
+  return (
+    <div className="flex h-full min-h-0">
+      <FilterSidebar 
+        filters={filters} 
+        setFilters={setFilters} 
+        resultCount={filteredDevices.length} 
+      />
+      <div className="flex-grow relative flex flex-col min-h-0 bg-ink-900 p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Fleet Monitoring View</h2>
+          <div className="flex rounded-lg border border-ink-500 bg-ink-700 p-0.5">
+            {(['grid', 'table'] as FleetView[]).map((m) => (
+              <button
+                key={m}
+                onClick={() => setFleetViewMode(m)}
+                className={`rounded-md px-3 py-1 text-xs font-semibold capitalize transition-colors ${
+                  fleetViewMode === m ? 'bg-argo-cyan text-ink-900' : 'text-slate-400 hover:text-fg'
+                }`}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <DeviceList 
+            devices={filteredDevices} 
+            view={fleetViewMode} 
+            onSelect={(d) => setSelectedDeviceId(d.id)} 
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AlertsWrapper() {
+  const { devices } = useApp();
+  const { setSelectedDeviceId } = useOutletContext<{ setSelectedDeviceId: (id: number | null) => void }>();
+  const navigate = useNavigate();
+  return (
+    <div className="h-full overflow-y-auto p-4">
+      <AlertsFeed 
+        devices={devices} 
+        onOpenDevice={(id) => {
+          setSelectedDeviceId(id);
+          navigate('/fleet');
+        }} 
+      />
+    </div>
+  );
 }

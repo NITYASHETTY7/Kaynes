@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { motion } from 'framer-motion';
 
 function GlassesMark({ className }: { className?: string }) {
   return (
@@ -17,8 +18,16 @@ function GlassesMark({ className }: { className?: string }) {
 function Backdrop() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute -left-40 -top-40 h-[28rem] w-[28rem] rounded-full bg-argo-cyan/15 blur-3xl" />
-      <div className="absolute -bottom-44 -right-40 h-[30rem] w-[30rem] rounded-full bg-argo-violet/15 blur-3xl" />
+      <motion.div 
+        animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, 30, 0] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="absolute -left-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-argo-cyan/10 blur-3xl" 
+      />
+      <motion.div 
+        animate={{ scale: [1, 1.3, 1], x: [0, -50, 0], y: [0, -30, 0] }}
+        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        className="absolute -bottom-44 -right-40 h-[36rem] w-[36rem] rounded-full bg-argo-violet/10 blur-3xl" 
+      />
       <svg className="absolute inset-0 h-full w-full opacity-[0.5]" preserveAspectRatio="none">
         <defs>
           <pattern id="dots" width="34" height="34" patternUnits="userSpaceOnUse">
@@ -101,10 +110,15 @@ export default function Login() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-ink-900 p-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-ink-900 p-4 font-sans">
       <Backdrop />
 
-      <div className="relative z-10 grid w-full max-w-4xl animate-fadeIn overflow-hidden rounded-2xl border border-ink-600 bg-ink-800 shadow-2xl md:grid-cols-2">
+      <motion.div 
+        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 grid w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/5 bg-ink-800/60 backdrop-blur-2xl shadow-2xl md:grid-cols-2 shadow-glow-cyan"
+      >
         
         {/* Brand Side Hero */}
         <div className="relative hidden flex-col justify-between bg-gradient-to-br from-argo-cyan to-argo-violet p-8 text-white md:flex">
@@ -141,7 +155,7 @@ export default function Login() {
         </div>
 
         {/* ── Form Side ──────────────────────────────────── */}
-        <div className="bg-ink-800 p-8 flex flex-col justify-center">
+        <div className="p-8 flex flex-col justify-center">
           
           {/* Logo for mobile */}
           <div className="mb-6 flex items-center gap-3 md:hidden">
@@ -158,8 +172,8 @@ export default function Login() {
           {view === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
-                <h2 className="text-lg font-bold text-fg">Authorized Sign In</h2>
-                <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">Enter your Kaynes Technology secure corporate credentials.</p>
+                <h2 className="text-2xl font-bold text-fg font-display tracking-tight">Authorized Sign In</h2>
+                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">Enter your Kaynes Technology secure corporate credentials.</p>
               </div>
 
               {error && <div className="rounded-lg bg-argo-red/10 border border-argo-red/30 p-2.5 text-xs text-argo-red font-semibold">{error}</div>}
@@ -172,7 +186,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@kaynes.com"
-                  className="w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm text-fg outline-none focus:border-argo-cyan font-mono"
+                  className="w-full rounded-xl border border-white/10 bg-ink-900/50 px-4 py-3 text-sm text-fg outline-none transition-all focus:border-argo-cyan focus:bg-ink-900 focus:shadow-glow-cyan font-mono"
                 />
               </div>
 
@@ -193,27 +207,27 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm text-fg outline-none focus:border-argo-cyan"
+                  className="w-full rounded-xl border border-white/10 bg-ink-900/50 px-4 py-3 text-sm text-fg outline-none transition-all focus:border-argo-cyan focus:bg-ink-900 focus:shadow-glow-cyan"
                 />
               </div>
 
               <button 
                 type="submit"
-                className="w-full rounded-lg bg-argo-cyan py-2.5 text-sm font-semibold text-ink-900 hover:brightness-110"
+                className="w-full rounded-xl bg-gradient-to-r from-argo-cyan to-[#00c6ff] py-3 text-sm font-bold text-ink-900 transition-all hover:scale-[1.02] hover:shadow-glow-cyan"
               >
                 Sign In to Console
               </button>
 
               {/* Helpful credentials blocks */}
-              <div className="rounded-lg bg-ink-700/30 border border-ink-600/50 p-3 space-y-1.5 text-[10px] text-slate-400">
+              <div className="rounded-xl bg-ink-900/40 border border-white/5 p-4 space-y-2 text-[10px] text-slate-400">
                 <span className="font-semibold text-slate-300 block">Stakeholder Demo Credentials:</span>
-                <div className="flex justify-between">
-                  <span>Admin: <strong className="text-fg font-mono">admin@kaynes.com</strong></span>
-                  <span>Pass: <strong className="text-fg font-mono">admin123</strong></span>
+                <div className="flex justify-between items-center">
+                  <span>Admin: <strong className="text-fg font-mono ml-1">admin@kaynes.com</strong></span>
+                  <span className="opacity-70">Pass: <strong className="text-fg font-mono">admin123</strong></span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Inspector: <strong className="text-fg font-mono">inspector@kaynes.com</strong></span>
-                  <span>Pass: <strong className="text-fg font-mono">inspector123</strong></span>
+                <div className="flex justify-between items-center">
+                  <span>Inspector: <strong className="text-fg font-mono ml-1">inspector@kaynes.com</strong></span>
+                  <span className="opacity-70">Pass: <strong className="text-fg font-mono">inspector123</strong></span>
                 </div>
               </div>
             </form>
@@ -314,7 +328,7 @@ export default function Login() {
 
         </div>
 
-      </div>
+      </motion.div>
     </div>
   );
 }

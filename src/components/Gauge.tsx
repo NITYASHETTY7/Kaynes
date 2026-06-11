@@ -1,4 +1,5 @@
 // Semi-circular gauge (pure SVG, no deps). Used for battery / utilisation.
+import { motion } from 'framer-motion';
 interface GaugeProps {
   value: number // 0–100
   label?: string
@@ -22,21 +23,33 @@ export default function Gauge({ value, label, sublabel, color }: GaugeProps) {
   return (
     <div className="flex flex-col items-center">
       <svg width="180" height="104" viewBox="0 0 180 104">
+        <defs>
+          <filter id="glow-gauge">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
         <path
           d="M 20 96 A 70 70 0 0 1 160 96"
           fill="none"
-          stroke="rgb(var(--s-600))"
+          stroke="currentColor"
+          className="text-white/10"
           strokeWidth="14"
           strokeLinecap="round"
         />
-        <path
+        <motion.path
           d="M 20 96 A 70 70 0 0 1 160 96"
           fill="none"
           stroke={stroke}
           strokeWidth="14"
           strokeLinecap="round"
-          strokeDasharray={`${dash} ${circumference}`}
-          style={{ transition: 'stroke-dasharray 0.6s ease' }}
+          initial={{ strokeDasharray: `0 ${circumference}` }}
+          animate={{ strokeDasharray: `${dash} ${circumference}` }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          filter="url(#glow-gauge)"
         />
         <text
           x="90"
