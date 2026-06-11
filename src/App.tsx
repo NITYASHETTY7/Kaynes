@@ -25,7 +25,7 @@ export default function App() {
     logout, 
     devices, 
     updateDevice, 
-    deleteImage, 
+    deleteCapture,
     notifications,
     isSupabaseConnected
   } = useApp();
@@ -67,9 +67,6 @@ export default function App() {
     updateDevice(id, { name });
   };
 
-  const deleteCapture = (_deviceId: number, mediaId: string) => {
-    deleteImage(mediaId);
-  };
 
   // Auth Guard
   if (!currentUser) return <Login />;

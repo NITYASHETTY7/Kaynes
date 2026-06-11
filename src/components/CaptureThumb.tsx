@@ -8,6 +8,7 @@ interface Props {
   deviceName?: string
   className?: string
   onImageClick?: () => void
+  onImageError?: () => void
 }
 
 export default function CaptureThumb({ 
@@ -15,7 +16,8 @@ export default function CaptureThumb({
   serial, 
   deviceName = 'Device',
   className,
-  onImageClick
+  onImageClick,
+  onImageError
 }: Props) {
   const [imageError, setImageError] = useState(false)
   
@@ -32,7 +34,10 @@ export default function CaptureThumb({
         src={imageUrl}
         alt={item.label}
         className="h-full w-full object-cover"
-        onError={() => setImageError(true)}
+        onError={() => {
+          setImageError(true);
+          onImageError?.();
+        }}
         loading="lazy"
       />
       
@@ -49,7 +54,7 @@ export default function CaptureThumb({
       {/* REC / timestamp HUD */}
       <div className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded bg-black/60 px-1.5 py-0.5 font-mono text-[9px] text-white/90">
         <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" /> 
-        {item.kind === 'video' ? 'CLIP' : 'STILL'}
+        'STILL'
       </div>
       
       {serial && (
@@ -58,20 +63,7 @@ export default function CaptureThumb({
         </div>
       )}
       
-      {item.kind === 'video' && (
-        <>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur group-hover:bg-white/40 transition-colors">
-              ▶
-            </span>
-          </div>
-          {item.durationSec != null && (
-            <div className="absolute bottom-1.5 right-1.5 rounded bg-black/60 px-1.5 py-0.5 font-mono text-[9px] text-white/80">
-              {Math.floor(item.durationSec / 60)}:{String(item.durationSec % 60).padStart(2, '0')}
-            </div>
-          )}
-        </>
-      )}
+
       
       {/* Label on hover (image) */}
       {item.kind === 'image' && (

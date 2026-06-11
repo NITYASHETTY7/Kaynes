@@ -3,6 +3,7 @@ import { type UserRole as Role } from '../context/AppContext'
 import { type Device, type MediaItem } from '../data/devices'
 import CaptureThumb from './CaptureThumb'
 import ImageViewer from './ImageViewer'
+import { getDeviceImageUrl } from '../lib/deviceImageMapper'
 
 interface Props {
   devices: Device[]
@@ -24,13 +25,14 @@ interface ViewerState {
   deviceName: string
 }
 
-type KindFilter = 'all' | 'image' | 'video'
+type KindFilter = 'all' | 'image'
 
 export default function MediaGallery({ devices, role, onDeleteCapture }: Props) {
   const [kind, setKind] = useState<KindFilter>('all')
   const [deviceId, setDeviceId] = useState<number | 'all'>('all')
   const [toast, setToast] = useState<string | null>(null)
-  const [viewer, setViewer] = useState<ViewerState>({ isOpen: false, item: null, deviceName: '' })
+  const [viewer, setViewer] = useState<ViewerState>({ isOpen: false, item: null, deviceName: '' });
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   const all: FlatItem[] = useMemo(
     () =>
@@ -47,7 +49,7 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
   )
 
   const filtered = all.filter(
-    (f) => (kind === 'all' || f.item.kind === kind) && (deviceId === 'all' || f.deviceId === deviceId),
+    (f) => !failedImages[f.item.id] && (kind === 'all' || f.item.kind === kind) && (deviceId === 'all' || f.deviceId === deviceId),
   )
 
   const withCaptures = devices.filter((d) => d.captures.length > 0)
@@ -58,6 +60,25 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
   }
 
   const isAdmin = role === 'admin'
+
+  const handleDownload = async (item: MediaItem, deviceName: string) => {
+    flash(`Downloading "${item.label}"…`);
+    try {
+      const url = (item as any).url || getDeviceImageUrl(deviceName, item.seed, item.label);
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = `${item.label.replace(/\s+/g, '_')}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      flash(`Failed to download "${item.label}"`);
+    }
+  };
 
   return (
     <div className="h-full overflow-auto p-6">
@@ -74,7 +95,7 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
         </div>
         <div className="flex flex-wrap gap-2.5">
           <div className="flex rounded-lg border border-ink-600 bg-ink-800 p-0.5 shadow-sm">
-            {(['all', 'image', 'video'] as KindFilter[]).map((k) => (
+            {(['all', 'image'] as KindFilter[]).map((k) => (
               <button
                 key={k}
                 onClick={() => setKind(k)}
@@ -82,7 +103,7 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
                   kind === k ? 'bg-argo-cyan text-ink-900 shadow-md' : 'text-slate-400 hover:text-fg'
                 }`}
               >
-                {k === 'all' ? 'All' : k === 'image' ? 'Photos' : 'Clips'}
+                {k === 'all' ? 'All' : 'Photos'}
               </button>
             ))}
           </div>
@@ -138,6 +159,7 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
                 deviceName={f.deviceName}
                 className="aspect-video w-full" 
                 onImageClick={() => setViewer({ isOpen: true, item: f.item, deviceName: f.deviceName })}
+                onImageError={() => setFailedImages(prev => ({ ...prev, [f.item.id]: true }))}
               />
               <div className="p-3">
                 <div className="truncate text-sm text-slate-200">{f.item.label}</div>
@@ -156,12 +178,12 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
                 </div>
                 <div className="mt-2 flex items-center justify-between border-t border-ink-600 pt-2">
                   <span className="text-[11px] text-slate-500">
-                    {f.item.kind === 'video' ? 'Clip' : 'Image'} · {f.item.sizeMb} MB
+                    Image · {f.item.sizeMb} MB
                   </span>
                   {isAdmin && (
                     <div className="flex gap-1.5">
                       <button
-                        onClick={() => flash(`Preparing "${f.item.label}" for download…`)}
+                        onClick={() => handleDownload(f.item, f.deviceName)}
                         className="rounded border border-ink-500 px-2 py-0.5 text-[11px] text-slate-300 hover:border-argo-cyan hover:text-fg"
                       >
                         ↓ Download

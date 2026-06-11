@@ -34,21 +34,11 @@ export default function ImageViewer({ isOpen, item, deviceName, onClose }: Props
 
         {/* Image Content */}
         <div className="flex flex-1 items-center justify-center overflow-hidden bg-black p-2 min-h-[300px]">
-          {item.kind === 'image' ? (
-            <img
-              src={(item as any).url || getDeviceImageUrl(deviceName, item.seed, item.label)}
-              alt={item.label}
-              className="max-h-full max-w-full rounded object-contain"
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center space-y-4 text-slate-400 py-12">
-              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-4xl">▶</span>
-              <div className="text-center">
-                <span className="block text-sm font-medium text-slate-200">Video playback staged</span>
-                <span className="text-xs">Referencing S3 bucket: kaynes-argo-media/{item.id}</span>
-              </div>
-            </div>
-          )}
+          <img
+            src={(item as any).url || getDeviceImageUrl(deviceName, item.seed, item.label)}
+            alt={item.label}
+            className="max-h-full max-w-full rounded object-contain"
+          />
         </div>
 
         {/* Metadata Footer */}
@@ -62,15 +52,9 @@ export default function ImageViewer({ isOpen, item, deviceName, onClose }: Props
               <span className="block font-semibold text-slate-300 uppercase tracking-wider text-[10px]">Size</span>
               {item.sizeMb} MB
             </div>
-            {item.kind === 'video' && item.durationSec && (
-              <div>
-                <span className="block font-semibold text-slate-300 uppercase tracking-wider text-[10px]">Duration</span>
-                {Math.floor(item.durationSec / 60)}:{String(item.durationSec % 60).padStart(2, '0')}
-              </div>
-            )}
             <div>
               <span className="block font-semibold text-slate-300 uppercase tracking-wider text-[10px]">Type</span>
-              {item.kind === 'image' ? 'Photo (Still)' : 'Video (Clip)'}
+              Photo (Still)
             </div>
           </div>
           {item.tags.length > 0 && (

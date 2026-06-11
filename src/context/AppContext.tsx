@@ -185,10 +185,10 @@ interface AppContextType {
   updateFirmware: (deviceId: number) => Promise<void>;
   addDeviceLog: (deviceId: number, level: 'info' | 'warn' | 'error', message: string) => Promise<void>;
 
-  // Image & AI Processing
   uploadImageFile: (file: File, label: string, assetId: string | null, deviceId: number | null, tags: string[]) => Promise<ImageItem | null>;
   uploadImage: (image: Omit<ImageItem, 'id' | 'created_at' | 'isArchived' | 'status'>) => Promise<ImageItem>;
   deleteImage: (id: string) => Promise<void>;
+  deleteCapture: (deviceId: number, captureId: string) => Promise<void>;
   archiveImage: (id: string) => Promise<void>;
   runAIProcessing: (imageId: string, filters: string[]) => Promise<AIResult>;
 
@@ -1213,6 +1213,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAiResults(prev => prev.filter(res => res.imageId !== id));
   };
 
+  const deleteCapture = async (deviceId: number, captureId: string) => {
+    const targetDev = devices.find(d => d.id === deviceId);
+    if (targetDev) {
+      const updatedCaptures = targetDev.captures.filter(c => c.id !== captureId);
+      await updateDevice(deviceId, { captures: updatedCaptures });
+    }
+  };
+
   const archiveImage = async (id: string) => {
     if (isSupabaseConnected && supabase) {
       await supabase.from('images').update({ is_archived: true }).eq('id', id);
@@ -1411,6 +1419,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       uploadImageFile,
       uploadImage,
       deleteImage,
+      deleteCapture,
       archiveImage,
       runAIProcessing,
       addNotification,

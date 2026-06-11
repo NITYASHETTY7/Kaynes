@@ -14,6 +14,7 @@ import CaptureThumb from './CaptureThumb'
 import Gauge from './Gauge'
 import Sparkline from './Sparkline'
 import ImageViewer from './ImageViewer'
+import { getDeviceImageUrl } from '../lib/deviceImageMapper'
 
 interface Props {
   device: Device | null
@@ -123,9 +124,23 @@ export default function DeviceDrawer({
     flash('Device metadata updated.');
   }
 
-  function download(item: MediaItem) {
-    // Placeholder — production streams from S3 / CloudFront.
-    flash(`Preparing "${item.label}" for download…`)
+  async function download(item: MediaItem) {
+    flash(`Downloading "${item.label}"…`);
+    try {
+      const url = (item as any).url || getDeviceImageUrl(d.name, item.seed, item.label);
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = `${item.label.replace(/\s+/g, '_')}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      flash(`Failed to download "${item.label}"`);
+    }
   }
 
   function remove(item: MediaItem) {
@@ -387,7 +402,7 @@ export default function DeviceDrawer({
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm text-slate-200">{m.label}</div>
                       <div className="text-[11px] text-slate-500">
-                        {m.kind === 'video' ? 'Clip' : 'Image'} · {m.sizeMb} MB · {m.capturedAt}
+                        Image · {m.sizeMb} MB · {m.capturedAt}
                       </div>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {m.tags.map((t) => (

@@ -1,0 +1,23 @@
+const fs = require('fs');
+let code = fs.readFileSync('src/components/MediaGallery.tsx', 'utf8');
+
+// 1. Add state - match exactly up to the bracket to ignore spacing/newlines
+code = code.replace(
+  /const \[viewer, setViewer\] = useState<ViewerState>\(\{ isOpen: false, item: null, deviceName: '' \}\)/,
+  "const [viewer, setViewer] = useState<ViewerState>({ isOpen: false, item: null, deviceName: '' });\n  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});"
+);
+
+// 2. Update filter array - using a robust regex that doesn't care about whitespace
+code = code.replace(
+  /const filtered = all\.filter\(\s*\(\s*f\s*\)\s*=>\s*\(kind === 'all' \|\| f\.item\.kind === kind\)\s*&&\s*\(deviceId === 'all' \|\| f\.deviceId === deviceId\),\s*\)/,
+  "const filtered = all.filter(\n    (f) => !failedImages[f.item.id] && (kind === 'all' || f.item.kind === kind) && (deviceId === 'all' || f.deviceId === deviceId),\n  )"
+);
+
+// 3. Add onImageError to CaptureThumb
+code = code.replace(
+  /onImageClick=\{\(\) => setViewer\(\{ isOpen: true, item: f\.item, deviceName: f\.deviceName \}\)\}/,
+  "onImageClick={() => setViewer({ isOpen: true, item: f.item, deviceName: f.deviceName })}\n                onImageError={() => setFailedImages(prev => ({ ...prev, [f.item.id]: true }))}"
+);
+
+fs.writeFileSync('src/components/MediaGallery.tsx', code);
+console.log('MediaGallery updated');

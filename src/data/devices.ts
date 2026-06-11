@@ -13,7 +13,7 @@
 export type DeviceStatus = 'online' | 'warning' | 'critical' | 'offline'
 export type Connection = 'Wi-Fi' | 'BLE' | 'Offline'
 export type Severity = 'normal' | 'warning' | 'critical'
-export type MediaKind = 'image' | 'video'
+export type MediaKind = 'image'
 
 // A captured frame/clip pulled off the glasses (Wi-Fi media transfer in the
 // SDK). In production these land in Amazon S3; here they're procedural.
@@ -23,7 +23,7 @@ export interface MediaItem {
   label: string
   capturedAt: string // relative, e.g. "2 h ago"
   sizeMb: number
-  durationSec?: number // video only
+  durationSec?: number // duration removed
   seed: number // drives the procedural thumbnail
   tags: string[] // ML-training context (the stated business use-case)
 }
@@ -93,10 +93,7 @@ const HERO_DEVICES: Device[] = [
         'connector',
         'assembly-qa',
       ]),
-      mediaVid('00000000-0000-0000-0000-000000000403', 'Remote-assist: rework cell', '1 h ago', 88.0, 142, 4203, [
-        'remote-assist',
-        'rework',
-      ]),
+      
     ],
     forecast: {
       severity: 'critical',
@@ -169,10 +166,7 @@ const HERO_DEVICES: Device[] = [
         'wiring-harness',
         'continuity',
       ]),
-      mediaVid('00000000-0000-0000-0000-000000000407', 'Assembly walkthrough', '35 min ago', 64.0, 96, 1502, [
-        'assembly',
-        'training-data',
-      ]),
+      
     ],
     forecast: {
       severity: 'normal',
@@ -297,17 +291,7 @@ function mediaImg(
 ): MediaItem {
   return { id, kind: 'image', label, capturedAt, sizeMb, seed, tags }
 }
-function mediaVid(
-  id: string,
-  label: string,
-  capturedAt: string,
-  sizeMb: number,
-  durationSec: number,
-  seed: number,
-  tags: string[],
-): MediaItem {
-  return { id, kind: 'video', label, capturedAt, sizeMb, durationSec, seed, tags }
-}
+
 
 // ── Deterministic generator for the wider fleet ────────────────────────────
 function mulberry32(seed: number) {
@@ -370,7 +354,7 @@ function rngUUID(rng: () => number): string {
 function makeCaptures(rng: () => number, n: number): MediaItem[] {
   const out: MediaItem[] = []
   for (let i = 0; i < n; i++) {
-    const isVid = rng() < 0.25
+
     const label = pick(rng, CAPTURE_LABELS)
     const tags = [pick(rng, CAPTURE_TAGS), pick(rng, CAPTURE_TAGS)].filter(
       (t, k, a) => a.indexOf(t) === k,
@@ -379,12 +363,7 @@ function makeCaptures(rng: () => number, n: number): MediaItem[] {
     const when = mins < 60 ? `${mins} min ago` : `${Math.floor(mins / 60)} h ago`
     const seed = Math.floor(rng() * 100000)
     const uuid = rngUUID(rng)
-    if (isVid) {
-      const dur = 20 + Math.floor(rng() * 160)
-      out.push(mediaVid(uuid, label, when, +(dur * 0.6).toFixed(1), dur, seed, tags))
-    } else {
-      out.push(mediaImg(uuid, label, when, +(2.5 + rng() * 3.5).toFixed(1), seed, tags))
-    }
+    out.push(mediaImg(uuid, label, when, +(2.5 + rng() * 3.5).toFixed(1), seed, tags))
   }
   return out
 }
