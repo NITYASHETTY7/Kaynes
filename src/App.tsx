@@ -1,63 +1,67 @@
-import { useState, useMemo } from 'react'
-import { Routes, Route, Navigate, NavLink, useLocation, useNavigate, useParams, Outlet, useOutletContext } from 'react-router-dom'
-import { useApp } from './context/AppContext'
-import Login from './components/Login'
-import Dashboard from './components/Dashboard'
-import TenantsPlants from './components/TenantsPlants'
-import Assets from './components/Assets'
+import { useMemo, useState } from 'react'
 import AIPipeline from './components/AIPipeline'
-import Users from './components/Users'
+import Assets from './components/Assets'
+import Dashboard from './components/Dashboard'
+import Login from './components/Login'
+import MediaGallery from './components/MediaGallery'
 import Reports from './components/Reports'
+import TenantsPlants from './components/TenantsPlants'
+import Users from './components/Users'
+import { useApp } from './context/AppContext'
 
 // Import original components
-import { type FleetView } from './components/DeviceList'
-import DeviceList from './components/DeviceList'
-import DeviceDrawer from './components/DeviceDrawer'
-import FilterSidebar from './components/FilterSidebar'
 import AlertsFeed from './components/AlertsFeed'
+import DeviceDrawer from './components/DeviceDrawer'
+import DeviceList, { type FleetView } from './components/DeviceList'
+import FilterSidebar from './components/FilterSidebar'
 import { DEFAULT_FILTERS, applyFilters, type Filters } from './lib/filters'
 
+type Theme = 'dark' | 'light'
+type SidebarItem = 'dashboard' | 'plants' | 'assets' | 'fleet' | 'ai-pipeline' | 'media' | 'users' | 'alerts' | 'reports'
+
 export default function App() {
-  const { currentUser } = useApp();
-
-  // Auth Guard
-  if (!currentUser) return <Login />;
-
-  return (
-    <Routes>
-      <Route path="/" element={<AppLayout />}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardWrapper />} />
-        <Route path="plants" element={<TenantsPlants />} />
-        <Route path="assets" element={<AssetsWrapper />} />
-        <Route path="assets/:id" element={<AssetsWrapper />} />
-        <Route path="fleet" element={<FleetWrapper />} />
-        <Route path="ai-pipeline" element={<AIPipeline />} />
-        <Route path="users" element={<Users />} />
-        <Route path="alerts" element={<AlertsWrapper />} />
-        <Route path="reports" element={<Reports />} />
-      </Route>
-    </Routes>
-  )
-}
-
-function AppLayout() {
   const { 
     currentUser, 
     logout, 
     devices, 
     updateDevice, 
     deleteImage, 
-    notifications, 
-    isSupabaseConnected, 
-    isSyncing,
-    theme,
-    toggleTheme
+    notifications,
+    isSupabaseConnected
   } = useApp();
 
-  const location = useLocation();
-  const isAdmin = currentUser?.role === 'admin';
-  const unacknowledgedCount = notifications.filter(n => !n.acknowledged).length;
+  // Tab & UI View States
+  const [activeMenu, setActiveMenu] = useState<SidebarItem>('dashboard');
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Fleet View specific states
+  const [fleetViewMode, setFleetViewMode] = useState<FleetView>('grid');
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
+  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('theme') as Theme) || 'light');
+
+  // Change theme side-effect
+  useMemo(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  // Devices calculations for original fleet view
+  const filteredDevices = useMemo(() => applyFilters(devices, filters), [devices, filters]);
+  const selectedDevice = useMemo(() => devices.find((d) => d.id === selectedDeviceId) ?? null, [devices, selectedDeviceId]);
+
+  // Handle navigation requests from cards/dashboard
+  const handleNavigate = (menu: string, param?: any) => {
+    setActiveMenu(menu as SidebarItem);
+    if (menu === 'assets' && typeof param === 'string') {
+      setSelectedAssetId(param);
+    }
+  };
 
   const renameDevice = (id: number, name: string) => {
     updateDevice(id, { name });
@@ -67,188 +71,243 @@ function AppLayout() {
     deleteImage(mediaId);
   };
 
-  const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
-  const selectedDevice = useMemo(() => devices.find((d) => d.id === selectedDeviceId) ?? null, [devices, selectedDeviceId]);
+  // Auth Guard
+  if (!currentUser) return <Login />;
+
+  const isAdmin = currentUser.role === 'admin';
+  const unacknowledgedCount = notifications.filter(n => !n.acknowledged).length;
 
   return (
-    <div className="flex h-screen flex-col bg-ink-900 text-slate-200 overflow-hidden font-sans">
-      <header className="z-30 flex flex-wrap items-center gap-4 border-b border-ink-600 bg-ink-800 px-5 py-3">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-argo-cyan/15 text-argo-cyan text-lg font-bold">
-            ◉
-          </span>
+    <div className="flex h-screen flex-col bg-[#F1F5F9] dark:bg-slate-950 text-slate-900 dark:text-slate-200 overflow-hidden font-sans">
+      
+      {/* ── Top Header ────────────────────────────────────────── */}
+      <header className="z-30 flex items-center justify-between border-b border-[#E2E8F0] dark:border-ink-600 bg-white dark:bg-ink-800 px-6 py-2 shadow-sm transition-colors">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded bg-[#185FA5] text-white text-base font-black">
+            A
+          </div>
           <div>
-            <h1 className="text-sm font-bold leading-tight text-fg sm:text-base">
-              Argo Glasses · Enterprise Console
+            <h1 className="text-xs font-black tracking-tight text-[#0F172A] dark:text-fg leading-none">
+              ARGO <span className="text-slate-400 font-bold">GLASSES</span>
             </h1>
-            <p className="text-[10px] leading-tight text-argo-cyan font-mono font-bold flex items-center gap-1.5">
-              <span>Kaynes Technology</span>
-              <span className="h-1 w-1 bg-ink-500 rounded-full" />
-              <span className={isSupabaseConnected ? 'text-argo-green' : 'text-argo-amber'}>
-                {isSupabaseConnected ? '● Cloud Connected' : '⊚ Disconnected'}
+            <div className="mt-1">
+              <span className="text-[8px] font-black uppercase tracking-widest text-[#185FA5] bg-sky-50 dark:bg-sky-500/10 px-1 py-0.5 rounded border border-sky-100 dark:border-sky-500/20">
+                Enterprise Console
               </span>
-              {isSyncing && <span className="animate-spin text-argo-cyan">↻</span>}
-            </p>
+            </div>
           </div>
         </div>
 
-        <div className="ml-auto flex items-center gap-3">
-          <div className="hidden text-right xl:block">
-            <span className="text-xs font-semibold text-fg block">{currentUser?.name}</span>
-            <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">{currentUser?.role} Account</span>
+        {/* Search Bar Center */}
+        <div className="hidden md:flex flex-1 max-w-md mx-8 relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+          <input 
+            type="text" 
+            placeholder="Search..." 
+            className="w-full bg-slate-50 dark:bg-ink-900/50 border border-slate-200 dark:border-ink-600 rounded-lg pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-[#185FA5] transition-colors"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-mono">⌘K</span>
+        </div>
+
+        {/* Right Header Panel */}
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <span className="text-[11px] font-black text-[#0F172A] dark:text-fg block leading-none">Kaynes Tech Admin</span>
+            <div className="flex items-center gap-1.5 mt-1 justify-end">
+               <span className={`h-1 w-1 rounded-full ${isSupabaseConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+               <span className="text-[8px] uppercase tracking-widest text-slate-400 font-bold">{isSupabaseConnected ? 'AWS Connected' : 'Local Mode'}</span>
+            </div>
           </div>
-          <button
-            onClick={toggleTheme}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-ink-500 bg-ink-700 text-slate-300 transition-colors hover:text-fg"
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {theme === 'dark' ? '☀' : '🌙'}
-          </button>
-          <button
-            onClick={logout}
-            className="rounded-lg border border-ink-500 bg-ink-700 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-fg"
-          >
-            Sign Out
-          </button>
+          
+          <div className="flex items-center gap-2 border-l border-slate-100 dark:border-ink-600 pl-4">
+            {/* Theme Toggle */}
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-100 dark:border-ink-600 bg-white dark:bg-ink-800 text-slate-400 hover:text-[#185FA5] transition-colors"
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? '☀' : '🌙'}
+            </button>
+            
+            <button className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 dark:hover:bg-ink-700 relative">
+              🔔
+              <span className="absolute top-2 right-2 h-1.5 w-1.5 bg-red-500 rounded-full border border-white" />
+            </button>
+            <button
+              onClick={logout}
+              className="rounded-lg border border-slate-200 dark:border-ink-600 bg-white dark:bg-ink-800 px-3 py-1.5 text-[10px] font-black text-[#0F172A] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-ink-700 uppercase tracking-widest shadow-sm transition-all"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </header>
 
+      {/* ── Main Workspace Body ───────────────────────────────── */}
       <div className="flex flex-1 min-h-0">
-        <aside className="z-20 w-16 sm:w-60 border-r border-ink-600 bg-ink-800 flex flex-col justify-between py-4">
-          <div className="space-y-1 px-2.5">
+        
+        {/* ── Left Sidebar Navigation ──────── */}
+        <aside className={`z-20 bg-white dark:bg-ink-800 border-r border-[#E2E8F0] dark:border-ink-600 flex flex-col justify-between py-6 shadow-xl transition-all duration-300 ${isSidebarOpen ? 'w-60' : 'w-20'} shrink-0 hidden sm:flex`}>
+          <div className="space-y-1.5 px-3">
             {[
-              { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: '🏠' },
-              { id: 'plants', path: '/plants', label: 'Plants & Tenants', icon: '🏭', adminOnly: true },
-              { id: 'assets', path: '/assets', label: 'Industrial Assets', icon: '📦' },
-              { id: 'fleet', path: '/fleet', label: 'Argo Glasses Fleet', icon: '🛰' },
-              { id: 'ai-pipeline', path: '/ai-pipeline', label: 'AI Inference Lab', icon: '🧠' },
-              { id: 'users', path: '/users', label: 'Staff Identity', icon: '👥', adminOnly: true },
-              { id: 'alerts', path: '/alerts', label: 'Alarms Feed', icon: '🔔', badge: unacknowledgedCount },
-              { id: 'reports', path: '/reports', label: 'Audit & Reports', icon: '📊' },
+              { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
+              { id: 'plants', label: 'Plants & Tenants', icon: '🏭', adminOnly: true },
+              { id: 'assets', label: 'Industrial Assets', icon: '📦' },
+              { id: 'fleet', label: 'Argo Glasses Fleet', icon: '🛰' },
+              { id: 'ai-pipeline', label: 'AI Inference Lab', icon: '🧠' },
+              { id: 'media', label: 'Media Repository', icon: '🎬' },
+              { id: 'users', label: 'Staff Identity', icon: '👥', adminOnly: true },
+              { id: 'alerts', label: 'Alarms Feed', icon: '🔔', badge: unacknowledgedCount },
+              { id: 'reports', label: 'Audit & Reports', icon: '📊' },
             ].map((item) => {
               if (item.adminOnly && !isAdmin) return null;
-              const isActive = location.pathname.startsWith(item.path);
+              const isActive = activeMenu === item.id;
               
               return (
-                <NavLink
+                <button
                   key={item.id}
-                  to={item.path}
-                  className={`w-full flex items-center justify-center sm:justify-start gap-3 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                  onClick={() => {
+                    setActiveMenu(item.id as SidebarItem);
+                    if (item.id === 'assets') setSelectedAssetId(null);
+                  }}
+                  className={`w-full flex items-center ${isSidebarOpen ? 'justify-start px-4' : 'justify-center px-0'} gap-3 py-2.5 rounded-lg text-[11px] font-black transition-all duration-200 group relative ${
                     isActive 
-                      ? 'bg-argo-cyan text-ink-900 shadow-md' 
-                      : 'text-slate-400 hover:bg-ink-700/50 hover:text-fg'
+                      ? 'bg-[#185FA5] text-white shadow-lg shadow-sky-900/10' 
+                      : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-ink-700/50 hover:text-[#0F172A] dark:hover:text-fg'
                   }`}
-                  title={item.label}
+                  title={!isSidebarOpen ? item.label : undefined}
                 >
-                  <span className="text-sm leading-none">{item.icon}</span>
-                  <span className="hidden sm:inline-block flex-1 text-left truncate">{item.label}</span>
+                  <span className={`text-base leading-none transition-transform duration-200 ${isActive ? 'scale-100' : 'group-hover:scale-110 opacity-70 group-hover:opacity-100'}`}>{item.icon}</span>
+                  
+                  {isSidebarOpen && (
+                    <span className="flex-1 text-left truncate tracking-wide uppercase">{item.label}</span>
+                  )}
+                  
                   {item.badge != null && item.badge > 0 && (
-                    <span className={`hidden sm:inline-flex px-1.5 py-0.5 rounded-full text-[9px] font-bold ${
-                      isActive ? 'bg-ink-900 text-argo-cyan' : 'bg-argo-red/20 text-argo-red'
+                    <span className={`flex items-center justify-center rounded-full text-[9px] font-black uppercase tracking-tighter shadow-sm ${
+                      isSidebarOpen ? 'px-2 py-0.5 ml-auto' : 'absolute top-1.5 right-1.5 h-4 w-4'
+                    } ${
+                      isActive ? 'bg-white text-indigo-700' : 'bg-argo-red text-white shadow-argo-red/30'
                     }`}>
-                      {item.badge}
+                      {isSidebarOpen ? item.badge : (item.badge > 9 ? '9+' : item.badge)}
                     </span>
                   )}
-                </NavLink>
+                </button>
               );
             })}
           </div>
 
-          <div className="px-4 text-center hidden sm:block">
-            <span className="text-[10px] text-slate-600 font-mono">Kaynes Fleet v2.0</span>
+          <div className="px-3 flex flex-col gap-2">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className={`flex w-full items-center ${isSidebarOpen ? 'justify-start px-4' : 'justify-center px-0'} gap-3 py-3 rounded-xl text-xs font-bold transition-all duration-200 text-slate-400 hover:bg-slate-100 dark:hover:bg-ink-700/50 hover:text-fg`}
+              title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+            >
+              <span className="text-sm leading-none">{isSidebarOpen ? '◀' : '▶'}</span>
+              {isSidebarOpen && <span className="flex-1 text-left tracking-wide font-bold">Collapse Menu</span>}
+            </button>
+            <div className={`rounded-lg bg-slate-50 dark:bg-ink-900/50 border border-[#E2E8F0] dark:border-ink-600 transition-all text-center ${isSidebarOpen ? 'p-3 mx-1' : 'p-2'}`}>
+               <span className={`font-black uppercase tracking-widest text-slate-500 block ${isSidebarOpen ? 'text-[9px] mb-1' : 'text-[7px]'}`}>Build</span>
+               <span className={`text-slate-400 font-mono ${isSidebarOpen ? 'text-xs' : 'text-[9px]'}`}>{isSidebarOpen ? 'Kaynes v2.1' : 'v2.1'}</span>
+            </div>
           </div>
         </aside>
 
-        <main className="relative flex-1 flex flex-col min-h-0 bg-ink-900">
-          <Outlet context={{ setSelectedDeviceId }} />
+        {/* ── Main Panel Viewer ───────────────────────────────── */}
+        <main className="relative flex-1 flex flex-col min-h-0 bg-[#F1F5F9] dark:bg-slate-950">
+          
+          {/* SECTION: DASHBOARD */}
+          {activeMenu === 'dashboard' && <Dashboard onNavigate={handleNavigate} />}
+
+          {/* SECTION: PLANTS & TENANTS */}
+          {activeMenu === 'plants' && <TenantsPlants />}
+
+          {/* SECTION: ASSETS */}
+          {activeMenu === 'assets' && (
+            <Assets 
+              selectedAssetId={selectedAssetId} 
+              onClearSelect={() => setSelectedAssetId(null)} 
+            />
+          )}
+
+          {/* SECTION: ORIGINAL ARGO GLASSES FLEET VIEW */}
+          {activeMenu === 'fleet' && (
+            <div className="flex h-full min-h-0">
+              <FilterSidebar 
+                filters={filters} 
+                setFilters={setFilters} 
+                resultCount={filteredDevices.length} 
+              />
+              <div className="flex-grow relative flex flex-col min-h-0 bg-[#F1F5F9] dark:bg-slate-950 p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Fleet Monitoring View</h2>
+                  <div className="flex rounded-lg border border-[#E2E8F0] dark:border-ink-500 bg-white dark:bg-ink-700 p-0.5">
+                    {(['grid', 'table'] as FleetView[]).map((m) => (
+                      <button
+                        key={m}
+                        onClick={() => setFleetViewMode(m)}
+                        className={`rounded-md px-3 py-1 text-xs font-semibold capitalize transition-colors ${
+                          fleetViewMode === m ? 'bg-sky-600 text-white dark:bg-argo-cyan dark:text-ink-900' : 'text-slate-500 dark:text-slate-400 hover:text-fg'
+                        }`}
+                      >
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                  <DeviceList 
+                    devices={filteredDevices} 
+                    view={fleetViewMode} 
+                    onSelect={(d) => setSelectedDeviceId(d.id)} 
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION: AI PIPELINE PLAYGROUND */}
+          {activeMenu === 'ai-pipeline' && <AIPipeline />}
+
+          {/* SECTION: MEDIA REPOSITORY */}
+          {activeMenu === 'media' && (
+            <MediaGallery 
+              devices={devices}
+              role={currentUser.role}
+              onDeleteCapture={deleteCapture}
+            />
+          )}
+
+          {/* SECTION: STAFF IDENTITY CRUD */}
+          {activeMenu === 'users' && <Users />}
+
+          {/* SECTION: NOTIFICATIONS/ALARMS FEED */}
+          {activeMenu === 'alerts' && (
+            <div className="h-full overflow-y-auto p-4">
+              <AlertsFeed 
+                devices={devices} 
+                onOpenDevice={(id) => {
+                  setSelectedDeviceId(id);
+                  setActiveMenu('fleet');
+                }} 
+              />
+            </div>
+          )}
+
+          {/* SECTION: REPORTS EXPORT */}
+          {activeMenu === 'reports' && <Reports />}
+
         </main>
       </div>
 
+      {/* ── Original Slide Drawer overlay for Fleet Glasses Details ── */}
       <DeviceDrawer
         device={selectedDevice}
-        role={currentUser?.role as any}
+        role={currentUser.role as any}
         onClose={() => setSelectedDeviceId(null)}
         onRename={renameDevice}
         onDeleteCapture={deleteCapture}
       />
     </div>
   )
-}
-
-function DashboardWrapper() {
-  const navigate = useNavigate();
-  return <Dashboard onNavigate={(tab, param) => {
-    if (tab === 'assets' && param) {
-      navigate(`/assets/${param}`);
-    } else {
-      navigate(`/${tab}`);
-    }
-  }} />;
-}
-
-function AssetsWrapper() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  return <Assets selectedAssetId={id || null} onClearSelect={() => navigate('/assets')} />;
-}
-
-function FleetWrapper() {
-  const { devices } = useApp();
-  const [fleetViewMode, setFleetViewMode] = useState<FleetView>('grid');
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
-  const { setSelectedDeviceId } = useOutletContext<{ setSelectedDeviceId: (id: number | null) => void }>();
-
-  const filteredDevices = useMemo(() => applyFilters(devices, filters), [devices, filters]);
-
-  return (
-    <div className="flex h-full min-h-0">
-      <FilterSidebar 
-        filters={filters} 
-        setFilters={setFilters} 
-        resultCount={filteredDevices.length} 
-      />
-      <div className="flex-grow relative flex flex-col min-h-0 bg-ink-900 p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Fleet Monitoring View</h2>
-          <div className="flex rounded-lg border border-ink-500 bg-ink-700 p-0.5">
-            {(['grid', 'table'] as FleetView[]).map((m) => (
-              <button
-                key={m}
-                onClick={() => setFleetViewMode(m)}
-                className={`rounded-md px-3 py-1 text-xs font-semibold capitalize transition-colors ${
-                  fleetViewMode === m ? 'bg-argo-cyan text-ink-900' : 'text-slate-400 hover:text-fg'
-                }`}
-              >
-                {m}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="flex-1 min-h-0 overflow-y-auto">
-          <DeviceList 
-            devices={filteredDevices} 
-            view={fleetViewMode} 
-            onSelect={(d) => setSelectedDeviceId(d.id)} 
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AlertsWrapper() {
-  const { devices } = useApp();
-  const { setSelectedDeviceId } = useOutletContext<{ setSelectedDeviceId: (id: number | null) => void }>();
-  const navigate = useNavigate();
-  return (
-    <div className="h-full overflow-y-auto p-4">
-      <AlertsFeed 
-        devices={devices} 
-        onOpenDevice={(id) => {
-          setSelectedDeviceId(id);
-          navigate('/fleet');
-        }} 
-      />
-    </div>
-  );
 }

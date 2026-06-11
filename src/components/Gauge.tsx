@@ -1,5 +1,4 @@
 // Semi-circular gauge (pure SVG, no deps). Used for battery / utilisation.
-import { motion } from 'framer-motion';
 interface GaugeProps {
   value: number // 0–100
   label?: string
@@ -16,40 +15,39 @@ function autoColor(v: number): string {
 export default function Gauge({ value, label, sublabel, color }: GaugeProps) {
   const v = Math.max(0, Math.min(100, value))
   const radius = 70
-  const circumference = Math.PI * radius // semicircle
+  // Math.PI * radius is the length of a semi-circle
+  const circumference = Math.PI * radius
+  // To fill 50%, we need to stroke half of the semi-circle
   const dash = (v / 100) * circumference
   const stroke = color ?? autoColor(v)
 
   return (
     <div className="flex flex-col items-center">
       <svg width="180" height="104" viewBox="0 0 180 104">
-        <defs>
-          <filter id="glow-gauge">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
+        {/* Filled Background Area - ONLY IN DARK MODE */}
+        <path
+          d="M 20 96 A 70 70 0 0 1 160 96 Z"
+          fill="none"
+          className="dark:fill-[#185FA512]" 
+        />
+        {/* Background Arc */}
         <path
           d="M 20 96 A 70 70 0 0 1 160 96"
           fill="none"
-          stroke="currentColor"
-          className="text-white/10"
+          stroke="rgb(var(--s-600))"
           strokeWidth="14"
           strokeLinecap="round"
         />
-        <motion.path
+        {/* Foreground Arc */}
+        <path
           d="M 20 96 A 70 70 0 0 1 160 96"
           fill="none"
           stroke={stroke}
           strokeWidth="14"
           strokeLinecap="round"
-          initial={{ strokeDasharray: `0 ${circumference}` }}
-          animate={{ strokeDasharray: `${dash} ${circumference}` }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-          filter="url(#glow-gauge)"
+          strokeDasharray={`${dash} ${circumference}`}
+          style={{ transition: 'stroke-dasharray 0.6s ease' }}
+          className="dark:!stroke-[#185FA5]"
         />
         <text
           x="90"
@@ -58,6 +56,7 @@ export default function Gauge({ value, label, sublabel, color }: GaugeProps) {
           fontSize="30"
           fontWeight="700"
           fill="rgb(var(--fg))"
+          className="dark:!fill-slate-200"
         >
           {v}%
         </text>

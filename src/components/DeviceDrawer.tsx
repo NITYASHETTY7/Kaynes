@@ -1,25 +1,25 @@
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence, type Variants } from 'framer-motion'
+import { type UserRole as Role, useApp } from '../context/AppContext'
 import {
-  type Device,
-  type MediaItem,
-  STATUS_LABEL,
-  STATUS_COLOR,
-  batteryColor,
-  storagePct,
-  needsFirmwareUpdate,
-  FIRMWARE_LATEST,
+    type Device,
+    FIRMWARE_LATEST,
+    type MediaItem,
+    STATUS_COLOR,
+    STATUS_LABEL,
+    batteryColor,
+    needsFirmwareUpdate,
+    storagePct,
 } from '../data/devices'
-import { type UserRole as Role } from '../context/AppContext'
+import CaptureThumb from './CaptureThumb'
 import Gauge from './Gauge'
 import Sparkline from './Sparkline'
-import CaptureThumb from './CaptureThumb'
+import ImageViewer from './ImageViewer'
 
 interface Props {
   device: Device | null
   role: Role
   onClose: () => void
-  onRename: (id: number, name: string) => void
+  onRename: (id: number, name: string) => void // Kept for compat, but we'll use updateDevice from context
   onDeleteCapture: (deviceId: number, mediaId: string) => void
 }
 
@@ -32,17 +32,9 @@ interface Diagnostic {
   source: string
 }
 
-const staggerVars: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
-  }
-}
-
-const childVars: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+interface ViewerState {
+  isOpen: boolean
+  item: MediaItem | null
 }
 
 function MetricCard({
@@ -57,18 +49,18 @@ function MetricCard({
   children: React.ReactNode
 }) {
   return (
-    <motion.div variants={childVars} className="rounded-2xl border border-white/5 bg-ink-800/40 p-4 shadow-glass-inner">
+    <div className="rounded-xl border border-ink-600 bg-ink-800/60 p-4">
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-ink-700/80 text-[11px] text-argo-cyan font-bold shadow-glow-cyan">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-ink-700 text-[11px] text-argo-cyan">
             {index}
           </span>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-display">{title}</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</h4>
         </div>
         {action}
       </div>
       {children}
-    </motion.div>
+    </div>
   )
 }
 
@@ -76,20 +68,33 @@ export default function DeviceDrawer({
   device,
   role,
   onClose,
-  onRename,
   onDeleteCapture,
 }: Props) {
+  const { updateDevice } = useApp();
   const [diag, setDiag] = useState<Diagnostic | null>(null)
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(false)
+  
+  // Metadata edit states
   const [draftName, setDraftName] = useState('')
+  const [draftSite, setDraftSite] = useState('')
+  const [draftOperator, setDraftOperator] = useState('')
+
   const [toast, setToast] = useState<string | null>(null)
+  const [viewer, setViewer] = useState<ViewerState>({ isOpen: false, item: null })
 
   useEffect(() => {
     setDiag(null)
     setLoading(false)
     setEditing(false)
     setToast(null)
+    setViewer({ isOpen: false, item: null })
+    
+    if (device) {
+      setDraftName(device.name)
+      setDraftSite(device.site)
+      setDraftOperator(device.operator)
+    }
   }, [device?.id])
 
   useEffect(() => {
@@ -108,9 +113,14 @@ export default function DeviceDrawer({
     window.setTimeout(() => setToast(null), 2200)
   }
 
-  function saveName() {
-    if (draftName.trim()) onRename(d.id, draftName.trim())
-    setEditing(false)
+  function saveMetadata() {
+    updateDevice(d.id, {
+      name: draftName.trim(),
+      site: draftSite.trim(),
+      operator: draftOperator.trim()
+    });
+    setEditing(false);
+    flash('Device metadata updated.');
   }
 
   function download(item: MediaItem) {
@@ -147,66 +157,86 @@ export default function DeviceDrawer({
   }
 
   return (
-    <AnimatePresence>
-      {device && (
-        <>
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-30 bg-ink-900/60 backdrop-blur-sm" 
-            onClick={onClose} 
-          />
-          <motion.div 
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 z-40 flex h-full w-full max-w-lg flex-col border-l border-white/10 bg-ink-900/80 backdrop-blur-2xl shadow-2xl"
-          >
+    <>
+      <div className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed right-0 top-0 z-40 flex h-full w-full max-w-lg animate-slideIn flex-col border-l border-ink-600 bg-ink-900 shadow-2xl">
         {/* header */}
-        <div className="flex items-start justify-between border-b border-white/5 p-5 bg-ink-800/20">
-          <div className="min-w-0">
+        <div className="flex items-start justify-between border-b border-ink-600 p-5">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: color }} />
+              <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: color }} />
               {editing ? (
-                <input
-                  autoFocus
-                  value={draftName}
-                  onChange={(e) => setDraftName(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && saveName()}
-                  className="rounded border border-argo-cyan bg-ink-700 px-2 py-0.5 text-lg font-semibold text-fg outline-none"
-                />
+                <div className="flex-1 space-y-3 pr-4">
+                  <div>
+                    <label className="block text-[9px] uppercase tracking-widest text-slate-500 font-bold mb-1">Device Alias</label>
+                    <input
+                      autoFocus
+                      value={draftName}
+                      onChange={(e) => setDraftName(e.target.value)}
+                      className="w-full rounded border border-[#185FA5] bg-ink-700 px-2 py-1 text-sm font-semibold text-fg outline-none"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-widest text-slate-500 font-bold mb-1">Site/Plant</label>
+                      <input
+                        value={draftSite}
+                        onChange={(e) => setDraftSite(e.target.value)}
+                        className="w-full rounded border border-ink-600 bg-ink-700 px-2 py-1 text-xs text-slate-200 outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] uppercase tracking-widest text-slate-500 font-bold mb-1">Operator</label>
+                      <input
+                        value={draftOperator}
+                        onChange={(e) => setDraftOperator(e.target.value)}
+                        className="w-full rounded border border-ink-600 bg-ink-700 px-2 py-1 text-xs text-slate-200 outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button 
+                      onClick={saveMetadata} 
+                      className="rounded bg-[#185FA5] px-3 py-1 text-[11px] font-bold text-white shadow-sm hover:brightness-110"
+                    >
+                      Save Changes
+                    </button>
+                    <button 
+                      onClick={() => setEditing(false)} 
+                      className="text-[11px] text-slate-500 hover:text-slate-300"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               ) : (
-                <h2 className="truncate text-lg font-semibold text-fg">{d.name}</h2>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h2 className="truncate text-lg font-semibold text-fg">{d.name}</h2>
+                    {isAdmin && (
+                      <button
+                        onClick={() => setEditing(true)}
+                        className="text-slate-500 hover:text-argo-cyan transition-colors"
+                        title="Edit metadata"
+                      >
+                        ✎
+                      </button>
+                    )}
+                  </div>
+                  <p className="mt-0.5 font-mono text-xs text-slate-500">
+                    {d.serial} · {d.site} · {d.operator}
+                  </p>
+                </div>
               )}
-              {isAdmin &&
-                (editing ? (
-                  <button onClick={saveName} className="text-xs text-argo-cyan hover:underline">
-                    save
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setDraftName(d.name)
-                      setEditing(true)
-                    }}
-                    className="text-slate-500 hover:text-argo-cyan"
-                    title="Rename device"
-                  >
-                    ✎
-                  </button>
-                ))}
             </div>
-            <p className="mt-0.5 font-mono text-xs text-slate-500">
-              {d.serial} · {d.site} · {d.operator}
-            </p>
-            <span
-              className="mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium"
-              style={{ background: `${color}1f`, color }}
-            >
-              {STATUS_LABEL[d.status]}
-            </span>
+            {!editing && (
+              <span
+                className="mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium"
+                style={{ background: `${color}1f`, color }}
+              >
+                {STATUS_LABEL[d.status]}
+              </span>
+            )}
           </div>
           <button
             onClick={onClose}
@@ -218,18 +248,12 @@ export default function DeviceDrawer({
         </div>
 
         {/* body */}
-        <motion.div 
-          variants={staggerVars}
-          initial="hidden"
-          animate="show"
-          className="flex-1 space-y-4 overflow-y-auto p-5"
-        >
+        <div className="flex-1 space-y-3 overflow-y-auto p-5">
           {/* alert banner */}
           {(d.status === 'critical' || d.status === 'warning') && (
-            <motion.div
-              variants={childVars}
-              className="rounded-2xl border p-4 shadow-glass-inner"
-              style={{ borderColor: `${color}40`, background: `${color}10` }}
+            <div
+              className="rounded-xl border p-4"
+              style={{ borderColor: `${color}66`, background: `${color}12` }}
             >
               <div className="flex items-center gap-2 text-sm font-semibold" style={{ color }}>
                 <span className="animate-pulse">●</span>{' '}
@@ -239,7 +263,7 @@ export default function DeviceDrawer({
               <p className="mt-2 rounded-md bg-ink-900/50 px-2 py-1.5 text-[11px] text-slate-300">
                 ⚡ An SNS notification would be dispatched to on-call operators (production).
               </p>
-            </motion.div>
+            </div>
           )}
 
           {/* 1. Battery */}
@@ -354,7 +378,12 @@ export default function DeviceDrawer({
                     key={m.id}
                     className="flex gap-3 rounded-lg border border-ink-600 bg-ink-900/40 p-2"
                   >
-                    <CaptureThumb item={m} className="h-16 w-24 shrink-0" />
+                    <CaptureThumb 
+                      item={m} 
+                      deviceName={d.name} 
+                      className="h-16 w-24 shrink-0" 
+                      onImageClick={() => setViewer({ isOpen: true, item: m })}
+                    />
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm text-slate-200">{m.label}</div>
                       <div className="text-[11px] text-slate-500">
@@ -397,7 +426,7 @@ export default function DeviceDrawer({
           </MetricCard>
 
           {/* 7. AI diagnostic */}
-          <motion.div variants={childVars} className="rounded-2xl border border-argo-cyan/30 bg-argo-cyan/[0.04] p-4 shadow-glow-cyan shadow-glass-inner">
+          <div className="rounded-xl border border-argo-cyan/30 bg-argo-cyan/[0.04] p-4">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-argo-cyan">
                 ✦ AI Device Diagnostic
@@ -437,26 +466,24 @@ export default function DeviceDrawer({
                 </p>
               )
             )}
-          </motion.div>
-        </motion.div>
-      </motion.div>
-      </>
-    )}
+          </div>
+        </div>
 
-      {/* toast */}
-      <AnimatePresence>
+        {/* toast */}
         {toast && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="pointer-events-none fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-ink-800/80 backdrop-blur-md px-5 py-2.5 text-xs font-semibold text-slate-100 shadow-2xl ring-1 ring-white/10"
-          >
+          <div className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 animate-fadeIn rounded-lg bg-ink-700 px-4 py-2 text-xs text-slate-100 shadow-lg ring-1 ring-ink-500">
             {toast}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </AnimatePresence>
+      </div>
+
+      <ImageViewer 
+        isOpen={viewer.isOpen} 
+        item={viewer.item} 
+        deviceName={d.name} 
+        onClose={() => setViewer({ ...viewer, isOpen: false })}
+      />
+    </>
   )
 }
 

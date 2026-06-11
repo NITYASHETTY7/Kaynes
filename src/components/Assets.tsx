@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
-import { useApp } from '../context/AppContext';
+import { useApp, type Asset } from '../context/AppContext';
 
 export default function Assets({ selectedAssetId, onClearSelect }: { selectedAssetId: string | null; onClearSelect: () => void }) {
-  const { assets, plants, devices, addAsset, mapDeviceToAsset, addAssetHistory, currentUser } = useApp();
+  const { assets, plants, devices, addAsset, updateAsset, mapDeviceToAsset, addAssetHistory, currentUser } = useApp();
   
   // Selection
   const [selectedId, setSelectedId] = useState<string | null>(selectedAssetId);
   const [showAssetModal, setShowAssetModal] = useState(false);
+  const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   // Search/Filters
@@ -25,6 +26,7 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
   const [historyDesc, setHistoryDesc] = useState('');
 
   const isOperator = currentUser?.role === 'operator';
+  const isAdmin = currentUser?.role === 'admin';
 
   // Get active asset details
   const activeAsset = useMemo(() => {
@@ -54,6 +56,7 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
   }, [assets, search, selectedPlantFilter]);
 
   const openCreateAsset = () => {
+    setEditingAsset(null);
     setAssetName('');
     setAssetSerial(`ASSET-${Date.now().toString().slice(-4)}`);
     setAssetCategory('Reflow Oven');
@@ -62,18 +65,38 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
     setShowAssetModal(true);
   };
 
-  const handleCreateAssetSubmit = (e: React.FormEvent) => {
+  const openEditAsset = (a: Asset) => {
+    setEditingAsset(a);
+    setAssetName(a.name);
+    setAssetSerial(a.serialNumber);
+    setAssetCategory(a.category);
+    setAssetPlantId(a.plantId);
+    setAssetImage(a.imageUrl || '');
+    setShowAssetModal(true);
+  };
+
+  const handleAssetSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!assetName.trim() || !assetPlantId) return;
 
-    addAsset({
-      name: assetName,
-      serialNumber: assetSerial,
-      category: assetCategory,
-      plantId: assetPlantId,
-      lastServiced: new Date().toISOString().split('T')[0],
-      imageUrl: assetImage || null
-    });
+    if (editingAsset) {
+      updateAsset(editingAsset.id, {
+        name: assetName,
+        serialNumber: assetSerial,
+        category: assetCategory,
+        plantId: assetPlantId,
+        imageUrl: assetImage || null
+      });
+    } else {
+      addAsset({
+        name: assetName,
+        serialNumber: assetSerial,
+        category: assetCategory,
+        plantId: assetPlantId,
+        lastServiced: new Date().toISOString().split('T')[0],
+        imageUrl: assetImage || null
+      });
+    }
     setShowAssetModal(false);
   };
 
@@ -221,6 +244,14 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
                   }`}>
                     {activeAsset.status}
                   </span>
+                  {isAdmin && (
+                    <button 
+                      onClick={() => openEditAsset(activeAsset)}
+                      className="ml-2 rounded border border-ink-600 bg-ink-800 px-2 py-0.5 text-[10px] font-semibold text-slate-400 hover:text-argo-cyan hover:border-argo-cyan"
+                    >
+                      Edit Asset
+                    </button>
+                  )}
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
                   Category: <strong className="text-slate-300">{activeAsset.category}</strong> · Serial: <strong className="text-slate-300 font-mono">{activeAsset.serialNumber}</strong> · Plant: <strong className="text-slate-300">{plants.find(p=>p.id===activeAsset.plantId)?.name}</strong>
@@ -286,10 +317,10 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
                   {!isOperator && availableDevices.length > 0 && (
                     <div className="border-t border-ink-600/50 pt-4">
                       <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-2">Map Available Glasses to Asset</label>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <select 
                           id="mapDeviceSelect"
-                          className="flex-1 rounded-md border border-ink-500 bg-ink-700 px-3 py-1.5 text-xs outline-none text-slate-300 focus:border-argo-cyan"
+                          className="flex-1 min-w-0 rounded-md border border-ink-500 bg-ink-700 px-3 py-1.5 text-xs outline-none text-slate-300 focus:border-argo-cyan"
                         >
                           {availableDevices.map(d => (
                             <option key={d.id} value={d.id}>{d.name} ({d.serial})</option>
@@ -300,7 +331,7 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
                             const select = document.getElementById('mapDeviceSelect') as HTMLSelectElement;
                             if (select?.value) handleMapDevice(Number(select.value));
                           }}
-                          className="rounded-md bg-argo-cyan px-3 py-1.5 text-xs font-semibold text-ink-900 hover:brightness-110"
+                          className="rounded-md bg-argo-cyan px-4 py-1.5 text-xs font-bold text-ink-900 hover:brightness-110 shrink-0 whitespace-nowrap"
                         >
                           Link Device
                         </button>
@@ -404,11 +435,13 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
         )}
       </div>
 
-      {/* ── CREATE ASSET MODAL ─────────────────────────────── */}
+      {/* ── ASSET MODAL (Create/Update) ─────────────────────────────── */}
       {showAssetModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <form onSubmit={handleCreateAssetSubmit} className="w-full max-w-md rounded-xl border border-ink-600 bg-ink-800 p-6 shadow-2xl">
-            <h3 className="text-base font-bold text-fg mb-4">Register New Industrial Asset</h3>
+          <form onSubmit={handleAssetSubmit} className="w-full max-w-md rounded-xl border border-ink-600 bg-ink-800 p-6 shadow-2xl">
+            <h3 className="text-base font-bold text-fg mb-4">
+              {editingAsset ? `Update Asset: ${editingAsset.name}` : 'Register New Industrial Asset'}
+            </h3>
             
             <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Asset Name</label>
             <input 
@@ -476,9 +509,9 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
               </button>
               <button 
                 type="submit"
-                className="rounded-lg bg-argo-cyan px-4 py-2 text-xs font-semibold text-ink-900 hover:brightness-110"
+                className="rounded-lg bg-argo-cyan px-4 py-2 text-xs font-bold text-ink-900 shadow-md hover:brightness-110"
               >
-                Register Asset
+                {editingAsset ? 'Save Asset Details' : 'Register Asset'}
               </button>
             </div>
           </form>

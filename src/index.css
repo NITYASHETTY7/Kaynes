@@ -2,51 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Theme tokens (RGB triplets so Tailwind's /<alpha> works) ───────────── */
-:root,
-[data-theme='dark'] {
+/* ── Professional SaaS Theme tokens ───────────── */
+:root {
+  color-scheme: light;
+  /* surfaces: very light and airy */
+  --s-900: 248 250 252; /* slate-50 background */
+  --s-800: 255 255 255; /* pristine white cards */
+  --s-700: 241 245 249; /* slate-100 hovers */
+  --s-600: 226 232 240; /* slate-200 borders */
+  --s-500: 203 213 225; /* slate-300 strong borders */
+  
+  /* neutral text inverts → dark text on light */
+  --n-100: 15 23 42;
+  --n-200: 51 65 85;    /* text-slate-700 */
+  --n-300: 71 85 105;
+  --n-400: 100 116 139;
+  --n-500: 148 163 184;
+  --n-600: 203 213 225;
+  --n-700: 226 232 240;
+  
+  --fg: 15 23 42; /* slate-900 */
+  
+  /* darker accents for contrast on white */
+  --argo-cyan: 2 132 199;   /* sky-600 */
+  --argo-violet: 79 70 229; /* indigo-600 */
+}
+
+.dark {
   color-scheme: dark;
-  /* surfaces (obsidian dark) */
-  --s-900: 3 5 8;
-  --s-800: 10 14 20;
-  --s-700: 16 23 35;
-  --s-600: 25 35 50;
-  --s-500: 40 54 74;
-  /* neutral text (light on dark) */
+  /* surfaces: deep slate/navy for a premium dashboard look */
+  --s-900: 3 7 18;      /* slate-950 */
+  --s-800: 15 23 42;    /* slate-900 */
+  --s-700: 30 41 59;    /* slate-800 */
+  --s-600: 51 65 85;    /* slate-700 */
+  --s-500: 71 85 105;   /* slate-600 */
+  
+  /* neutral text */
   --n-100: 248 250 252;
-  --n-200: 241 245 249;
+  --n-200: 226 232 240; /* crisp white/grey */
   --n-300: 203 213 225;
   --n-400: 148 163 184;
   --n-500: 100 116 139;
   --n-600: 71 85 105;
   --n-700: 51 65 85;
+  
   /* primary heading colour */
   --fg: 255 255 255;
-  /* brand accents - extra vibrant for dark mode */
-  --argo-cyan: 0 240 255;
-  --argo-violet: 160 140 255;
-}
-
-[data-theme='light'] {
-  color-scheme: light;
-  /* surfaces become light, with stronger separation for contrast */
-  --s-900: 233 238 244; /* page background */
-  --s-800: 255 255 255; /* cards / header / sidebar */
-  --s-700: 241 245 249; /* hover / tracks */
-  --s-600: 209 217 227; /* borders */
-  --s-500: 180 191 204; /* stronger borders */
-  /* neutral text inverts → dark text on light */
-  --n-100: 15 23 42;
-  --n-200: 30 41 59;
-  --n-300: 51 65 85;
-  --n-400: 71 85 105;
-  --n-500: 100 116 139;
-  --n-600: 148 163 184;
-  --n-700: 203 213 225;
-  --fg: 15 23 42;
-  /* darker accents so they read on white */
-  --argo-cyan: 8 145 178;
-  --argo-violet: 109 92 230;
+  
+  /* brand accents: electric cyan and deep indigo */
+  --argo-cyan: 14 165 233;   /* sky-500 */
+  --argo-violet: 99 102 241; /* indigo-500 */
 }
 
 html,
@@ -61,20 +66,20 @@ body {
   color: rgb(var(--n-200));
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Thin themed scrollbars. */
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 *::-webkit-scrollbar-track {
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
   background: rgb(var(--s-500));
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 /* Range slider accent. */

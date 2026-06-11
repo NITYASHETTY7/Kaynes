@@ -449,7 +449,7 @@ function generateDevices(target: number): Device[] {
       : 'Continue normal operation.'
 
     const serial = `ARGO-AG2-${String(id).padStart(4, '0')}`
-    const captures = makeCaptures(rng, Math.floor(rng() * 4))
+    const captures = makeCaptures(rng, 2 + Math.floor(rng() * 5)) // Increased: 2-6 captures per device
 
     out.push({
       id,
