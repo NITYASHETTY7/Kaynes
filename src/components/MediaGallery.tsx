@@ -84,37 +84,75 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
   const isAdmin = role === 'admin'
 
   return (
-    <div className="h-full overflow-auto p-6">
-      {/* Header */}
+    <div
+      className="h-full overflow-auto p-4 sm:p-6 lg:p-8"
+      style={{ background: 'rgb(var(--s-base))' }}
+    >
+      {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-xl font-black tracking-tight text-fg">Cloud Media Repository</h1>
+          <div
+            className="text-[10px] font-semibold uppercase tracking-widest mb-1"
+            style={{ color: '#FF9900' }}
+          >
+            Amazon S3 · ap-south-1
+          </div>
+          <h1
+            className="text-xl font-bold font-display tracking-tight"
+            style={{ color: 'rgb(var(--fg))' }}
+          >
+            Cloud Media Repository
+          </h1>
           <div className="mt-1 flex items-center gap-2">
-            <span className="flex h-1.5 w-1.5 rounded-full bg-argo-green animate-pulse" />
-            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">
-              S3 Bucket: <span className="text-argo-cyan">kaynes-argo-media-prod</span>
+            <span
+              className="flex h-1.5 w-1.5 rounded-full animate-pulse"
+              style={{ background: '#34d399', boxShadow: '0 0 6px #34d399' }}
+            />
+            <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgb(var(--n-500))' }}>
+              Bucket: <span style={{ color: '#38bdf8' }}>kaynes-argo-media-prod</span>
             </p>
           </div>
         </div>
+
         <div className="flex flex-wrap gap-2.5">
-          <div className="flex rounded-lg border border-ink-600 bg-ink-800 p-0.5 shadow-sm">
+          {/* Kind toggle */}
+          <div
+            className="flex rounded-xl p-1 shadow-sm"
+            style={{
+              border: '1px solid rgb(var(--s-600))',
+              background: 'rgb(var(--s-800))',
+            }}
+          >
             {(['all', 'image'] as KindFilter[]).map((k) => (
               <button
                 key={k}
                 onClick={() => setKind(k)}
-                className={`rounded-md px-4 py-1.5 text-[10px] font-black uppercase tracking-tighter transition-all ${
-                  kind === k ? 'bg-argo-cyan text-ink-900 shadow-md' : 'text-slate-400 hover:text-fg'
-                }`}
+                className="rounded-lg px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all"
+                style={kind === k ? {
+                  background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                  color: '#0D0F15',
+                  boxShadow: '0 2px 8px rgba(255,153,0,0.25)',
+                } : {
+                  color: 'rgb(var(--n-500))',
+                }}
               >
-                {k === 'all' ? 'All' : 'Photos'}
+                {k === 'all' ? 'All Media' : 'Photos'}
               </button>
             ))}
           </div>
 
+          {/* Device filter */}
           <select
             value={String(deviceId)}
             onChange={(e) => setDeviceId(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-            className="rounded-lg border border-ink-600 bg-ink-800 px-3 py-1.5 text-[11px] font-bold text-slate-300 outline-none focus:border-argo-cyan shadow-sm"
+            className="rounded-xl px-3 py-1.5 text-[11px] font-medium outline-none transition-all shadow-sm"
+            style={{
+              border: '1px solid rgb(var(--s-600))',
+              background: 'rgb(var(--s-800))',
+              color: 'rgb(var(--n-300))',
+            }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(255,153,0,0.5)' }}
+            onBlur={e => { e.target.style.borderColor = 'rgb(var(--s-600))' }}
           >
             <option value="all">All Devices</option>
             {withCaptures.map((d) => (
@@ -126,77 +164,171 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
         </div>
       </div>
 
-      {/* Cloud Stats Bar */}
-      <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      {/* ── Cloud Stats Bar ─────────────────────────────────────────── */}
+      <div className="mb-7 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
-          { label: 'Storage Used', value: `${Math.round(all.reduce((acc, f) => acc + f.item.sizeMb, 0))}`, unit: 'MB', icon: '💾' },
-          { label: 'Total Objects', value: all.length, unit: 'Items', icon: '📦' },
-          { label: 'Sync Status', value: '100', unit: '%', icon: '☁', color: 'text-argo-green' },
-          { label: 'AWS Region', value: 'AP-SOUTH-1', unit: '', icon: '🌐' },
+          { label: 'Storage Used', value: `${Math.round(all.reduce((acc, f) => acc + f.item.sizeMb, 0))}`, unit: 'MB',  icon: '💾', accent: '#38bdf8' },
+          { label: 'Total Objects', value: all.length,  unit: 'Items', icon: '📦', accent: '#a78bfa' },
+          { label: 'Sync Status',   value: '100',       unit: '%',     icon: '☁',  accent: '#34d399' },
+          { label: 'AWS Region',    value: 'AP-SOUTH-1',unit: '',      icon: '🌐', accent: '#FF9900' },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-ink-600 bg-ink-800/40 p-4 transition-all hover:border-argo-cyan/20">
+          <div
+            key={stat.label}
+            className="rounded-2xl border p-4 transition-all"
+            style={{
+              borderColor: 'rgb(var(--s-600))',
+              background: 'rgb(var(--s-800))',
+              boxShadow: 'var(--shadow-card)',
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.borderColor = stat.accent + '50'
+              ;(e.currentTarget as HTMLElement).style.boxShadow = `var(--shadow-card-hover), 0 0 20px ${stat.accent}15`
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--s-600))'
+              ;(e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)'
+            }}
+          >
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs">{stat.icon}</span>
-              <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">{stat.label}</span>
+              <span className="text-sm">{stat.icon}</span>
+              <span
+                className="text-[9px] font-semibold uppercase tracking-widest"
+                style={{ color: 'rgb(var(--n-500))' }}
+              >
+                {stat.label}
+              </span>
             </div>
-            <div className={`text-xl font-black ${stat.color || 'text-fg'}`}>
-              {stat.value} <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{stat.unit}</span>
+            <div className="text-xl font-bold font-display" style={{ color: stat.accent }}>
+              {stat.value}{' '}
+              <span
+                className="text-[10px] font-medium uppercase tracking-tight"
+                style={{ color: 'rgb(var(--n-500))' }}
+              >
+                {stat.unit}
+              </span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* grid */}
+      {/* ── Media Grid ──────────────────────────────────────────────── */}
       {filtered.length === 0 ? (
-        <div className="py-20 text-center text-slate-500">No media matches the current filter.</div>
+        <div
+          className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed text-center"
+          style={{ borderColor: 'rgb(var(--s-500))', background: 'rgb(var(--s-700) / 0.4)' }}
+        >
+          <div className="text-3xl mb-3">📂</div>
+          <p className="text-[12px] font-semibold" style={{ color: 'rgb(var(--n-500))' }}>
+            No media matches the current filter.
+          </p>
+        </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
           {filtered.map((f) => (
             <div
               key={f.item.id}
-              className="group overflow-hidden rounded-xl border border-ink-600 bg-ink-800"
+              className="group overflow-hidden rounded-2xl border transition-all duration-200"
+              style={{
+                borderColor: 'rgb(var(--s-600))',
+                background: 'rgb(var(--s-800))',
+                boxShadow: 'var(--shadow-card)',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card-hover)'
+                ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,153,0,0.35)'
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)'
+                ;(e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--s-600))'
+              }}
             >
-              <CaptureThumb 
-                item={f.item} 
-                serial={f.serial} 
+              <CaptureThumb
+                item={f.item}
+                serial={f.serial}
                 deviceName={f.deviceName}
-                className="aspect-video w-full" 
+                className="aspect-video w-full"
                 onImageClick={() => setViewer({ isOpen: true, item: f.item, deviceName: f.deviceName })}
                 onImageError={() => setFailedImages(prev => ({ ...prev, [f.item.id]: true }))}
               />
               <div className="p-3">
-                <div className="truncate text-sm text-slate-200">{f.item.label}</div>
-                <div className="text-[11px] text-slate-500">
+                <div
+                  className="truncate text-sm font-semibold"
+                  style={{ color: 'rgb(var(--fg))' }}
+                >
+                  {f.item.label}
+                </div>
+                <div
+                  className="text-[10px] font-medium mt-0.5"
+                  style={{ color: 'rgb(var(--n-500))' }}
+                >
                   {f.deviceName} · {f.item.capturedAt}
                 </div>
-                <div className="mt-1.5 flex flex-wrap gap-1">
+
+                {/* Tags */}
+                <div className="mt-2 flex flex-wrap gap-1">
                   {f.item.tags.map((t) => (
                     <span
                       key={t}
-                      className="rounded bg-argo-violet/15 px-1.5 py-0.5 text-[10px] text-argo-violet"
+                      className="rounded-lg px-1.5 py-0.5 text-[9px] font-semibold"
+                      style={{
+                        background: 'rgba(167,139,250,0.1)',
+                        color: '#a78bfa',
+                        border: '1px solid rgba(167,139,250,0.2)',
+                      }}
                     >
                       {t}
                     </span>
                   ))}
                 </div>
-                <div className="mt-2 flex items-center justify-between border-t border-ink-600 pt-2">
-                  <span className="text-[11px] text-slate-500">
+
+                {/* Footer */}
+                <div
+                  className="mt-2.5 flex items-center justify-between pt-2.5"
+                  style={{ borderTop: '1px solid rgb(var(--s-600))' }}
+                >
+                  <span className="text-[10px] font-medium" style={{ color: 'rgb(var(--n-600))' }}>
                     Image · {f.item.sizeMb} MB
                   </span>
                   {isAdmin && (
                     <div className="flex gap-1.5">
                       <button
                         onClick={() => download(f)}
-                        className="rounded border border-ink-500 px-2 py-0.5 text-[11px] text-slate-300 hover:border-argo-cyan hover:text-fg"
+                        className="rounded-lg px-2 py-0.5 text-[10px] font-medium transition-all"
+                        style={{
+                          border: '1px solid rgb(var(--s-500))',
+                          background: 'transparent',
+                          color: 'rgb(var(--n-400))',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLElement).style.borderColor = '#38bdf8'
+                          ;(e.currentTarget as HTMLElement).style.color = '#38bdf8'
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--s-500))'
+                          ;(e.currentTarget as HTMLElement).style.color = 'rgb(var(--n-400))'
+                        }}
                       >
-                        ↓ Download
+                        ↓ Save
                       </button>
                       <button
                         onClick={() => {
                           onDeleteCapture(f.deviceId, f.item.id)
                           flash('Capture deleted.')
                         }}
-                        className="rounded border border-ink-500 px-2 py-0.5 text-[11px] text-slate-300 hover:border-argo-red hover:text-argo-red"
+                        className="rounded-lg px-2 py-0.5 text-[10px] font-medium transition-all"
+                        style={{
+                          border: '1px solid rgb(var(--s-500))',
+                          background: 'transparent',
+                          color: 'rgb(var(--n-400))',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLElement).style.borderColor = '#f87171'
+                          ;(e.currentTarget as HTMLElement).style.color = '#f87171'
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLElement).style.borderColor = 'rgb(var(--s-500))'
+                          ;(e.currentTarget as HTMLElement).style.color = 'rgb(var(--n-400))'
+                        }}
                       >
                         🗑
                       </button>
@@ -209,16 +341,25 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
         </div>
       )}
 
+      {/* Toast */}
       {toast && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 animate-fadeIn rounded-lg bg-ink-700 px-4 py-2 text-xs text-slate-100 shadow-lg ring-1 ring-ink-500">
+        <div
+          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 animate-fadeIn rounded-xl px-4 py-2.5 text-xs font-semibold shadow-xl"
+          style={{
+            background: 'rgb(var(--s-700))',
+            color: 'rgb(var(--n-200))',
+            border: '1px solid rgb(var(--s-500))',
+            boxShadow: 'var(--shadow-card-hover)',
+          }}
+        >
           {toast}
         </div>
       )}
 
-      <ImageViewer 
-        isOpen={viewer.isOpen} 
-        item={viewer.item} 
-        deviceName={viewer.deviceName} 
+      <ImageViewer
+        isOpen={viewer.isOpen}
+        item={viewer.item}
+        deviceName={viewer.deviceName}
         serial={all.find(a => a.item.id === viewer.item?.id)?.serial}
         onClose={() => setViewer({ ...viewer, isOpen: false })}
       />

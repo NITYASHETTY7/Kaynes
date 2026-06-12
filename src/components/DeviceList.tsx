@@ -82,7 +82,7 @@ function Grid({ devices, onSelect }: Omit<Props, 'view'>) {
       variants={containerVars} 
       initial="hidden" 
       animate="show" 
-      className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 pb-10"
     >
       {devices.map((d) => {
         const color = STATUS_COLOR[d.status]
@@ -91,10 +91,9 @@ function Grid({ devices, onSelect }: Omit<Props, 'view'>) {
             variants={itemVars}
             key={d.id}
             onClick={() => onSelect(d)}
-            className={`group relative flex flex-col overflow-hidden rounded-[1.25rem] border bg-ink-800/40 backdrop-blur-xl p-5 text-left transition-all hover:-translate-y-1 hover:shadow-lg ${
-              d.status === 'offline' ? 'opacity-80 hover:opacity-100' : ''
-            }`}
-            style={{ borderColor: `${color}40`, boxShadow: `0 4px 20px -2px ${color}10` }}
+            className={`group relative flex flex-col overflow-hidden rounded-[1.25rem] border p-5 text-left transition-all hover:-translate-y-1 hover:shadow-lg ${d.status === 'offline' ? 'opacity-80 hover:opacity-100' : ''}`}
+            style={{ borderColor: `${color}40`, boxShadow: `0 4px 20px -2px ${color}10`, background: 'rgb(var(--s-800))' }}
+
           >
             {/* status accent bar + faint tint */}
             <span className="absolute left-0 top-0 h-full w-1.5" style={{ background: color }} />
@@ -123,7 +122,7 @@ function Grid({ devices, onSelect }: Omit<Props, 'view'>) {
               <ConnIcon d={d} />
             </div>
 
-            <div className="relative mt-3 flex items-center justify-between border-t border-white/5 pt-3 text-[11px] text-slate-400 font-medium">
+            <div className="relative mt-3 flex items-center justify-between pt-3 text-[11px] font-medium" style={{ borderTop: '1px solid rgb(var(--s-600))', color: 'rgb(var(--n-500))' }}>
               <span className="flex items-center gap-1.5"><Camera size={12} className="opacity-70" /> {d.captures.length} captures</span>
               <span className="flex items-center gap-1.5"><Clock size={12} className="opacity-70" /> {d.lastSeen}</span>
             </div>
@@ -144,11 +143,11 @@ function Grid({ devices, onSelect }: Omit<Props, 'view'>) {
 // ── Table view (bolt-style dense list) ─────────────────────────────────────
 function Table({ devices, onSelect }: Omit<Props, 'view'>) {
   return (
-    <div className="h-full overflow-auto p-4">
-      <div className="overflow-hidden rounded-xl border border-ink-600">
+    <div className="h-full overflow-auto pb-10">
+      <div className="overflow-hidden rounded-xl border" style={{ borderColor: 'rgb(var(--s-600))' }}>
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-ink-700 text-left text-[11px] uppercase tracking-wider text-slate-400">
+            <tr className="text-left text-[11px] uppercase tracking-wider" style={{ background: 'rgb(var(--s-700))', color: 'rgb(var(--n-500))' }}>
               <th className="px-4 py-3 font-semibold">Device</th>
               <th className="px-4 py-3 font-semibold">Status</th>
               <th className="px-4 py-3 font-semibold">Battery</th>
@@ -163,13 +162,17 @@ function Table({ devices, onSelect }: Omit<Props, 'view'>) {
               <tr
                 key={d.id}
                 onClick={() => onSelect(d)}
-                className={`cursor-pointer border-t border-ink-600/70 transition-colors hover:bg-ink-700/50 ${
-                  d.status === 'critical' ? 'bg-argo-red/[0.06]' : ''
-                }`}
+                className="cursor-pointer transition-all"
+                style={{
+                  borderTop: '1px solid rgb(var(--s-600))',
+                  background: d.status === 'critical' ? 'rgba(248,113,113,0.04)' : undefined,
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--s-700))' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = d.status === 'critical' ? 'rgba(248,113,113,0.04)' : '' }}
               >
                 <td className="px-4 py-3">
-                  <div className="font-medium text-slate-100">{d.name}</div>
-                  <div className="font-mono text-[11px] text-slate-500">
+                  <div className="font-medium" style={{ color: 'rgb(var(--fg))' }}>{d.name}</div>
+                  <div className="font-mono text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>
                     {d.serial} · {d.site}
                   </div>
                 </td>
@@ -184,7 +187,7 @@ function Table({ devices, onSelect }: Omit<Props, 'view'>) {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-14 overflow-hidden rounded-full bg-ink-600">
+                    <div className="h-1.5 w-14 overflow-hidden rounded-full" style={{ background: 'rgb(var(--s-600))' }}>
                       <div
                         className="h-full rounded-full"
                         style={{
@@ -193,16 +196,16 @@ function Table({ devices, onSelect }: Omit<Props, 'view'>) {
                         }}
                       />
                     </div>
-                    <span className="tabular-nums text-[11px] text-slate-400">{storagePct(d)}%</span>
+                    <span className="tabular-nums text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>{storagePct(d)}%</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 font-mono text-[11px] text-slate-400">{d.firmware}</td>
-                <td className="px-4 py-3 text-[11px] text-slate-400">{d.lastSeen}</td>
+                <td className="px-4 py-3 font-mono text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>{d.firmware}</td>
+                <td className="px-4 py-3 text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>{d.lastSeen}</td>
               </tr>
             ))}
             {devices.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-slate-500">
+                <td colSpan={7} className="px-4 py-10 text-center" style={{ color: 'rgb(var(--n-500))' }}>
                   No devices match the current filters.
                 </td>
               </tr>

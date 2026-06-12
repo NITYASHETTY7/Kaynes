@@ -26,14 +26,20 @@ export default function ImageViewer({ isOpen, item, deviceName, serial, onClose 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm" onClick={onClose}>
       <div 
-        className="relative flex w-full max-h-[90vh] max-w-4xl flex-col rounded-lg bg-ink-900 shadow-2xl animate-fadeIn overflow-hidden"
+        className="relative flex w-full max-h-[90vh] max-w-4xl flex-col rounded-lg shadow-2xl animate-fadeIn overflow-hidden"
+        style={{ background: 'rgb(var(--s-800))' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-ink-700 p-4 bg-ink-900">
+        <div 
+          className="flex items-center justify-between border-b p-4"
+          style={{ borderColor: 'rgb(var(--s-600))', background: 'rgb(var(--s-800))' }}
+        >
           <div>
-            <h3 className="font-semibold text-fg">{item.label}</h3>
-            <p className="text-sm text-slate-400">{deviceName} {serial ? `· ${serial}` : ''}</p>
+            <h3 className="text-lg font-bold font-display" style={{ color: 'rgb(var(--fg))' }}>{item.label}</h3>
+            <p className="text-xs font-medium" style={{ color: 'rgb(var(--n-500))' }}>
+              {deviceName} {serial ? `· ${serial}` : ''}
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -63,7 +69,7 @@ export default function ImageViewer({ isOpen, item, deviceName, serial, onClose 
         </div>
 
         {/* Metadata Footer */}
-        <div className="border-t border-ink-700 bg-ink-800 p-4 text-xs text-slate-400">
+        <div className="border-t p-4 text-xs text-slate-400" style={{ borderColor: 'rgb(var(--s-600))', background: 'rgb(var(--s-900))' }}>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div>
               <span className="block font-semibold text-slate-300 uppercase tracking-wider text-[10px]">Captured</span>

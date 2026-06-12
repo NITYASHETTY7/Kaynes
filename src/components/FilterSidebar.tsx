@@ -19,13 +19,14 @@ const CONNECTIONS: Connection[] = ['Wi-Fi', 'BLE', 'Offline']
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="border-b border-ink-600/50 px-5 py-4">
-      <h3 className="mb-4 text-xs font-black uppercase tracking-widest text-slate-400">
+    <div
+      className="px-4 py-4"
+      style={{ borderBottom: '1px solid rgb(var(--s-600))' }}
+    >
+      <h3 className="mb-3 text-[9px] font-semibold uppercase tracking-widest" style={{ color: 'rgb(var(--n-500))' }}>
         {title}
       </h3>
-      <div>
-        {children}
-      </div>
+      <div>{children}</div>
     </div>
   )
 }
@@ -42,20 +43,36 @@ function Check({
   dot?: string
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-3 py-1.5 text-[11px] font-bold text-slate-300 hover:text-fg transition-colors group">
-      <div className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${
-        checked ? 'border-argo-cyan bg-argo-cyan' : 'border-ink-500 bg-ink-900 group-hover:border-argo-cyan/50'
-      }`}>
-        {checked && <span className="text-ink-900 text-[10px]">✓</span>}
+    <label
+      className="flex cursor-pointer items-center gap-2.5 py-1.5 text-[11px] font-medium transition-colors group"
+      style={{ color: 'rgb(var(--n-400))' }}
+    >
+      {/* Custom checkbox */}
+      <div
+        className="flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-all duration-150"
+        style={checked ? {
+          background: '#FF9900',
+          borderColor: '#FF9900',
+          boxShadow: '0 0 8px rgba(255,153,0,0.25)',
+        } : {
+          borderColor: 'rgb(var(--s-500))',
+          background: 'rgb(var(--s-700))',
+        }}
+      >
+        {checked && (
+          <svg className="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+        )}
       </div>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={onChange}
-        className="hidden"
-      />
-      {dot && <span className="h-2 w-2 rounded-full shadow-sm" style={{ background: dot }} />}
-      {label}
+      <input type="checkbox" checked={checked} onChange={onChange} className="hidden" />
+      {dot && (
+        <span
+          className="h-2 w-2 rounded-full shrink-0"
+          style={{ background: dot, boxShadow: `0 0 5px ${dot}80` }}
+        />
+      )}
+      <span className="group-hover:text-fg transition-colors">{label}</span>
     </label>
   )
 }
@@ -64,41 +81,113 @@ export default function FilterSidebar({ filters, setFilters, resultCount }: Prop
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
-    <aside className={`hidden shrink-0 flex-col overflow-y-auto border-r border-ink-600 bg-ink-800/80 backdrop-blur-xl md:flex shadow-xl z-10 transition-all duration-300 ${isCollapsed ? 'w-16 items-center' : 'w-64'}`}>
-      <div className={`flex items-center pt-5 pb-2 w-full ${isCollapsed ? 'justify-center flex-col gap-4' : 'justify-between px-5'}`}>
+    <aside
+      className={`hidden shrink-0 flex-col overflow-y-auto border-r md:flex z-10 transition-all duration-300 ${
+        isCollapsed ? 'w-14 items-center' : 'w-60'
+      }`}
+      style={{
+        background: 'rgb(var(--s-800))',
+        borderColor: 'rgb(var(--s-600))',
+        boxShadow: '1px 0 0 0 rgb(var(--s-600))',
+      }}
+    >
+      {/* Header */}
+      <div
+        className={`flex items-center pt-5 pb-3 w-full shrink-0 ${
+          isCollapsed ? 'justify-center flex-col gap-3 px-2' : 'justify-between px-4'
+        }`}
+      >
         {!isCollapsed && (
           <>
-            <h2 className="text-xs font-black uppercase tracking-widest text-fg">Filters</h2>
-            <span className="rounded-md bg-argo-cyan/10 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-argo-cyan border border-argo-cyan/20 shadow-[0_0_10px_rgba(34,211,238,0.1)]">
-              {resultCount} devices
+            <h2 className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'rgb(var(--fg))' }}>
+              Filters
+            </h2>
+            <span
+              className="rounded-lg px-2 py-1 text-[9px] font-semibold uppercase tracking-wider"
+              style={{
+                background: 'rgba(255,153,0,0.1)',
+                color: '#FF9900',
+                border: '1px solid rgba(255,153,0,0.2)',
+              }}
+            >
+              {resultCount}
             </span>
           </>
         )}
-        <button 
+
+        {isCollapsed && (
+          <span
+            className="rounded-lg px-1.5 py-1 text-[8px] font-bold"
+            style={{ background: 'rgba(255,153,0,0.1)', color: '#FF9900', border: '1px solid rgba(255,153,0,0.2)' }}
+          >
+            {resultCount}
+          </span>
+        )}
+
+        <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink-700/50 text-slate-400 hover:bg-ink-700 hover:text-fg transition-colors"
-          title={isCollapsed ? "Expand Filters" : "Collapse Filters"}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-all"
+          style={{
+            background: 'rgb(var(--s-700))',
+            borderColor: 'rgb(var(--s-600))',
+            color: 'rgb(var(--n-500))',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.background = 'rgb(var(--s-600))'
+            ;(e.currentTarget as HTMLElement).style.color = 'rgb(var(--n-200))'
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.background = 'rgb(var(--s-700))'
+            ;(e.currentTarget as HTMLElement).style.color = 'rgb(var(--n-500))'
+          }}
+          title={isCollapsed ? 'Expand Filters' : 'Collapse Filters'}
         >
-          {isCollapsed ? '▶' : '◀'}
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            {isCollapsed
+              ? <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M3 5l7 7-7 7"/>
+              : <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7M21 19l-7-7 7-7"/>
+            }
+          </svg>
         </button>
       </div>
 
       {!isCollapsed && (
         <>
+          {/* Search */}
           <Section title="Search">
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px]">🔍</span>
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none"
+                style={{ color: 'rgb(var(--n-500))' }}
+                fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"
+              >
+                <circle cx="11" cy="11" r="8"/><path strokeLinecap="round" d="M21 21l-4.35-4.35"/>
+              </svg>
               <input
                 value={filters.search}
                 onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
                 placeholder="Name, serial, operator…"
-                className="w-full rounded-lg border border-ink-600 bg-ink-900/50 pl-8 pr-3 py-2 text-xs font-medium text-slate-200 outline-none placeholder:text-slate-600 focus:border-argo-cyan transition-colors shadow-inner"
+                className="w-full rounded-lg border pl-9 pr-3 py-2 text-[11px] font-medium outline-none transition-all"
+                style={{
+                  borderColor: 'rgb(var(--s-500))',
+                  background: 'rgb(var(--s-700))',
+                  color: 'rgb(var(--n-200))',
+                }}
+                onFocus={e => {
+                  e.target.style.borderColor = 'rgba(255,153,0,0.5)'
+                  e.target.style.boxShadow = '0 0 0 3px rgba(255,153,0,0.1)'
+                }}
+                onBlur={e => {
+                  e.target.style.borderColor = 'rgb(var(--s-500))'
+                  e.target.style.boxShadow = 'none'
+                }}
               />
             </div>
           </Section>
 
+          {/* Status */}
           <Section title="Status">
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {STATUSES.map((s) => (
                 <Check
                   key={s}
@@ -116,23 +205,34 @@ export default function FilterSidebar({ filters, setFilters, resultCount }: Prop
             </div>
           </Section>
 
+          {/* Site */}
           <Section title="Site">
             <select
               value={filters.site}
               onChange={(e) => setFilters((f) => ({ ...f, site: e.target.value }))}
-              className="w-full rounded-lg border border-ink-600 bg-ink-900/50 px-3 py-2 text-xs font-bold text-slate-300 outline-none focus:border-argo-cyan transition-colors appearance-none cursor-pointer shadow-inner"
+              className="w-full rounded-lg border px-3 py-2 text-[11px] font-medium outline-none transition-all appearance-none cursor-pointer"
+              style={{
+                borderColor: 'rgb(var(--s-500))',
+                background: 'rgb(var(--s-700))',
+                color: 'rgb(var(--n-200))',
+              }}
+              onFocus={e => {
+                e.target.style.borderColor = 'rgba(255,153,0,0.5)'
+              }}
+              onBlur={e => {
+                e.target.style.borderColor = 'rgb(var(--s-500))'
+              }}
             >
               <option value="">All sites</option>
               {ALL_SITES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
+                <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </Section>
 
+          {/* Connection */}
           <Section title="Connection">
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {CONNECTIONS.map((c) => (
                 <Check
                   key={c}
@@ -149,17 +249,19 @@ export default function FilterSidebar({ filters, setFilters, resultCount }: Prop
             </div>
           </Section>
 
+          {/* Battery range */}
           <Section title={`Min battery — ${filters.minBattery}%`}>
-            <div className="pt-2">
+            <div className="pt-1">
               <input
                 type="range"
                 min={0}
                 max={100}
                 value={filters.minBattery}
                 onChange={(e) => setFilters((f) => ({ ...f, minBattery: Number(e.target.value) }))}
-                className="w-full h-1.5 bg-ink-900 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-1.5 rounded-lg appearance-none cursor-pointer"
+                style={{ background: 'rgb(var(--s-600))', accentColor: '#FF9900' }}
               />
-              <div className="mt-2 flex justify-between text-[10px] font-bold text-slate-500 font-mono">
+              <div className="mt-2 flex justify-between text-[9px] font-mono font-semibold" style={{ color: 'rgb(var(--n-600))' }}>
                 <span>0%</span>
                 <span>100%</span>
               </div>

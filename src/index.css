@@ -2,58 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Professional SaaS Theme tokens ───────────── */
+/* ── Kaynes · Argo Enterprise Design Tokens ─────────────────────────────── */
 :root {
   color-scheme: light;
-  /* surfaces: very light and airy */
-  --s-900: 248 250 252; /* slate-50 background */
-  --s-800: 255 255 255; /* pristine white cards */
-  --s-700: 241 245 249; /* slate-100 hovers */
-  --s-600: 226 232 240; /* slate-200 borders */
-  --s-500: 203 213 225; /* slate-300 strong borders */
-  
-  /* neutral text inverts → dark text on light */
-  --n-100: 15 23 42;
-  --n-200: 51 65 85;    /* text-slate-700 */
-  --n-300: 71 85 105;
-  --n-400: 100 116 139;
-  --n-500: 148 163 184;
-  --n-600: 203 213 225;
-  --n-700: 226 232 240;
-  
-  --fg: 15 23 42; /* slate-900 */
-  
-  /* darker accents for contrast on white */
-  --argo-cyan: 2 132 199;   /* sky-600 */
-  --argo-violet: 79 70 229; /* indigo-600 */
+
+  /* ── Surface layers (light mode: white-based airy cards) ── */
+  --s-base:   248 250 252;   /* slate-50  · page background      */
+  --s-900:    248 250 252;   /* page bg alias                    */
+  --s-800:    255 255 255;   /* card background                  */
+  --s-750:    250 251 253;   /* card subtle hover                */
+  --s-700:    241 245 249;   /* slate-100 · input / chip bg      */
+  --s-600:    226 232 240;   /* slate-200 · borders              */
+  --s-500:    203 213 225;   /* slate-300 · strong borders       */
+  --s-400:    148 163 184;   /* slate-400 · disabled             */
+
+  /* ── Neutral text (light: dark text) ── */
+  --n-50:     2   6   23;    /* near-black heading               */
+  --n-100:    15  23  42;    /* slate-900                        */
+  --n-200:    30  41  59;    /* slate-800                        */
+  --n-300:    51  65  85;    /* slate-700                        */
+  --n-400:    71  85  105;   /* slate-600                        */
+  --n-500:    100 116 139;   /* slate-500                        */
+  --n-600:    148 163 184;   /* slate-400 muted                  */
+  --n-700:    203 213 225;   /* slate-300 very muted             */
+
+  --fg:       2   6   23;    /* primary heading                  */
+
+  /* ── Brand Accents ── */
+  --aws-orange:   255 153  0;    /* AWS official orange              */
+  --aws-squid:     35  47  62;   /* AWS dark squid ink               */
+  --sky-bright:    14 165 233;   /* sky-500  · info / links          */
+  --sky-deep:      2  132 199;   /* sky-600  · hover                 */
+  --violet:        99 102 241;   /* indigo-500 · AI / ML accent      */
+  --emerald:       16 185 129;   /* success green                    */
+  --amber:        245 158  11;   /* warning amber                    */
+  --rose:         239  68  68;   /* critical red                     */
+
+  /* ── Shadows (light mode) ── */
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-card-hover: 0 8px 24px -4px rgb(0 0 0 / 0.10), 0 4px 8px -2px rgb(0 0 0 / 0.06);
+  --shadow-glow-orange: 0 0 24px 0 rgb(255 153 0 / 0.18);
+  --shadow-glow-sky: 0 0 24px 0 rgb(14 165 233 / 0.18);
 }
 
 .dark {
   color-scheme: dark;
-  /* surfaces: deep slate/navy for a premium dashboard look */
-  --s-900: 3 7 18;      /* slate-950 */
-  --s-800: 15 23 42;    /* slate-900 */
-  --s-700: 30 41 59;    /* slate-800 */
-  --s-600: 51 65 85;    /* slate-700 */
-  --s-500: 71 85 105;   /* slate-600 */
-  
-  /* neutral text */
-  --n-100: 248 250 252;
-  --n-200: 226 232 240; /* crisp white/grey */
-  --n-300: 203 213 225;
-  --n-400: 148 163 184;
-  --n-500: 100 116 139;
-  --n-600: 71 85 105;
-  --n-700: 51 65 85;
-  
-  /* primary heading colour */
-  --fg: 255 255 255;
-  
-  /* brand accents: electric cyan and deep indigo */
-  --argo-cyan: 14 165 233;   /* sky-500 */
-  --argo-violet: 99 102 241; /* indigo-500 */
+
+  /* ── Surface layers (dark mode: deep navy / slate) ── */
+  --s-base:   8   12  28;    /* #080C1C deepest background       */
+  --s-900:    8   12  28;    /* page bg alias                    */
+  --s-800:    13  19  38;    /* #0D1326 card background          */
+  --s-750:    17  25  48;    /* subtle card hover                */
+  --s-700:    22  32  62;    /* #16203E elevated surface         */
+  --s-600:    32  44  82;    /* #202C52 borders                  */
+  --s-500:    50  63  102;   /* #323F66 strong borders           */
+  --s-400:    74  90  131;   /* disabled / muted border          */
+
+  /* ── Neutral text (dark: light text) ── */
+  --n-50:     255 255 255;   /* pure white headings              */
+  --n-100:    241 245 249;   /* slate-100                        */
+  --n-200:    226 232 240;   /* slate-200                        */
+  --n-300:    203 213 225;   /* slate-300                        */
+  --n-400:    148 163 184;   /* slate-400                        */
+  --n-500:    100 116 139;   /* slate-500 muted                  */
+  --n-600:    71  85  105;   /* very muted                       */
+  --n-700:    51  65  85;    /* near invisible                   */
+
+  --fg:       241 245 249;   /* primary heading                  */
+
+  /* ── Brand Accents (brighter in dark) ── */
+  --aws-orange:   255 165  20;   /* slightly brighter orange         */
+  --aws-squid:    241 245 249;   /* inverted for dark                */
+  --sky-bright:   56  189 248;   /* sky-400 brighter                 */
+  --sky-deep:     14  165 233;   /* sky-500                          */
+  --violet:       139 92  246;   /* violet-500 vivid                 */
+  --emerald:      52  211 153;   /* emerald-400                      */
+  --amber:        251 191  36;   /* amber-400                        */
+  --rose:         248  113 113;  /* red-400                          */
+
+  /* ── Shadows (dark mode — glow based) ── */
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-card-hover: 0 8px 32px -4px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(var(--s-500) / 0.5);
+  --shadow-glow-orange: 0 0 28px 0 rgb(255 165 20 / 0.22);
+  --shadow-glow-sky: 0 0 28px 0 rgb(56 189 248 / 0.2);
 }
 
+/* ── Base Resets ─────────────────────────────────────────────────────────── */
 html,
 body,
 #root {
@@ -66,23 +100,146 @@ body {
   color: rgb(var(--n-200));
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Thin themed scrollbars. */
-*::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
-*::-webkit-scrollbar-thumb {
-  background: rgb(var(--s-500));
-  border-radius: 8px;
+/* ── Scrollbars ──────────────────────────────────────────────────────────── */
+*::-webkit-scrollbar        { width: 5px; height: 5px; }
+*::-webkit-scrollbar-track  { background: transparent; }
+*::-webkit-scrollbar-thumb  { background: rgb(var(--s-500)); border-radius: 99px; }
+*::-webkit-scrollbar-thumb:hover { background: rgb(var(--s-400)); }
+
+/* ── Range sliders ───────────────────────────────────────────────────────── */
+input[type='range'] { accent-color: rgb(var(--aws-orange)); }
+
+/* ── Reusable card utility ───────────────────────────────────────────────── */
+@layer components {
+  /* Standard enterprise card */
+  .k-card {
+    @apply relative overflow-hidden rounded-2xl border bg-[rgb(var(--s-800))] transition-all duration-200;
+    border-color: rgb(var(--s-600));
+    box-shadow: var(--shadow-card);
+  }
+  .k-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgb(var(--s-500));
+  }
+
+  /* Top accent bar shared by all cards */
+  .k-card-accent {
+    @apply absolute top-0 left-0 right-0 h-[2px];
+  }
+
+  /* Label caps — standardised */
+  .k-label {
+    @apply text-[10px] font-semibold uppercase tracking-widest;
+    color: rgb(var(--n-500));
+  }
+
+  /* Section heading */
+  .k-section-title {
+    @apply text-[11px] font-semibold uppercase tracking-widest;
+    color: rgb(var(--n-500));
+  }
+
+  /* Primary CTA — AWS Orange */
+  .k-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold
+           transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none;
+    background: linear-gradient(135deg, rgb(var(--aws-orange)), rgb(255 179 50));
+    color: rgb(13 17 35);
+    box-shadow: 0 4px 14px rgb(var(--aws-orange) / 0.3);
+  }
+  .k-btn-primary:hover {
+    box-shadow: 0 6px 20px rgb(var(--aws-orange) / 0.45);
+  }
+
+  /* Secondary CTA */
+  .k-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
+           border transition-all duration-200 hover:scale-[1.01] focus:outline-none;
+    border-color: rgb(var(--s-500));
+    background: rgb(var(--s-700));
+    color: rgb(var(--n-300));
+  }
+  .k-btn-secondary:hover {
+    background: rgb(var(--s-600));
+    color: rgb(var(--n-100));
+  }
+
+  /* Status pills */
+  .k-pill-online  { @apply rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 ring-1 ring-emerald-500/20; }
+  .k-pill-warning { @apply rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider bg-amber-500/10 text-amber-500 ring-1 ring-amber-500/20; }
+  .k-pill-critical{ @apply rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider bg-rose-500/10 text-rose-500 ring-1 ring-rose-500/20; }
+  .k-pill-offline { @apply rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider bg-slate-500/10 text-slate-400 ring-1 ring-slate-500/20; }
+
+  /* Input field */
+  .k-input {
+    @apply w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-all duration-150 font-medium;
+    background: rgb(var(--s-700));
+    border-color: rgb(var(--s-600));
+    color: rgb(var(--n-100));
+  }
+  .k-input::placeholder { color: rgb(var(--n-600)); }
+  .k-input:focus {
+    border-color: rgb(var(--aws-orange) / 0.7);
+    box-shadow: 0 0 0 3px rgb(var(--aws-orange) / 0.12);
+    background: rgb(var(--s-800));
+  }
 }
 
-/* Range slider accent. */
-input[type='range'] {
-  accent-color: rgb(var(--argo-cyan));
+/* ── Keyframe Animations ─────────────────────────────────────────────────── */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 rgb(239 68 68 / 0.5); }
+  70%  { box-shadow: 0 0 0 8px rgb(239 68 68 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(239 68 68 / 0); }
+}
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.animate-slideInRight { animation: slideInRight 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
+.animate-fadeInUp     { animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+.animate-fadeIn       { animation: fadeIn 0.25s ease; }
+.animate-pulseRing    { animation: pulseRing 1.8s infinite; }
+.animate-shimmer      { animation: shimmer 1.6s infinite; }
+.animate-countUp      { animation: countUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.animate-spin-slow    { animation: spin-slow 3s linear infinite; }
+.animate-blink        { animation: blink 1.4s ease-in-out infinite; }
+
+/* ── Glassmorphism helper ─────────────────────────────────────────────────── */
+.glass {
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+}
+
+/* ── AWS-orange focus rings for interactive elements ─────────────────────── */
+.k-focus-ring:focus-visible {
+  outline: 2px solid rgb(var(--aws-orange));
+  outline-offset: 2px;
 }

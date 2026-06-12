@@ -1,334 +1,646 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
-function GlassesMark({ className }: { className?: string }) {
+/* ── AWS-style architecture SVG background nodes ─────────────────────────── */
+function ArchBackground() {
   return (
-    <svg viewBox="0 0 120 48" className={className} fill="none">
-      <circle cx="30" cy="24" r="18" stroke="currentColor" strokeWidth="3" />
-      <circle cx="90" cy="24" r="18" stroke="currentColor" strokeWidth="3" />
-      <path d="M48 24h24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      <path d="M12 16 4 12M108 16l8-4" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="30" cy="24" r="6" fill="currentColor" />
-      <circle cx="90" cy="24" r="6" fill="currentColor" />
-    </svg>
-  )
-}
+    <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
+      {/* Ambient glows */}
+      <motion.div
+        animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute -top-32 -left-32 h-[28rem] w-[28rem] rounded-full"
+        style={{ background: 'radial-gradient(circle, rgba(255,153,0,0.08) 0%, transparent 70%)' }}
+      />
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
+        className="absolute -bottom-40 -right-32 h-[32rem] w-[32rem] rounded-full"
+        style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.07) 0%, transparent 70%)' }}
+      />
 
-function Backdrop() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <motion.div 
-        animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, 30, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute -left-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-argo-cyan/10 blur-3xl" 
-      />
-      <motion.div 
-        animate={{ scale: [1, 1.3, 1], x: [0, -50, 0], y: [0, -30, 0] }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        className="absolute -bottom-44 -right-40 h-[36rem] w-[36rem] rounded-full bg-argo-violet/10 blur-3xl" 
-      />
-      <svg className="absolute inset-0 h-full w-full opacity-[0.5]" preserveAspectRatio="none">
+      {/* Blueprint grid — theme aware */}
+      <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
         <defs>
-          <pattern id="dots" width="34" height="34" patternUnits="userSpaceOnUse">
-            <circle cx="2" cy="2" r="1" fill="rgb(var(--n-500) / 0.25)" />
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgb(var(--s-500) / 0.25)" strokeWidth="0.8"/>
+          </pattern>
+          <pattern id="grid-lg" width="200" height="200" patternUnits="userSpaceOnUse">
+            <path d="M 200 0 L 0 0 0 200" fill="none" stroke="rgb(var(--s-500) / 0.35)" strokeWidth="1"/>
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#dots)" />
+        <rect width="100%" height="100%" fill="url(#grid)" />
+        <rect width="100%" height="100%" fill="url(#grid-lg)" />
       </svg>
+
+      {/* AWS service node constellation */}
+      {[
+        { cx: '15%', cy: '20%', r: 22, label: 'IoT Core', delay: 0 },
+        { cx: '80%', cy: '15%', r: 18, label: 'S3',       delay: 0.8 },
+        { cx: '88%', cy: '70%', r: 20, label: 'Lambda',   delay: 1.2 },
+        { cx: '10%', cy: '78%', r: 16, label: 'SNS',      delay: 1.8 },
+        { cx: '50%', cy: '8%',  r: 14, label: 'SageMaker',delay: 2.2 },
+      ].map((node) => (
+        <motion.div
+          key={node.label}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: [0.5, 0.85, 0.5], scale: [0.95, 1.05, 0.95] }}
+          transition={{ duration: 4, repeat: Infinity, delay: node.delay, ease: 'easeInOut' }}
+          className="absolute flex flex-col items-center"
+          style={{ left: node.cx, top: node.cy, transform: 'translate(-50%, -50%)' }}
+        >
+          <div
+            className="flex items-center justify-center rounded-lg font-mono font-bold"
+            style={{
+              width: node.r * 2.2,
+              height: node.r * 2.2,
+              background: 'rgba(255,153,0,0.12)',
+              border: '1px solid rgba(255,153,0,0.25)',
+              fontSize: 8,
+              color: 'rgba(255,153,0,0.8)',
+            }}
+          >
+            AWS
+          </div>
+          <span style={{ fontSize: 7, color: 'rgba(255,255,255,0.25)', marginTop: 3, whiteSpace: 'nowrap' }}>
+            {node.label}
+          </span>
+        </motion.div>
+      ))}
     </div>
-  )
+  );
 }
 
+/* ── Feature list item ───────────────────────────────────────────────────── */
+function FeatureItem({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <li className="flex items-center gap-3">
+      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-sm shrink-0">
+        {icon}
+      </span>
+      <span className="text-[11px] text-white/80 font-medium leading-snug">{label}</span>
+    </li>
+  );
+}
+
+/* ── Eye icon for password toggle ───────────────────────────────────────── */
+function EyeIcon({ open }: { open: boolean }) {
+  return open ? (
+    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+      <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ) : (
+    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+    </svg>
+  );
+}
+
+/* ── Spinner ─────────────────────────────────────────────────────────────── */
+function Spinner() {
+  return (
+    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
+}
+
+/* ── Kaynes logo mark ────────────────────────────────────────────────────── */
+function KaynesLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+  const dim = size === 'sm' ? 32 : size === 'lg' ? 52 : 42;
+  return (
+    <div
+      className="flex items-center justify-center rounded-xl font-display font-bold text-white shrink-0"
+      style={{
+        width: dim,
+        height: dim,
+        background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+        boxShadow: '0 4px 14px rgba(255,153,0,0.35)',
+        fontSize: dim * 0.38,
+        letterSpacing: '-0.03em',
+      }}
+    >
+      K
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
 export default function Login() {
   const { login, forgotPassword, resetPassword } = useApp();
-  
+
   // View state: login | forgot | reset
   const [view, setView] = useState<'login' | 'forgot' | 'reset'>('login');
-  
+
   // Forms
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail]           = useState('');
+  const [password, setPassword]     = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
+  const [error, setError]           = useState('');
+  const [message, setMessage]       = useState('');
+  const [loading, setLoading]       = useState(false);
+  const [showPass, setShowPass]     = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [credOpen, setCredOpen]     = useState(false);
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setMessage('');
-    
-    if (!email.trim() || !password.trim()) {
-      setError('Please fill in both fields.');
-      return;
-    }
-
+    if (!email.trim() || !password.trim()) { setError('Please fill in both fields.'); return; }
+    setLoading(true);
     const res = await login(email, password);
-    if (!res.success) {
-      setError(res.error || 'Authentication failed.');
-    }
+    setLoading(false);
+    if (!res.success) setError(res.error || 'Authentication failed.');
   };
 
   const handleForgotSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setMessage('');
-
-    if (!email.trim()) {
-      setError('Please enter your email.');
-      return;
-    }
-
+    if (!email.trim()) { setError('Please enter your email.'); return; }
+    setLoading(true);
     const res = await forgotPassword(email);
+    setLoading(false);
     setMessage(res.message);
-    if (res.success) {
-      // Advance to reset password step for simulator demo
-      setTimeout(() => {
-        setView('reset');
-      }, 2500);
-    }
+    if (res.success) setTimeout(() => setView('reset'), 2500);
   };
 
   const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setMessage('');
-
-    if (!email.trim() || !newPassword.trim()) {
-      setError('Please fill in all fields.');
-      return;
-    }
-
+    if (!email.trim() || !newPassword.trim()) { setError('Please fill in all fields.'); return; }
+    setLoading(true);
     const res = await resetPassword(email, newPassword);
+    setLoading(false);
     setMessage(res.message);
-    if (res.success) {
-      setTimeout(() => {
-        setView('login');
-        setPassword('');
-      }, 2000);
-    }
+    if (res.success) setTimeout(() => { setView('login'); setPassword(''); }, 2000);
   };
 
-  return (
-    <div className="relative flex min-h-screen items-center justify-center bg-ink-900 p-4 font-sans">
-      <Backdrop />
+  const switchView = (v: typeof view) => {
+    setView(v);
+    setError('');
+    setMessage('');
+  };
 
-      <motion.div 
-        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+  /* ── Shared input style — adapts to light/dark via CSS vars ── */
+  const inputCls =
+    'w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all duration-200 font-medium k-input';
+
+  return (
+    <div
+      className="relative flex min-h-screen items-center justify-center p-4 font-sans overflow-hidden"
+      style={{ background: 'rgb(var(--s-base))' }}
+    >
+      <ArchBackground />
+
+      <motion.div
+        initial={{ opacity: 0, y: 28, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 grid w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/5 bg-ink-800/60 backdrop-blur-2xl shadow-2xl md:grid-cols-2 shadow-glow-cyan"
+        transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 w-full max-w-4xl overflow-hidden rounded-2xl shadow-2xl md:grid md:grid-cols-2"
+        style={{
+          background: 'rgb(var(--s-800))',
+          border: '1px solid rgb(var(--s-600))',
+          boxShadow: 'var(--shadow-card-hover)',
+        }}
       >
-        
-        {/* Brand Side Hero */}
-        <div className="relative hidden flex-col justify-between bg-gradient-to-br from-argo-cyan to-argo-violet p-8 text-white md:flex">
-          <div className="relative">
-            <GlassesMark className="h-12 w-28 text-white" />
-            <h1 className="mt-6 text-2xl font-bold leading-tight">
-              Argo Glasses
-              <br />
-              IoT Fleet Console
+        {/* ── Left: Brand Hero Panel ──────────────────────────────────── */}
+        <div
+          className="relative hidden flex-col justify-between p-10 text-white md:flex overflow-hidden"
+          style={{
+            background: 'linear-gradient(160deg, #0f1f3d 0%, #0a1830 40%, #080f20 100%)',
+            borderRight: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          {/* AWS-style orange vertical accent bar */}
+          <div
+            className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full"
+            style={{ background: 'linear-gradient(to bottom, #FF9900, #FFB833, transparent)' }}
+          />
+
+          {/* Decorative corner glow */}
+          <div
+            className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at top right, rgba(255,153,0,0.08) 0%, transparent 60%)' }}
+          />
+
+          {/* Brand top */}
+          <div className="relative pl-4">
+            <div className="flex items-center gap-3 mb-6">
+              <KaynesLogo size="md" />
+              <div>
+                <div className="text-base font-bold font-display tracking-tight leading-tight">
+                  Argo Glasses
+                </div>
+                <div
+                  className="text-[10px] font-semibold uppercase tracking-widest mt-0.5"
+                  style={{ color: '#FF9900' }}
+                >
+                  IoT Fleet Console
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="mb-2 text-[10px] font-semibold uppercase tracking-widest"
+              style={{ color: 'rgba(255,153,0,0.7)' }}
+            >
+              Powered by Kaynes AI
+            </div>
+
+            <h1 className="text-2xl font-bold font-display leading-snug text-white mb-3">
+              Enterprise Smart<br />
+              <span style={{ color: '#FF9900' }}>Glasses Command</span><br />
+              Platform
             </h1>
-            <p className="mt-3 max-w-xs text-xs leading-relaxed text-white/80">
-              Unified telemetry command center for corporate smart glasses fleets. Powered by Kaynes AI.
+            <p className="text-[11px] leading-relaxed text-white/55 max-w-xs">
+              Unified telemetry, AI defect analysis and real-time fleet management 
+              for industrial smart glasses — on AWS infrastructure.
             </p>
           </div>
 
-          <ul className="relative space-y-3 text-xs text-white/90">
-            {[
-              ['🛰', 'Centralized plant & asset mapping'],
-              ['🧠', 'Optical AI defect analysis playground'],
-              ['📊', 'Telemetry reporting & secure access control'],
-            ].map(([icon, label]) => (
-              <li key={label} className="flex items-center gap-2.5">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/15">
-                  {icon}
-                </span>
-                {label}
-              </li>
-            ))}
+          {/* Feature list */}
+          <ul className="relative pl-4 space-y-3">
+            <FeatureItem icon="🛰" label="Centralized multi-plant asset & device mapping" />
+            <FeatureItem icon="🧠" label="AWS SageMaker optical AI defect analysis" />
+            <FeatureItem icon="☁" label="AWS IoT Core · S3 · Lambda telemetry bridge" />
+            <FeatureItem icon="🔒" label="Role-based access with audit & compliance logs" />
           </ul>
 
-          <div className="relative text-[10px] text-white/70">
-            Corporate Authorized Personnel Only
+          {/* Footer */}
+          <div className="relative pl-4 flex items-center gap-2">
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: '#10B981', boxShadow: '0 0 6px #10B981' }}
+            />
+            <span className="text-[10px] text-white/40 font-medium">
+              Corporate Authorized Personnel Only · AP-SOUTH-1
+            </span>
           </div>
         </div>
 
-        {/* ── Form Side ──────────────────────────────────── */}
-        <div className="p-8 flex flex-col justify-center">
-          
-          {/* Logo for mobile */}
+        {/* ── Form Panel ────────────────────────────────────────── */}
+        <div className="flex flex-col justify-center px-8 py-10 md:px-10" style={{ background: 'rgb(var(--s-base))' }}>
+          {/* Mobile logo */}
           <div className="mb-6 flex items-center gap-3 md:hidden">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-argo-cyan/15 text-argo-cyan">
-              <GlassesMark className="h-5 w-12" />
-            </span>
+            <KaynesLogo size="sm" />
             <div>
-              <h1 className="text-sm font-semibold leading-tight text-fg">Argo Glasses</h1>
-              <p className="text-[11px] leading-tight text-argo-cyan">IoT Fleet Console</p>
+              <div className="text-sm font-bold font-display leading-tight" style={{ color: 'rgb(var(--fg))' }}>Argo Glasses</div>
+              <div className="text-[10px] font-semibold uppercase tracking-widest mt-0.5" style={{ color: '#FF9900' }}>
+                IoT Fleet Console
+              </div>
             </div>
           </div>
 
-          {/* VIEW: LOGIN FORM */}
-          {view === 'login' && (
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
-              <div>
-                <h2 className="text-2xl font-bold text-fg font-display tracking-tight">Authorized Sign In</h2>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">Enter your Kaynes Technology secure corporate credentials.</p>
-              </div>
-
-              {error && <div className="rounded-lg bg-argo-red/10 border border-argo-red/30 p-2.5 text-xs text-argo-red font-semibold">{error}</div>}
-
-              <div>
-                <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">Corporate Email</label>
-                <input 
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@kaynes.com"
-                  className="w-full rounded-xl border border-white/10 bg-ink-900/50 px-4 py-3 text-sm text-fg outline-none transition-all focus:border-argo-cyan focus:bg-ink-900 focus:shadow-glow-cyan font-mono"
-                />
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-1.5">
-                  <label className="block text-[10px] uppercase tracking-wider text-slate-500 font-bold">Secure Password</label>
-                  <button 
-                    type="button" 
-                    onClick={() => { setView('forgot'); setError(''); setMessage(''); }}
-                    className="text-[10px] text-argo-cyan hover:underline font-semibold"
+          <AnimatePresence mode="wait">
+            {/* ── VIEW: LOGIN ──────────────────────────────────────── */}
+            {view === 'login' && (
+              <motion.form
+                key="login"
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.22 }}
+                onSubmit={handleLoginSubmit}
+                className="space-y-5"
+              >
+                <div>
+                  <div
+                    className="text-[10px] font-semibold uppercase tracking-widest mb-1"
+                    style={{ color: '#FF9900' }}
                   >
-                    Forgot Password?
+                    Kaynes Technology
+                  </div>
+                  <h2 className="text-2xl font-bold font-display tracking-tight" style={{ color: 'rgb(var(--fg))' }}>
+                    Welcome back
+                  </h2>
+                  <p className="text-[12px] mt-1.5 leading-relaxed" style={{ color: 'rgb(var(--n-500))' }}>
+                    Sign in with your corporate credentials to access the console.
+                  </p>
+                </div>
+
+                {/* Error banner */}
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-start gap-2 rounded-xl p-3 text-xs font-medium"
+                    style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#dc2626' }}
+                  >
+                    <span className="shrink-0 mt-0.5">⚠</span>
+                    {error}
+                  </motion.div>
+                )}
+
+                {/* Email field */}
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: 'rgb(var(--n-500))' }}>
+                    Corporate Email
+                  </label>
+                  <input
+                    required
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@kaynes.com"
+                    className={inputCls + ' font-mono'}
+                    autoComplete="email"
+                  />
+                </div>
+
+                {/* Password field */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgb(var(--n-500))' }}>
+                      Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => switchView('forgot')}
+                      className="text-[10px] font-medium transition-colors hover:underline"
+                      style={{ color: '#FF9900' }}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      required
+                      type={showPass ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      className={inputCls + ' pr-11'}
+                      autoComplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPass(!showPass)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                      tabIndex={-1}
+                    >
+                      <EyeIcon open={showPass} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+                  style={{
+                    background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                    color: '#0D0F15',
+                    boxShadow: '0 4px 18px rgba(255,153,0,0.35)',
+                  }}
+                >
+                  {loading ? <><Spinner /> Authenticating…</> : 'Sign In to Console'}
+                </button>
+
+                {/* Demo credentials (collapsible) */}
+                <div
+                  className="rounded-xl overflow-hidden"
+                  style={{ border: '1px solid rgb(var(--s-600))', background: 'rgb(var(--s-700))' }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setCredOpen(!credOpen)}
+                    className="w-full flex items-center justify-between px-4 py-3 text-[10px] font-semibold uppercase tracking-widest transition-colors"
+                    style={{ color: 'rgb(var(--n-500))' }}
+                  >
+                    <span>Demo Credentials</span>
+                    <span className={`transition-transform ${credOpen ? 'rotate-180' : ''}`}>▾</span>
+                  </button>
+                  {credOpen && (
+                    <div className="px-4 pb-4 space-y-2">
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                        <span className="font-medium" style={{ color: 'rgb(var(--n-600))' }}>Admin</span>
+                        <span className="font-mono" style={{ color: 'rgb(var(--n-400))' }}>admin@kaynes.com</span>
+                        <span className="font-medium" style={{ color: 'rgb(var(--n-600))' }}>Pass</span>
+                        <span className="font-mono" style={{ color: 'rgb(var(--n-400))' }}>admin123</span>
+                      </div>
+                      <div className="h-px w-full" style={{ background: 'rgb(var(--s-600))' }} />
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                        <span className="font-medium" style={{ color: 'rgb(var(--n-600))' }}>Inspector</span>
+                        <span className="font-mono" style={{ color: 'rgb(var(--n-400))' }}>inspector@kaynes.com</span>
+                        <span className="font-medium" style={{ color: 'rgb(var(--n-600))' }}>Pass</span>
+                        <span className="font-mono" style={{ color: 'rgb(var(--n-400))' }}>inspector123</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.form>
+            )}
+
+            {/* ── VIEW: FORGOT PASSWORD ─────────────────────────────── */}
+            {view === 'forgot' && (
+              <motion.form
+                key="forgot"
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.22 }}
+                onSubmit={handleForgotSubmit}
+                className="space-y-5"
+              >
+                <div>
+                  <div
+                    className="text-[10px] font-semibold uppercase tracking-widest mb-1"
+                    style={{ color: '#FF9900' }}
+                  >
+                    Account Recovery
+                  </div>
+                  <h2 className="text-xl font-bold font-display tracking-tight" style={{ color: 'rgb(var(--fg))' }}>
+                    Reset your password
+                  </h2>
+                  <p className="text-[12px] mt-1.5 leading-relaxed" style={{ color: 'rgb(var(--n-500))' }}>
+                    Enter your registered corporate email to receive a reset link.
+                  </p>
+                </div>
+
+                {error && (
+                  <div
+                    className="flex items-start gap-2 rounded-xl p-3 text-xs font-medium"
+                    style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}
+                  >
+                    <span className="shrink-0 mt-0.5">⚠</span>{error}
+                  </div>
+                )}
+                {message && (
+                  <div
+                    className="flex items-start gap-2 rounded-xl p-3 text-xs font-medium"
+                    style={{ background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.25)', color: '#34d399' }}
+                  >
+                    <span className="shrink-0 mt-0.5">✓</span>{message}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: 'rgb(var(--n-500))' }}>
+                    Email Address
+                  </label>
+                  <input
+                    required
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@kaynes.com"
+                    className={inputCls + ' font-mono'}
+                    autoComplete="email"
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => switchView('login')}
+                    className="flex-1 rounded-xl border py-3 text-xs font-medium transition-all"
+                    style={{ borderColor: 'rgb(var(--s-500))', background: 'rgb(var(--s-700))', color: 'rgb(var(--n-400))' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--s-600))'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--n-200))' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--s-700))'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--n-400))' }}
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-70"
+                    style={{
+                      background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                      color: '#0D0F15',
+                      boxShadow: '0 4px 14px rgba(255,153,0,0.3)',
+                    }}
+                  >
+                    {loading ? <Spinner /> : 'Send Reset Link'}
                   </button>
                 </div>
-                <input 
-                  required
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full rounded-xl border border-white/10 bg-ink-900/50 px-4 py-3 text-sm text-fg outline-none transition-all focus:border-argo-cyan focus:bg-ink-900 focus:shadow-glow-cyan"
-                />
-              </div>
+              </motion.form>
+            )}
 
-              <button 
-                type="submit"
-                className="w-full rounded-xl bg-gradient-to-r from-argo-cyan to-[#00c6ff] py-3 text-sm font-bold text-ink-900 transition-all hover:scale-[1.02] hover:shadow-glow-cyan"
+            {/* ── VIEW: RESET PASSWORD ──────────────────────────────── */}
+            {view === 'reset' && (
+              <motion.form
+                key="reset"
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.22 }}
+                onSubmit={handleResetSubmit}
+                className="space-y-5"
               >
-                Sign In to Console
-              </button>
-
-              {/* Helpful credentials blocks */}
-              <div className="rounded-xl bg-ink-900/40 border border-white/5 p-4 space-y-2 text-[10px] text-slate-400">
-                <span className="font-semibold text-slate-300 block">Stakeholder Demo Credentials:</span>
-                <div className="flex justify-between items-center">
-                  <span>Admin: <strong className="text-fg font-mono ml-1">admin@kaynes.com</strong></span>
-                  <span className="opacity-70">Pass: <strong className="text-fg font-mono">admin123</strong></span>
+                <div>
+                  <div
+                    className="text-[10px] font-semibold uppercase tracking-widest mb-1"
+                    style={{ color: '#FF9900' }}
+                  >
+                    New Credentials
+                  </div>
+                  <h2 className="text-xl font-bold font-display tracking-tight" style={{ color: 'rgb(var(--fg))' }}>
+                    Set new password
+                  </h2>
+                  <p className="text-[12px] mt-1.5 leading-relaxed" style={{ color: 'rgb(var(--n-500))' }}>
+                    Enter your corporate email and your new secure password.
+                  </p>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span>Inspector: <strong className="text-fg font-mono ml-1">inspector@kaynes.com</strong></span>
-                  <span className="opacity-70">Pass: <strong className="text-fg font-mono">inspector123</strong></span>
+
+                {error && (
+                  <div
+                    className="flex items-start gap-2 rounded-xl p-3 text-xs font-medium"
+                    style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}
+                  >
+                    <span>⚠</span>{error}
+                  </div>
+                )}
+                {message && (
+                  <div
+                    className="flex items-start gap-2 rounded-xl p-3 text-xs font-medium"
+                    style={{ background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.25)', color: '#34d399' }}
+                  >
+                    <span>✓</span>{message}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: 'rgb(var(--n-500))' }}>
+                    Confirm Account Email
+                  </label>
+                  <input
+                    required
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={inputCls + ' font-mono'}
+                    autoComplete="email"
+                  />
                 </div>
-              </div>
-            </form>
-          )}
 
-          {/* VIEW: FORGOT PASSWORD */}
-          {view === 'forgot' && (
-            <form onSubmit={handleForgotSubmit} className="space-y-4">
-              <div>
-                <h2 className="text-lg font-bold text-fg">Account Recovery</h2>
-                <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">Enter your registered email address to receive an account reset simulation link.</p>
-              </div>
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: 'rgb(var(--n-500))' }}>
+                    New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      required
+                      type={showNewPass ? 'text' : 'password'}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Minimum 8 characters"
+                      className={inputCls + ' pr-11'}
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPass(!showNewPass)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                      tabIndex={-1}
+                    >
+                      <EyeIcon open={showNewPass} />
+                    </button>
+                  </div>
+                </div>
 
-              {error && <div className="rounded-lg bg-argo-red/10 p-2.5 text-xs text-argo-red font-semibold">{error}</div>}
-              {message && <div className="rounded-lg bg-argo-green/10 border border-argo-green/30 p-2.5 text-xs text-argo-green font-semibold">{message}</div>}
-
-              <div>
-                <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">Email Address</label>
-                <input 
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@kaynes.com"
-                  className="w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm text-fg outline-none focus:border-argo-cyan font-mono"
-                />
-              </div>
-
-              <div className="flex justify-between gap-3">
-                <button 
-                  type="button" 
-                  onClick={() => { setView('login'); setError(''); setMessage(''); }}
-                  className="flex-1 rounded-lg border border-ink-500 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-ink-700"
-                >
-                  Back to Sign In
-                </button>
-                <button 
-                  type="submit"
-                  className="flex-1 rounded-lg bg-argo-cyan py-2 text-xs font-semibold text-ink-900 hover:brightness-110"
-                >
-                  Simulate Link
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* VIEW: RESET PASSWORD */}
-          {view === 'reset' && (
-            <form onSubmit={handleResetSubmit} className="space-y-4">
-              <div>
-                <h2 className="text-lg font-bold text-fg">Configure New Password</h2>
-                <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">Enter your corporate email and specify your updated credentials.</p>
-              </div>
-
-              {error && <div className="rounded-lg bg-argo-red/10 p-2.5 text-xs text-argo-red font-semibold">{error}</div>}
-              {message && <div className="rounded-lg bg-argo-green/10 border border-argo-green/30 p-2.5 text-xs text-argo-green font-semibold">{message}</div>}
-
-              <div>
-                <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">Confirm Account Email</label>
-                <input 
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm text-fg outline-none focus:border-argo-cyan font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">Specify New Password</label>
-                <input 
-                  required
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="New Secure Pass"
-                  className="w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm text-fg outline-none focus:border-argo-cyan"
-                />
-              </div>
-
-              <div className="flex justify-between gap-3">
-                <button 
-                  type="button" 
-                  onClick={() => { setView('login'); setError(''); setMessage(''); }}
-                  className="flex-1 rounded-lg border border-ink-500 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-ink-700"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className="flex-1 rounded-lg bg-argo-cyan py-2 text-xs font-semibold text-ink-900 hover:brightness-110"
-                >
-                  Update Credentials
-                </button>
-              </div>
-            </form>
-          )}
-
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => switchView('login')}
+                    className="flex-1 rounded-xl border py-3 text-xs font-medium transition-all"
+                    style={{ borderColor: 'rgb(var(--s-500))', background: 'rgb(var(--s-700))', color: 'rgb(var(--n-400))' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--s-600))'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--n-200))' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--s-700))'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--n-400))' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-70"
+                    style={{
+                      background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                      color: '#0D0F15',
+                      boxShadow: '0 4px 14px rgba(255,153,0,0.3)',
+                    }}
+                  >
+                    {loading ? <Spinner /> : 'Update Password'}
+                  </button>
+                </div>
+              </motion.form>
+            )}
+          </AnimatePresence>
         </div>
-
       </motion.div>
+
+      {/* Footer note */}
+      <div className="absolute bottom-4 left-0 right-0 text-center">
+        <span className="text-[9px] font-medium tracking-widest uppercase" style={{ color: 'rgb(var(--n-700))' }}>
+          Kaynes Technology Industries · Enterprise IoT Division · v2.1
+        </span>
+      </div>
     </div>
   );
 }

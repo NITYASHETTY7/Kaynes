@@ -80,16 +80,23 @@ export default function Users() {
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-ink-900 p-6 text-slate-200">
+    <div
+      className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8"
+      style={{ background: 'rgb(var(--s-base))', color: 'rgb(var(--fg))' }}
+    >
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-xl font-bold text-fg">Identity & Access Control</h1>
-          <p className="text-xs text-slate-400">Add inspectors/operators, assign secure roles, and toggle platform access permissions.</p>
+          <h1 className="text-xl font-bold font-display" style={{ color: 'rgb(var(--fg))' }}>Identity &amp; Access Control</h1>
+          <p className="text-xs" style={{ color: 'rgb(var(--n-400))' }}>Add inspectors/operators, assign secure roles, and toggle platform access permissions.</p>
         </div>
         {isAdmin && (
           <button 
             onClick={openCreate}
-            className="rounded-lg bg-argo-cyan px-4 py-2 text-xs font-semibold text-ink-900 shadow-md hover:brightness-110 self-start sm:self-auto"
+            className="rounded-lg px-4 py-2 text-xs font-semibold shadow-md hover:brightness-110 self-start sm:self-auto transition-all"
+            style={{
+              background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+              color: '#0D0F15',
+            }}
           >
             + Register Staff Account
           </button>
@@ -98,60 +105,120 @@ export default function Users() {
 
       {/* Grid List of Staff Profiles */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mb-6">
-        <div className="rounded-xl border border-ink-600 bg-ink-800 p-4">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Admins</span>
-          <span className="block text-2xl font-bold text-fg mt-1">{activeUsers.filter(u=>u.role==='admin').length}</span>
+        <div
+          className="rounded-2xl border p-4"
+          style={{
+            background: 'rgb(var(--s-800))',
+            borderColor: 'rgb(var(--s-600))',
+            boxShadow: 'var(--shadow-card)'
+          }}
+        >
+          <span
+            className="text-[10px] font-semibold uppercase tracking-widest"
+            style={{ color: 'rgb(var(--n-500))' }}
+          >
+            Admins
+          </span>
+          <span className="block text-2xl font-bold mt-1" style={{ color: 'rgb(var(--fg))' }}>
+            {activeUsers.filter(u=>u.role==='admin').length}
+          </span>
         </div>
-        <div className="rounded-xl border border-ink-600 bg-ink-800 p-4">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">QA Inspectors</span>
-          <span className="block text-2xl font-bold text-argo-violet mt-1">{activeUsers.filter(u=>u.role==='inspector').length}</span>
+        <div
+          className="rounded-2xl border p-4"
+          style={{
+            background: 'rgb(var(--s-800))',
+            borderColor: 'rgb(var(--s-600))',
+            boxShadow: 'var(--shadow-card)'
+          }}
+        >
+          <span
+            className="text-[10px] font-semibold uppercase tracking-widest"
+            style={{ color: 'rgb(var(--n-500))' }}
+          >
+            QA Inspectors
+          </span>
+          <span className="block text-2xl font-bold text-argo-violet mt-1">
+            {activeUsers.filter(u=>u.role==='inspector').length}
+          </span>
         </div>
-        <div className="rounded-xl border border-ink-600 bg-ink-800 p-4">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Line Operators</span>
-          <span className="block text-2xl font-bold text-argo-cyan mt-1">{activeUsers.filter(u=>u.role==='operator').length}</span>
+        <div
+          className="rounded-2xl border p-4"
+          style={{
+            background: 'rgb(var(--s-800))',
+            borderColor: 'rgb(var(--s-600))',
+            boxShadow: 'var(--shadow-card)'
+          }}
+        >
+          <span
+            className="text-[10px] font-semibold uppercase tracking-widest"
+            style={{ color: 'rgb(var(--n-500))' }}
+          >
+            Line Operators
+          </span>
+          <span className="block text-2xl font-bold mt-1" style={{ color: '#FF9900' }}>
+            {activeUsers.filter(u=>u.role==='operator').length}
+          </span>
         </div>
       </div>
 
       {/* Users table */}
-      <div className="rounded-xl border border-ink-600 bg-ink-800 p-5">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">Authorized Operators Index</h2>
+      <div
+        className="rounded-2xl border p-5"
+        style={{
+          background: 'rgb(var(--s-800))',
+          borderColor: 'rgb(var(--s-600))',
+          boxShadow: 'var(--shadow-card)'
+        }}
+      >
+        <h2
+          className="text-[10px] font-semibold uppercase tracking-widest mb-4"
+          style={{ color: 'rgb(var(--n-500))' }}
+        >
+          Authorized Operators Index
+        </h2>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
+          <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-ink-600 text-slate-500">
-                <th className="py-2">Staff Member Name</th>
-                <th className="py-2">Corporate Email</th>
-                <th className="py-2">Role Assigned</th>
-                <th className="py-2">Assigned Plant</th>
-                <th className="py-2">Status</th>
-                {isAdmin && <th className="py-2 text-right">Actions</th>}
+              <tr style={{ borderBottom: '1px solid rgb(var(--s-600))' }}>
+                <th className="py-2 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Staff Member Name</th>
+                <th className="py-2 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Corporate Email</th>
+                <th className="py-2 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Role Assigned</th>
+                <th className="py-2 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Assigned Plant</th>
+                <th className="py-2 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Status</th>
+                {isAdmin && <th className="py-2 text-right font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Actions</th>}
               </tr>
             </thead>
-            <tbody className="divide-y divide-ink-600/50">
+            <tbody>
               {activeUsers.map(u => {
                 const isSelf = u.id === currentUser?.id;
                 const assignedPlantName = u.plantId ? plants.find(p=>p.id===u.plantId)?.name || 'Central Site' : 'Unassigned (Global)';
                 
                 return (
-                  <tr key={u.id} className="hover:bg-ink-700/30">
-                    <td className="py-3 font-semibold text-fg">
-                      {u.name} {isSelf && <span className="text-[10px] text-argo-cyan">(You)</span>}
+                  <tr
+                    key={u.id}
+                    style={{ borderTop: '1px solid rgb(var(--s-600))' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgb(var(--s-700))')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <td className="py-3 font-semibold" style={{ color: 'rgb(var(--fg))' }}>
+                      {u.name} {isSelf && <span className="text-[10px]" style={{ color: '#FF9900' }}>(You)</span>}
                     </td>
-                    <td className="py-3 text-slate-400 font-mono">{u.email}</td>
+                    <td className="py-3 font-mono" style={{ color: 'rgb(var(--n-400))' }}>{u.email}</td>
                     <td className="py-3">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold capitalize ${
-                        u.role === 'admin' ? 'bg-argo-cyan/10 text-argo-cyan' : 
-                        u.role === 'inspector' ? 'bg-argo-violet/10 text-argo-violet' : 'bg-slate-700 text-slate-300'
+                        u.role === 'admin' ? 'bg-amber-500/10 text-amber-400' : 
+                        u.role === 'inspector' ? 'bg-argo-violet/10 text-argo-violet' : 'bg-emerald-500/10 text-emerald-400'
                       }`}>
                         {u.role}
                       </span>
                     </td>
-                    <td className="py-3 text-slate-400 font-medium">{assignedPlantName}</td>
+                    <td className="py-3 font-medium" style={{ color: 'rgb(var(--n-400))' }}>{assignedPlantName}</td>
                     <td className="py-3">
                       <button 
                         disabled={!isAdmin || isSelf}
                         onClick={() => handleToggleStatus(u)}
-                        className={`inline-flex items-center gap-1.5 capitalize rounded px-1.5 py-0.5 ${isAdmin && !isSelf ? 'hover:bg-ink-600' : ''}`}
+                        className={`inline-flex items-center gap-1.5 capitalize rounded px-1.5 py-0.5 transition-colors ${isAdmin && !isSelf ? 'hover:bg-[rgb(var(--s-600))]' : ''}`}
+                        style={{ color: 'rgb(var(--n-300))' }}
                       >
                         <span className="h-2 w-2 rounded-full" style={{ backgroundColor: u.status === 'active' ? '#10b981' : '#ef4444' }} />
                         {u.status}
@@ -161,7 +228,8 @@ export default function Users() {
                       <td className="py-3 text-right">
                         <button 
                           onClick={() => openEdit(u)}
-                          className="mr-3 text-argo-cyan hover:underline"
+                          className="mr-3 hover:underline transition-colors"
+                          style={{ color: '#FF9900' }}
                         >
                           Edit Profile
                         </button>
@@ -185,46 +253,84 @@ export default function Users() {
       {/* ── USER MODAL ───────────────────────────────────── */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <form onSubmit={handleSubmit} className="w-full max-w-md rounded-xl border border-ink-600 bg-ink-800 p-6 shadow-2xl">
-            <h3 className="text-base font-bold text-fg mb-4">{editingUser ? 'Edit Operator Profile' : 'Register New Staff Member'}</h3>
+          <form
+            onSubmit={handleSubmit}
+            className="w-full max-w-md rounded-2xl border p-6 shadow-2xl"
+            style={{
+              background: 'rgb(var(--s-800))',
+              borderColor: 'rgb(var(--s-600))',
+              boxShadow: 'var(--shadow-card)'
+            }}
+          >
+            <h3 className="text-base font-bold font-display mb-4" style={{ color: 'rgb(var(--fg))' }}>
+              {editingUser ? 'Edit Operator Profile' : 'Register New Staff Member'}
+            </h3>
             
-            <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Full Name</label>
+            <label className="block text-[10px] uppercase tracking-widest mb-1.5" style={{ color: 'rgb(var(--n-500))' }}>Full Name</label>
             <input 
               required
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. S. Prakash"
-              className="mb-4 w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm outline-none text-fg focus:border-argo-cyan"
+              className="mb-4 w-full rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+              style={{
+                border: '1px solid rgb(var(--s-500))',
+                background: 'rgb(var(--s-700))',
+                color: 'rgb(var(--n-200))',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+              onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
             />
 
-            <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Corporate Email Address</label>
+            <label className="block text-[10px] uppercase tracking-widest mb-1.5" style={{ color: 'rgb(var(--n-500))' }}>Corporate Email Address</label>
             <input 
               required
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="operator@kaynes.com"
-              className="mb-4 w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm outline-none text-fg font-mono focus:border-argo-cyan"
+              className="mb-4 w-full rounded-lg px-3 py-2 text-sm outline-none font-mono transition-colors"
+              style={{
+                border: '1px solid rgb(var(--s-500))',
+                background: 'rgb(var(--s-700))',
+                color: 'rgb(var(--n-200))',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+              onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
             />
 
-            <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Login Password</label>
+            <label className="block text-[10px] uppercase tracking-widest mb-1.5" style={{ color: 'rgb(var(--n-500))' }}>Login Password</label>
             <input 
               required
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="mb-4 w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm outline-none text-fg focus:border-argo-cyan"
+              className="mb-4 w-full rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+              style={{
+                border: '1px solid rgb(var(--s-500))',
+                background: 'rgb(var(--s-700))',
+                color: 'rgb(var(--n-200))',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+              onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
             />
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Platform Role</label>
+                <label className="block text-[10px] uppercase tracking-widest mb-1.5" style={{ color: 'rgb(var(--n-500))' }}>Platform Role</label>
                 <select 
                   value={role}
                   onChange={(e) => setRole(e.target.value as any)}
-                  className="w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm outline-none text-slate-300 focus:border-argo-cyan"
+                  className="w-full rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+                  style={{
+                    border: '1px solid rgb(var(--s-500))',
+                    background: 'rgb(var(--s-700))',
+                    color: 'rgb(var(--n-200))',
+                  }}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+                  onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                 >
                   <option value="admin">Admin</option>
                   <option value="inspector">QA Inspector</option>
@@ -232,11 +338,18 @@ export default function Users() {
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Account Status</label>
+                <label className="block text-[10px] uppercase tracking-widest mb-1.5" style={{ color: 'rgb(var(--n-500))' }}>Account Status</label>
                 <select 
                   value={status}
                   onChange={(e) => setStatus(e.target.value as any)}
-                  className="w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm outline-none text-slate-300 focus:border-argo-cyan"
+                  className="w-full rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+                  style={{
+                    border: '1px solid rgb(var(--s-500))',
+                    background: 'rgb(var(--s-700))',
+                    color: 'rgb(var(--n-200))',
+                  }}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+                  onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
@@ -246,11 +359,18 @@ export default function Users() {
 
             <div className="grid grid-cols-2 gap-4 mb-5">
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Tenant Account</label>
+                <label className="block text-[10px] uppercase tracking-widest mb-1.5" style={{ color: 'rgb(var(--n-500))' }}>Tenant Account</label>
                 <select 
                   value={tenantId}
                   onChange={(e) => setTenantId(e.target.value)}
-                  className="w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm outline-none text-slate-300 focus:border-argo-cyan"
+                  className="w-full rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+                  style={{
+                    border: '1px solid rgb(var(--s-500))',
+                    background: 'rgb(var(--s-700))',
+                    color: 'rgb(var(--n-200))',
+                  }}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+                  onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                 >
                   {tenants.map(t => (
                     <option key={t.id} value={t.id}>{t.name}</option>
@@ -258,11 +378,18 @@ export default function Users() {
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Plant Site</label>
+                <label className="block text-[10px] uppercase tracking-widest mb-1.5" style={{ color: 'rgb(var(--n-500))' }}>Plant Site</label>
                 <select 
                   value={plantId}
                   onChange={(e) => setPlantId(e.target.value)}
-                  className="w-full rounded-lg border border-ink-500 bg-ink-700 px-3 py-2 text-sm outline-none text-slate-300 focus:border-argo-cyan"
+                  className="w-full rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+                  style={{
+                    border: '1px solid rgb(var(--s-500))',
+                    background: 'rgb(var(--s-700))',
+                    color: 'rgb(var(--n-200))',
+                  }}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+                  onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                 >
                   <option value="none">Unassigned (Global)</option>
                   {plants.map(p => (
@@ -272,17 +399,31 @@ export default function Users() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 border-t border-ink-600 pt-4">
+            <div
+              className="flex justify-end gap-3 pt-4"
+              style={{ borderTop: '1px solid rgb(var(--s-600))' }}
+            >
               <button 
                 type="button" 
                 onClick={() => setShowModal(false)}
-                className="rounded-lg border border-ink-500 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-ink-700"
+                className="rounded-lg px-4 py-2 text-xs font-semibold transition-colors"
+                style={{
+                  border: '1px solid rgb(var(--s-500))',
+                  color: 'rgb(var(--n-300))',
+                  background: 'transparent',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgb(var(--s-700))')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 Cancel
               </button>
               <button 
                 type="submit"
-                className="rounded-lg bg-argo-cyan px-4 py-2 text-xs font-semibold text-ink-900 hover:brightness-110"
+                className="rounded-lg px-4 py-2 text-xs font-semibold hover:brightness-110 transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                  color: '#0D0F15',
+                }}
               >
                 {editingUser ? 'Save Operator Changes' : 'Confirm Registration'}
               </button>

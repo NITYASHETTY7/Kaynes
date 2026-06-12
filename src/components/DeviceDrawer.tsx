@@ -50,13 +50,19 @@ function MetricCard({
   children: React.ReactNode
 }) {
   return (
-    <div className="rounded-xl border border-ink-600 bg-ink-800/60 p-4">
+    <div
+      className="rounded-xl p-4"
+      style={{ border: '1px solid rgb(var(--s-600))', background: 'rgb(var(--s-800))' }}
+    >
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-ink-700 text-[11px] text-argo-cyan">
+          <span
+            className="flex h-5 w-5 items-center justify-center rounded-full text-[11px]"
+            style={{ background: 'rgb(var(--s-700))', color: '#38bdf8' }}
+          >
             {index}
           </span>
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgb(var(--n-500))' }}>{title}</h4>
         </div>
         {action}
       </div>
@@ -182,51 +188,89 @@ export default function DeviceDrawer({
   return (
     <>
       <div className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="fixed right-0 top-0 z-40 flex h-full w-full max-w-lg animate-slideIn flex-col border-l border-ink-600 bg-ink-900 shadow-2xl">
+      <div
+        className="fixed right-0 top-0 z-40 flex h-full w-full max-w-lg animate-slideIn flex-col shadow-2xl"
+        style={{ borderLeft: '1px solid rgb(var(--s-600))', background: 'rgb(var(--s-base))' }}
+      >
         {/* header */}
-        <div className="flex items-start justify-between border-b border-ink-600 p-5">
+        <div
+          className="flex items-start justify-between p-5"
+          style={{ borderBottom: '1px solid rgb(var(--s-600))' }}
+        >
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: color }} />
               {editing ? (
                 <div className="flex-1 space-y-3 pr-4">
                   <div>
-                    <label className="block text-[9px] uppercase tracking-widest text-slate-500 font-bold mb-1">Device Alias</label>
+                    <label
+                      className="block text-[9px] uppercase tracking-widest font-bold mb-1"
+                      style={{ color: 'rgb(var(--n-500))' }}
+                    >Device Alias</label>
                     <input
                       autoFocus
                       value={draftName}
                       onChange={(e) => setDraftName(e.target.value)}
-                      className="w-full rounded border border-[#185FA5] bg-ink-700 px-2 py-1 text-sm font-semibold text-fg outline-none"
+                      className="w-full rounded px-2 py-1 text-sm font-semibold outline-none"
+                      style={{
+                        border: '1px solid #FF9900',
+                        background: 'rgb(var(--s-700))',
+                        color: 'rgb(var(--fg))',
+                      }}
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[9px] uppercase tracking-widest text-slate-500 font-bold mb-1">Site/Plant</label>
+                      <label
+                        className="block text-[9px] uppercase tracking-widest font-bold mb-1"
+                        style={{ color: 'rgb(var(--n-500))' }}
+                      >Site/Plant</label>
                       <input
                         value={draftSite}
                         onChange={(e) => setDraftSite(e.target.value)}
-                        className="w-full rounded border border-ink-600 bg-ink-700 px-2 py-1 text-xs text-slate-200 outline-none"
+                        className="w-full rounded px-2 py-1 text-xs outline-none"
+                        style={{
+                          border: '1px solid rgb(var(--s-600))',
+                          background: 'rgb(var(--s-700))',
+                          color: 'rgb(var(--n-200))',
+                        }}
                       />
                     </div>
                     <div>
-                      <label className="block text-[9px] uppercase tracking-widest text-slate-500 font-bold mb-1">Operator</label>
+                      <label
+                        className="block text-[9px] uppercase tracking-widest font-bold mb-1"
+                        style={{ color: 'rgb(var(--n-500))' }}
+                      >Operator</label>
                       <input
                         value={draftOperator}
                         onChange={(e) => setDraftOperator(e.target.value)}
-                        className="w-full rounded border border-ink-600 bg-ink-700 px-2 py-1 text-xs text-slate-200 outline-none"
+                        className="w-full rounded px-2 py-1 text-xs outline-none"
+                        style={{
+                          border: '1px solid rgb(var(--s-600))',
+                          background: 'rgb(var(--s-700))',
+                          color: 'rgb(var(--n-200))',
+                        }}
                       />
                     </div>
                   </div>
                   <div className="flex gap-2 pt-1">
-                    <button 
-                      onClick={saveMetadata} 
-                      className="rounded bg-[#185FA5] px-3 py-1 text-[11px] font-bold text-white shadow-sm hover:brightness-110"
+                    <button
+                      onClick={saveMetadata}
+                      className="rounded px-3 py-1 text-[11px] font-bold shadow-sm hover:brightness-110"
+                      style={{
+                        background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                        color: '#0D0F15',
+                        boxShadow: '0 4px 14px rgba(255,153,0,0.3)',
+                      }}
                     >
                       Save Changes
                     </button>
-                    <button 
-                      onClick={() => setEditing(false)} 
-                      className="text-[11px] text-slate-500 hover:text-slate-300"
+                    <button
+                      onClick={() => setEditing(false)}
+                      className="text-[11px] transition-colors"
+                      style={{ color: 'rgb(var(--n-500))' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'rgb(var(--n-300))')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'rgb(var(--n-500))')}
                     >
                       Cancel
                     </button>
@@ -235,18 +279,21 @@ export default function DeviceDrawer({
               ) : (
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h2 className="truncate text-lg font-semibold text-fg">{d.name}</h2>
+                    <h2 className="truncate text-lg font-semibold" style={{ color: 'rgb(var(--fg))' }}>{d.name}</h2>
                     {isAdmin && (
                       <button
                         onClick={() => setEditing(true)}
-                        className="text-slate-500 hover:text-argo-cyan transition-colors"
+                        className="transition-colors"
+                        style={{ color: 'rgb(var(--n-500))' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#38bdf8')}
+                        onMouseLeave={e => (e.currentTarget.style.color = 'rgb(var(--n-500))')}
                         title="Edit metadata"
                       >
                         ✎
                       </button>
                     )}
                   </div>
-                  <p className="mt-0.5 font-mono text-xs text-slate-500">
+                  <p className="mt-0.5 font-mono text-xs" style={{ color: 'rgb(var(--n-500))' }}>
                     {d.serial} · {d.site} · {d.operator}
                   </p>
                 </div>
@@ -263,7 +310,16 @@ export default function DeviceDrawer({
           </div>
           <button
             onClick={onClose}
-            className="rounded-md p-1.5 text-slate-400 hover:bg-ink-700 hover:text-fg"
+            className="rounded-md p-1.5 transition-colors"
+            style={{ color: 'rgb(var(--n-500))' }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgb(var(--s-700))';
+              e.currentTarget.style.color = 'rgb(var(--fg))';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'rgb(var(--n-500))';
+            }}
             aria-label="Close"
           >
             ✕
@@ -282,8 +338,11 @@ export default function DeviceDrawer({
                 <span className="animate-pulse">●</span>{' '}
                 {d.status === 'critical' ? 'Critical Alert' : 'Attention'}
               </div>
-              <p className="mt-1.5 text-sm leading-snug text-slate-200/90">{d.forecast.alertText}</p>
-              <p className="mt-2 rounded-md bg-ink-900/50 px-2 py-1.5 text-[11px] text-slate-300">
+              <p className="mt-1.5 text-sm leading-snug" style={{ color: 'rgb(var(--n-200))' }}>{d.forecast.alertText}</p>
+              <p
+                className="mt-2 rounded-md px-2 py-1.5 text-[11px]"
+                style={{ background: 'rgba(var(--s-base),0.5)', color: 'rgb(var(--n-300))' }}
+              >
                 ⚡ An SNS notification would be dispatched to on-call operators (production).
               </p>
             </div>
@@ -311,10 +370,10 @@ export default function DeviceDrawer({
             </div>
             {d.connection !== 'Offline' && (
               <div className="mt-3">
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink-700">
+                <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: 'rgb(var(--s-700))' }}>
                   <div
-                    className="h-full rounded-full bg-argo-cyan"
-                    style={{ width: `${d.signal}%` }}
+                    className="h-full rounded-full"
+                    style={{ width: `${d.signal}%`, background: '#38bdf8' }}
                   />
                 </div>
               </div>
@@ -324,9 +383,9 @@ export default function DeviceDrawer({
           {/* 3. Storage */}
           <MetricCard index={3} title="On-device Storage">
             <div className="mb-1 flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-fg">
+              <span className="text-2xl font-bold" style={{ color: 'rgb(var(--fg))' }}>
                 {d.storageUsedGb}
-                <span className="text-base font-normal text-slate-400"> / {d.storageTotalGb} GB</span>
+                <span className="text-base font-normal" style={{ color: 'rgb(var(--n-500))' }}> / {d.storageTotalGb} GB</span>
               </span>
               <span
                 className="tabular-nums text-sm"
@@ -335,7 +394,7 @@ export default function DeviceDrawer({
                 {storagePct(d)}%
               </span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-ink-700">
+            <div className="h-2 w-full overflow-hidden rounded-full" style={{ background: 'rgb(var(--s-700))' }}>
               <div
                 className="h-full rounded-full"
                 style={{
@@ -349,7 +408,7 @@ export default function DeviceDrawer({
           {/* 4. Battery history */}
           <MetricCard index={4} title="Battery History (last 12 readings)">
             <Sparkline data={d.historicalBattery} color={batteryColor(d.battery)} />
-            <div className="mt-1 flex justify-between text-[11px] text-slate-500">
+            <div className="mt-1 flex justify-between text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>
               <span>earliest</span>
               <span>now · {d.battery}%</span>
             </div>
@@ -361,26 +420,45 @@ export default function DeviceDrawer({
             title="Firmware"
             action={
               needsFirmwareUpdate(d) ? (
-                <span className="rounded-full bg-argo-amber/15 px-2 py-0.5 text-[11px] font-medium text-argo-amber">
+                <span
+                  className="rounded-full px-2 py-0.5 text-[11px] font-medium"
+                  style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24' }}
+                >
                   update available
                 </span>
               ) : (
-                <span className="rounded-full bg-argo-green/15 px-2 py-0.5 text-[11px] font-medium text-argo-green">
+                <span
+                  className="rounded-full px-2 py-0.5 text-[11px] font-medium"
+                  style={{ background: 'rgba(52,211,153,0.15)', color: '#34d399' }}
+                >
                   up to date
                 </span>
               )
             }
           >
             <div className="flex items-center justify-between text-sm">
-              <span className="font-mono text-slate-300">{d.firmware}</span>
+              <span className="font-mono" style={{ color: 'rgb(var(--n-300))' }}>{d.firmware}</span>
               {needsFirmwareUpdate(d) && (
-                <span className="text-[11px] text-slate-500">→ {FIRMWARE_LATEST}</span>
+                <span className="text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>→ {FIRMWARE_LATEST}</span>
               )}
             </div>
             {isAdmin && needsFirmwareUpdate(d) && (
               <button
                 onClick={handleOTAUpdate}
-                className="mt-3 w-full rounded-lg border border-ink-500 bg-ink-700 py-2 text-xs font-medium text-slate-200 hover:border-argo-cyan hover:text-fg"
+                className="mt-3 w-full rounded-lg py-2 text-xs font-medium transition-colors"
+                style={{
+                  border: '1px solid rgb(var(--s-500))',
+                  background: 'rgb(var(--s-700))',
+                  color: 'rgb(var(--n-200))',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = '#38bdf8';
+                  e.currentTarget.style.color = 'rgb(var(--fg))';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'rgb(var(--s-500))';
+                  e.currentTarget.style.color = 'rgb(var(--n-200))';
+                }}
               >
                 Push OTA update
               </button>
@@ -393,13 +471,14 @@ export default function DeviceDrawer({
             title={`Captured Media (${d.captures.length})`}
           >
             {d.captures.length === 0 ? (
-              <p className="text-xs text-slate-500">No captures stored on this device.</p>
+              <p className="text-xs" style={{ color: 'rgb(var(--n-500))' }}>No captures stored on this device.</p>
             ) : (
               <div className="space-y-2.5">
                 {d.captures.map((m) => (
                   <div
                     key={m.id}
-                    className="flex gap-3 rounded-lg border border-ink-600 bg-ink-900/40 p-2"
+                    className="flex gap-3 rounded-lg p-2"
+                    style={{ border: '1px solid rgb(var(--s-600))', background: 'rgba(var(--s-base),0.4)' }}
                   >
                     <CaptureThumb 
                       item={m} 
@@ -408,15 +487,16 @@ export default function DeviceDrawer({
                       onImageClick={() => setViewer({ isOpen: true, item: m })}
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm text-slate-200">{m.label}</div>
-                      <div className="text-[11px] text-slate-500">
+                      <div className="truncate text-sm" style={{ color: 'rgb(var(--n-200))' }}>{m.label}</div>
+                      <div className="text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>
                         Image · {m.sizeMb} MB · {m.capturedAt}
                       </div>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {m.tags.map((t) => (
                           <span
                             key={t}
-                            className="rounded bg-argo-violet/15 px-1.5 py-0.5 text-[10px] text-argo-violet"
+                            className="rounded px-1.5 py-0.5 text-[10px]"
+                            style={{ background: 'rgba(167,139,250,0.15)', color: '#a78bfa' }}
                           >
                             {t}
                           </span>
@@ -427,13 +507,31 @@ export default function DeviceDrawer({
                       <div className="flex flex-col justify-center gap-1.5">
                         <button
                           onClick={() => download(m)}
-                          className="rounded border border-ink-500 px-2 py-1 text-[11px] text-slate-300 hover:border-argo-cyan hover:text-fg"
+                          className="rounded px-2 py-1 text-[11px] transition-colors"
+                          style={{ border: '1px solid rgb(var(--s-500))', color: 'rgb(var(--n-300))' }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.borderColor = '#38bdf8';
+                            e.currentTarget.style.color = 'rgb(var(--fg))';
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.borderColor = 'rgb(var(--s-500))';
+                            e.currentTarget.style.color = 'rgb(var(--n-300))';
+                          }}
                         >
                           ↓
                         </button>
                         <button
                           onClick={() => remove(m)}
-                          className="rounded border border-ink-500 px-2 py-1 text-[11px] text-slate-300 hover:border-argo-red hover:text-argo-red"
+                          className="rounded px-2 py-1 text-[11px] transition-colors"
+                          style={{ border: '1px solid rgb(var(--s-500))', color: 'rgb(var(--n-300))' }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.borderColor = '#f87171';
+                            e.currentTarget.style.color = '#f87171';
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.borderColor = 'rgb(var(--s-500))';
+                            e.currentTarget.style.color = 'rgb(var(--n-300))';
+                          }}
                         >
                           🗑
                         </button>
@@ -443,39 +541,43 @@ export default function DeviceDrawer({
                 ))}
               </div>
             )}
-            <p className="mt-2 text-[10px] text-slate-600">
+            <p className="mt-2 text-[10px]" style={{ color: 'rgb(var(--n-500))' }}>
               Captures feed the future AI/ML training set — stored in Amazon S3 in production.
             </p>
           </MetricCard>
 
           {/* 7. AI diagnostic */}
-          <div className="rounded-xl border border-argo-cyan/30 bg-argo-cyan/[0.04] p-4">
+          <div
+            className="rounded-xl p-4"
+            style={{ border: '1px solid rgba(56,189,248,0.3)', background: 'rgba(56,189,248,0.04)' }}
+          >
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-argo-cyan">
+              <h4 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#38bdf8' }}>
                 ✦ AI Device Diagnostic
               </h4>
               <button
                 onClick={runDiagnostic}
                 disabled={loading}
-                className="rounded-md bg-argo-cyan px-3 py-1.5 text-xs font-semibold text-ink-900 hover:brightness-110 disabled:opacity-50"
+                className="rounded-md px-3 py-1.5 text-xs font-semibold hover:brightness-110 disabled:opacity-50"
+                style={{ background: '#38bdf8', color: 'rgb(var(--s-base))' }}
               >
                 {loading ? 'Analysing…' : diag ? 'Re-run' : 'Run analysis'}
               </button>
             </div>
             {diag ? (
               <div className="mt-3 space-y-2 text-sm">
-                <div className="font-medium text-fg">{diag.headline}</div>
-                <p className="leading-snug text-slate-300">{diag.summary}</p>
-                <p className="text-xs text-slate-400">
-                  <span className="text-slate-500">Root cause: </span>
+                <div className="font-medium" style={{ color: 'rgb(var(--fg))' }}>{diag.headline}</div>
+                <p className="leading-snug" style={{ color: 'rgb(var(--n-300))' }}>{diag.summary}</p>
+                <p className="text-xs" style={{ color: 'rgb(var(--n-500))' }}>
+                  <span style={{ color: 'rgb(var(--n-500))' }}>Root cause: </span>
                   {diag.rootCause}
                 </p>
-                <ul className="list-disc space-y-0.5 pl-5 text-xs text-slate-300">
+                <ul className="list-disc space-y-0.5 pl-5 text-xs" style={{ color: 'rgb(var(--n-300))' }}>
                   {diag.actions.map((a, i) => (
                     <li key={i}>{a}</li>
                   ))}
                 </ul>
-                <div className="text-[11px] text-slate-500">
+                <div className="text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>
                   {diag.confidence}% confidence ·{' '}
                   <span className="font-mono">
                     {diag.source === 'gemini' ? 'live model' : 'on-device model'}
@@ -484,7 +586,7 @@ export default function DeviceDrawer({
               </div>
             ) : (
               !loading && (
-                <p className="mt-2 text-[11px] text-slate-500">
+                <p className="mt-2 text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>
                   Routes through the secure serverless layer (any API key stays server-side).
                 </p>
               )
@@ -494,7 +596,15 @@ export default function DeviceDrawer({
 
         {/* toast */}
         {toast && (
-          <div className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 animate-fadeIn rounded-lg bg-ink-700 px-4 py-2 text-xs text-slate-100 shadow-lg ring-1 ring-ink-500">
+          <div
+            className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 animate-fadeIn rounded-lg px-4 py-2 text-xs shadow-lg"
+            style={{
+              background: 'rgb(var(--s-700))',
+              color: 'rgb(var(--n-200))',
+              boxShadow: 'var(--shadow-card)',
+              outline: '1px solid rgb(var(--s-500))',
+            }}
+          >
             {toast}
           </div>
         )}
@@ -514,8 +624,11 @@ export default function DeviceDrawer({
 function Row({ label, value, warn }: { label: string; value: string; warn?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <span className="text-[11px] uppercase tracking-wider text-slate-500">{label}</span>
-      <span className={`tabular-nums ${warn ? 'text-argo-red' : 'text-slate-200'}`}>{value}</span>
+      <span className="text-[11px] uppercase tracking-wider" style={{ color: 'rgb(var(--n-500))' }}>{label}</span>
+      <span
+        className="tabular-nums"
+        style={{ color: warn ? '#f87171' : 'rgb(var(--n-200))' }}
+      >{value}</span>
     </div>
   )
 }

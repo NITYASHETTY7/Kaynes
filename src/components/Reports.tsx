@@ -83,13 +83,16 @@ export default function Reports() {
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-ink-900 p-6 text-slate-200 print:bg-white print:text-black">
+    <div
+      className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8 print:bg-white print:text-black"
+      style={{ background: 'rgb(var(--s-base))', color: 'rgb(var(--fg))' }}
+    >
       
       {/* Header */}
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center print:hidden">
         <div>
-          <h1 className="text-xl font-bold text-fg">Platform Diagnostic Reports</h1>
-          <p className="text-xs text-slate-400">Compile industrial assets telemetry logs, fleet battery wear models, and AI defects audit reports.</p>
+          <h1 className="text-xl font-bold font-display" style={{ color: 'rgb(var(--fg))' }}>Platform Diagnostic Reports</h1>
+          <p className="text-xs" style={{ color: 'rgb(var(--n-400))' }}>Compile industrial assets telemetry logs, fleet battery wear models, and AI defects audit reports.</p>
         </div>
       </div>
 
@@ -97,15 +100,39 @@ export default function Reports() {
         
         {/* Controls Column (Left, Hidden in print) */}
         <div className="space-y-6 lg:col-span-1 print:hidden">
-          <div className="rounded-xl border border-ink-600 bg-ink-800 p-5 space-y-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Configure Export</h3>
+          <div
+            className="rounded-2xl border p-5 space-y-4"
+            style={{
+              background: 'rgb(var(--s-800))',
+              borderColor: 'rgb(var(--s-600))',
+              boxShadow: 'var(--shadow-card)'
+            }}
+          >
+            <h3
+              className="text-[10px] font-semibold uppercase tracking-widest"
+              style={{ color: 'rgb(var(--n-500))' }}
+            >
+              Configure Export
+            </h3>
             
             <div>
-              <label className="block text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Select Report Type</label>
+              <label
+                className="block text-[10px] uppercase tracking-widest mb-1.5"
+                style={{ color: 'rgb(var(--n-500))' }}
+              >
+                Select Report Type
+              </label>
               <select
                 value={reportType}
                 onChange={(e) => setReportType(e.target.value as any)}
-                className="w-full rounded-md border border-ink-500 bg-ink-700 px-3 py-2 text-xs outline-none text-slate-300 focus:border-argo-cyan"
+                className="w-full rounded-md px-3 py-2 text-xs outline-none transition-colors"
+                style={{
+                  border: '1px solid rgb(var(--s-500))',
+                  background: 'rgb(var(--s-700))',
+                  color: 'rgb(var(--n-200))',
+                }}
+                onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+                onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
               >
                 <option value="assets">Asset Health Summary</option>
                 <option value="devices">Connected Device Telemetry</option>
@@ -114,17 +141,29 @@ export default function Reports() {
               </select>
             </div>
 
-            <div className="space-y-2 pt-2 border-t border-ink-600/50">
+            <div
+              className="space-y-2 pt-2"
+              style={{ borderTop: '1px solid rgba(var(--s-600), 0.5)' }}
+            >
               <button 
                 onClick={handleExportCSV}
                 disabled={isExporting}
-                className="w-full rounded-lg border border-ink-500 bg-ink-700 hover:text-fg py-2 text-xs font-semibold text-slate-300 disabled:opacity-40"
+                className="w-full rounded-lg py-2 text-xs font-semibold disabled:opacity-40 transition-colors"
+                style={{
+                  border: '1px solid rgb(var(--s-500))',
+                  background: 'rgb(var(--s-700))',
+                  color: 'rgb(var(--n-200))',
+                }}
               >
                 {isExporting ? 'Compiling CSV...' : '📊 Export to Excel / CSV'}
               </button>
               <button 
                 onClick={handlePrintPDF}
-                className="w-full rounded-lg bg-argo-cyan py-2 text-xs font-semibold text-ink-900 hover:brightness-110"
+                className="w-full rounded-lg py-2 text-xs font-semibold hover:brightness-110 transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                  color: '#0D0F15',
+                }}
               >
                 🖨 Generate Print PDF
               </button>
@@ -133,44 +172,57 @@ export default function Reports() {
         </div>
 
         {/* Report Preview Column (Right, Full width in print) */}
-        <div className="lg:col-span-3 rounded-xl border border-ink-600 bg-ink-800 p-8 print:border-none print:bg-white print:p-0">
+        <div
+          className="lg:col-span-3 rounded-2xl border p-8 print:border-none print:bg-white print:p-0"
+          style={{
+            background: 'rgb(var(--s-800))',
+            borderColor: 'rgb(var(--s-600))',
+            boxShadow: 'var(--shadow-card)'
+          }}
+        >
           
           {/* Print Header */}
-          <div className="border-b-2 border-ink-600/50 pb-5 mb-6 flex justify-between items-start">
+          <div
+            className="pb-5 mb-6 flex justify-between items-start"
+            style={{ borderBottom: '2px solid rgba(var(--s-600), 0.5)' }}
+          >
             <div>
-              <div className="text-[10px] uppercase tracking-wider text-argo-cyan font-bold font-mono">Kaynes Technology Limited</div>
-              <h2 className="text-lg font-bold text-fg print:text-black mt-1 capitalize">{reportType} Diagnostic Report</h2>
-              <p className="text-[10px] text-slate-500 mt-1">Generated: {new Date().toLocaleString()} · Target: Fleet Systems Console</p>
+              <div className="text-[10px] uppercase tracking-wider font-bold font-mono" style={{ color: '#FF9900' }}>Kaynes Technology Limited</div>
+              <h2 className="text-lg font-bold font-display print:text-black mt-1 capitalize" style={{ color: 'rgb(var(--fg))' }}>{reportType} Diagnostic Report</h2>
+              <p className="text-[10px] mt-1" style={{ color: 'rgb(var(--n-500))' }}>Generated: {new Date().toLocaleString()} · Target: Fleet Systems Console</p>
             </div>
             <div className="text-right">
-              <div className="text-xs font-semibold text-slate-400 font-mono">CONFIDENTIAL</div>
-              <div className="text-[9px] text-slate-500 mt-1">SECURE AUDIT WINDOW</div>
+              <div className="text-xs font-semibold font-mono" style={{ color: 'rgb(var(--n-400))' }}>CONFIDENTIAL</div>
+              <div className="text-[9px] mt-1" style={{ color: 'rgb(var(--n-500))' }}>SECURE AUDIT WINDOW</div>
             </div>
           </div>
 
           {/* Asset Report Preview */}
           {reportType === 'assets' && (
             <div className="space-y-6">
-              <p className="text-xs text-slate-400 print:text-slate-600 leading-relaxed">This report summarizes the operational health metrics of registered physical assets currently active across all physical facility locations. Defect rates are derived from active AI optical inspection models.</p>
+              <p className="text-xs print:text-slate-600 leading-relaxed" style={{ color: 'rgb(var(--n-400))' }}>This report summarizes the operational health metrics of registered physical assets currently active across all physical facility locations. Defect rates are derived from active AI optical inspection models.</p>
               
-              <table className="w-full text-left text-xs text-slate-300 print:text-black">
+              <table className="w-full text-left text-xs print:text-black">
                 <thead>
-                  <tr className="border-b border-ink-600 text-slate-500 font-bold">
-                    <th className="py-2.5">Asset Name</th>
-                    <th className="py-2.5">Serial</th>
-                    <th className="py-2.5 text-center">Health score</th>
-                    <th className="py-2.5">Status</th>
-                    <th className="py-2.5 text-right">Last Serviced</th>
+                  <tr style={{ borderBottom: '1px solid rgb(var(--s-600))' }}>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Asset Name</th>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Serial</th>
+                    <th className="py-2.5 text-center font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Health score</th>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Status</th>
+                    <th className="py-2.5 text-right font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Last Serviced</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-ink-600/30">
+                <tbody>
                   {assets.map(a => (
-                    <tr key={a.id}>
-                      <td className="py-3 font-semibold text-fg print:text-black">{a.name}</td>
-                      <td className="py-3 font-mono text-slate-400">{a.serialNumber}</td>
-                      <td className="py-3 text-center font-mono text-argo-cyan font-bold">{a.healthScore}%</td>
-                      <td className="py-3 capitalize font-semibold">{a.status}</td>
-                      <td className="py-3 text-right font-mono text-[11px] text-slate-500">{a.lastServiced}</td>
+                    <tr key={a.id} style={{ borderTop: '1px solid rgb(var(--s-600))' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgb(var(--s-700))')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <td className="py-3 font-semibold print:text-black" style={{ color: 'rgb(var(--fg))' }}>{a.name}</td>
+                      <td className="py-3 font-mono" style={{ color: 'rgb(var(--n-400))' }}>{a.serialNumber}</td>
+                      <td className="py-3 text-center font-mono font-bold" style={{ color: '#FF9900' }}>{a.healthScore}%</td>
+                      <td className="py-3 capitalize font-semibold" style={{ color: 'rgb(var(--n-200))' }}>{a.status}</td>
+                      <td className="py-3 text-right font-mono text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>{a.lastServiced}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -181,28 +233,31 @@ export default function Reports() {
           {/* Devices Telemetry Report Preview */}
           {reportType === 'devices' && (
             <div className="space-y-6">
-              <p className="text-xs text-slate-400 print:text-slate-600 leading-relaxed">Real-time telemetry and network diagnostic output of the active smart glasses fleet. Status is evaluated via active device ping heartbeats and local storage capacity thresholds.</p>
+              <p className="text-xs print:text-slate-600 leading-relaxed" style={{ color: 'rgb(var(--n-400))' }}>Real-time telemetry and network diagnostic output of the active smart glasses fleet. Status is evaluated via active device ping heartbeats and local storage capacity thresholds.</p>
               
-              <table className="w-full text-left text-xs text-slate-300 print:text-black">
+              <table className="w-full text-left text-xs print:text-black">
                 <thead>
-                  <tr className="border-b border-ink-600 text-slate-500 font-bold">
-                    <th className="py-2.5">Glasses Tag Name</th>
-                    <th className="py-2.5">Serial</th>
-                    <th className="py-2.5">Assigned Facility</th>
-                    <th className="py-2.5 text-center">Battery</th>
-                    <th className="py-2.5">Connection</th>
-                    <th className="py-2.5 text-right">Status</th>
+                  <tr style={{ borderBottom: '1px solid rgb(var(--s-600))' }}>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Glasses Tag Name</th>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Serial</th>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Assigned Facility</th>
+                    <th className="py-2.5 text-center font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Battery</th>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Connection</th>
+                    <th className="py-2.5 text-right font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-ink-600/30">
+                <tbody>
                   {devices.map(d => (
-                    <tr key={d.id}>
-                      <td className="py-3 font-semibold text-fg print:text-black">{d.name}</td>
-                      <td className="py-3 font-mono text-slate-400">{d.serial}</td>
-                      <td className="py-3 text-slate-400">{d.site}</td>
-                      <td className="py-3 text-center font-mono text-argo-cyan font-bold">{d.battery}%</td>
-                      <td className="py-3">{d.connection}</td>
-                      <td className="py-3 text-right capitalize font-semibold">{d.status}</td>
+                    <tr key={d.id} style={{ borderTop: '1px solid rgb(var(--s-600))' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgb(var(--s-700))')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <td className="py-3 font-semibold print:text-black" style={{ color: 'rgb(var(--fg))' }}>{d.name}</td>
+                      <td className="py-3 font-mono" style={{ color: 'rgb(var(--n-400))' }}>{d.serial}</td>
+                      <td className="py-3" style={{ color: 'rgb(var(--n-400))' }}>{d.site}</td>
+                      <td className="py-3 text-center font-mono font-bold" style={{ color: '#FF9900' }}>{d.battery}%</td>
+                      <td className="py-3" style={{ color: 'rgb(var(--n-300))' }}>{d.connection}</td>
+                      <td className="py-3 text-right capitalize font-semibold" style={{ color: 'rgb(var(--n-200))' }}>{d.status}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -213,26 +268,29 @@ export default function Reports() {
           {/* AI Defect Inference Report Preview */}
           {reportType === 'ai' && (
             <div className="space-y-6">
-              <p className="text-xs text-slate-400 print:text-slate-600 leading-relaxed">Comprehensive audit log of convolutional defect classification output results. Bounding boxes are drawn for solder joint bridge faults and surface fractures.</p>
+              <p className="text-xs print:text-slate-600 leading-relaxed" style={{ color: 'rgb(var(--n-400))' }}>Comprehensive audit log of convolutional defect classification output results. Bounding boxes are drawn for solder joint bridge faults and surface fractures.</p>
               
-              <table className="w-full text-left text-xs text-slate-300 print:text-black">
+              <table className="w-full text-left text-xs print:text-black">
                 <thead>
-                  <tr className="border-b border-ink-600 text-slate-500 font-bold">
-                    <th className="py-2.5">Inference Classification</th>
-                    <th className="py-2.5 text-center">Confidence</th>
-                    <th className="py-2.5">Defect detected</th>
-                    <th className="py-2.5">Severity</th>
-                    <th className="py-2.5 text-right">Execution Date</th>
+                  <tr style={{ borderBottom: '1px solid rgb(var(--s-600))' }}>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Inference Classification</th>
+                    <th className="py-2.5 text-center font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Confidence</th>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Defect detected</th>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Severity</th>
+                    <th className="py-2.5 text-right font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Execution Date</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-ink-600/30">
+                <tbody>
                   {aiResults.map(res => (
-                    <tr key={res.id}>
-                      <td className="py-3 font-semibold text-fg print:text-black">{res.classification}</td>
-                      <td className="py-3 text-center font-mono text-argo-cyan font-bold">{res.confidence}%</td>
-                      <td className="py-3 font-semibold">{res.defectDetected ? '⚠️ TRUE' : '✓ FALSE'}</td>
-                      <td className="py-3 capitalize">{res.severity}</td>
-                      <td className="py-3 text-right font-mono text-[11px] text-slate-500">{new Date(res.created_at).toLocaleDateString()}</td>
+                    <tr key={res.id} style={{ borderTop: '1px solid rgb(var(--s-600))' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgb(var(--s-700))')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <td className="py-3 font-semibold print:text-black" style={{ color: 'rgb(var(--fg))' }}>{res.classification}</td>
+                      <td className="py-3 text-center font-mono font-bold" style={{ color: '#FF9900' }}>{res.confidence}%</td>
+                      <td className="py-3 font-semibold" style={{ color: 'rgb(var(--n-200))' }}>{res.defectDetected ? '⚠️ TRUE' : '✓ FALSE'}</td>
+                      <td className="py-3 capitalize" style={{ color: 'rgb(var(--n-300))' }}>{res.severity}</td>
+                      <td className="py-3 text-right font-mono text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>{new Date(res.created_at).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -243,24 +301,27 @@ export default function Reports() {
           {/* Plant metrics Report Preview */}
           {reportType === 'plants' && (
             <div className="space-y-6">
-              <p className="text-xs text-slate-400 print:text-slate-600 leading-relaxed font-medium">Facility output capacity, supervisor assignments, and operational geo-location indexing for certified Kaynes plants.</p>
+              <p className="text-xs print:text-slate-600 leading-relaxed font-medium" style={{ color: 'rgb(var(--n-400))' }}>Facility output capacity, supervisor assignments, and operational geo-location indexing for certified Kaynes plants.</p>
               
-              <table className="w-full text-left text-xs text-slate-300 print:text-black">
+              <table className="w-full text-left text-xs print:text-black">
                 <thead>
-                  <tr className="border-b border-ink-600 text-slate-500 font-bold">
-                    <th className="py-2.5">Plant Facility</th>
-                    <th className="py-2.5">Location</th>
-                    <th className="py-2.5">Managing Supervisor</th>
-                    <th className="py-2.5 text-right">Capacity Units</th>
+                  <tr style={{ borderBottom: '1px solid rgb(var(--s-600))' }}>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Plant Facility</th>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Location</th>
+                    <th className="py-2.5 font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Managing Supervisor</th>
+                    <th className="py-2.5 text-right font-semibold" style={{ color: 'rgb(var(--n-500))' }}>Capacity Units</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-ink-600/30">
+                <tbody>
                   {plants.map(p => (
-                    <tr key={p.id}>
-                      <td className="py-3 font-semibold text-fg print:text-black">{p.name}</td>
-                      <td className="py-3 text-slate-400">{p.location}</td>
-                      <td className="py-3 text-slate-300 font-medium">{p.manager}</td>
-                      <td className="py-3 text-right font-mono font-bold text-argo-cyan">{p.capacity}</td>
+                    <tr key={p.id} style={{ borderTop: '1px solid rgb(var(--s-600))' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgb(var(--s-700))')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <td className="py-3 font-semibold print:text-black" style={{ color: 'rgb(var(--fg))' }}>{p.name}</td>
+                      <td className="py-3" style={{ color: 'rgb(var(--n-400))' }}>{p.location}</td>
+                      <td className="py-3 font-medium" style={{ color: 'rgb(var(--n-300))' }}>{p.manager}</td>
+                      <td className="py-3 text-right font-mono font-bold" style={{ color: '#FF9900' }}>{p.capacity}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -269,13 +330,24 @@ export default function Reports() {
           )}
 
           {/* Diagnostic Disclaimer / Signature block */}
-          <div className="mt-12 pt-8 border-t-2 border-ink-600/40 grid grid-cols-2 gap-6 text-[10px] text-slate-500 print:text-slate-600">
+          <div
+            className="mt-12 pt-8 grid grid-cols-2 gap-6 text-[10px] print:text-slate-600"
+            style={{
+              borderTop: '2px solid rgba(var(--s-600), 0.4)',
+              color: 'rgb(var(--n-500))'
+            }}
+          >
             <div>
               <p className="leading-relaxed">This report is compile-generated from encrypted telemetry streams on physical assets. AI optical inspections are statistical models. Re-evaluate anomalous results in physical labs as required by standard SOPs.</p>
             </div>
             <div className="text-right flex flex-col justify-end items-end space-y-4">
-              <div className="border-b border-ink-600/40 w-36 pb-1">Approved Signature</div>
-              <div className="font-semibold text-fg print:text-black uppercase">Fleet Systems Director</div>
+              <div
+                className="w-36 pb-1"
+                style={{ borderBottom: '1px solid rgba(var(--s-600), 0.4)' }}
+              >
+                Approved Signature
+              </div>
+              <div className="font-semibold print:text-black uppercase" style={{ color: 'rgb(var(--fg))' }}>Fleet Systems Director</div>
             </div>
           </div>
 

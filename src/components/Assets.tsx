@@ -140,7 +140,7 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
   }, [activeAsset]);
 
   return (
-    <div className="flex h-full min-h-0 bg-ink-900 text-slate-200">
+    <div className="flex h-full min-h-0" style={{ background: 'rgb(var(--s-base))', color: 'rgb(var(--n-200))' }}>
       
       {/* ── Left column: Asset List ─────────────────────── */}
       <div className={`flex w-full flex-col border-r border-ink-600 bg-ink-800/40 lg:w-80 ${activeAsset ? 'hidden lg:flex' : 'flex'}`}>
@@ -217,7 +217,10 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
       </div>
 
       {/* ── Right Column: Asset Details ─────────────────── */}
-      <div className={`flex-1 flex-col min-h-0 bg-ink-900 ${activeAsset ? 'flex' : 'hidden lg:flex items-center justify-center'}`}>
+      <div
+        className={`flex-1 flex-col min-h-0 ${activeAsset ? 'flex' : 'hidden lg:flex items-center justify-center'}`}
+        style={{ background: 'rgb(var(--s-base))' }}
+      >
         {!activeAsset ? (
           <div className="text-center p-6 max-w-sm">
             <span className="text-4xl text-slate-600 block mb-3">📦</span>
@@ -225,7 +228,7 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
             <p className="text-xs text-slate-500 mt-1">Select an asset from the side explorer to view its diagnostic health log, timeline history, and mapped smart glasses.</p>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
             
             {/* Asset Header Info */}
             <div className="flex flex-col justify-between gap-4 border-b border-ink-600 pb-5 sm:flex-row sm:items-start mb-6">
