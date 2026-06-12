@@ -95,16 +95,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* Search Bar Center */}
-        <div className="hidden md:flex flex-1 max-w-md mx-8 relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
-          <input 
-            type="text" 
-            placeholder="Search..." 
-            className="w-full bg-slate-50 dark:bg-ink-900/50 border border-slate-200 dark:border-ink-600 rounded-lg pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:border-[#185FA5] transition-colors"
-          />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-mono">⌘K</span>
-        </div>
+        {/* Header Title Space (Centered) */}
+        <div className="flex-1" />
 
         {/* Right Header Panel */}
         <div className="flex items-center gap-4">

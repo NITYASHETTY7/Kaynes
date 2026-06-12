@@ -4,7 +4,6 @@ import { type Device, type MediaItem } from '../data/devices'
 import { getDeviceImageUrl } from '../lib/deviceImageMapper'
 import CaptureThumb from './CaptureThumb'
 import ImageViewer from './ImageViewer'
-import { getDeviceImageUrl } from '../lib/deviceImageMapper'
 
 interface Props {
   devices: Device[]
@@ -83,25 +82,6 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
   }
 
   const isAdmin = role === 'admin'
-
-  const handleDownload = async (item: MediaItem, deviceName: string) => {
-    flash(`Downloading "${item.label}"…`);
-    try {
-      const url = (item as any).url || getDeviceImageUrl(deviceName, item.seed, item.label);
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = objectUrl;
-      link.download = `${item.label.replace(/\s+/g, '_')}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(objectUrl);
-    } catch (err) {
-      flash(`Failed to download "${item.label}"`);
-    }
-  };
 
   return (
     <div className="h-full overflow-auto p-6">
@@ -206,11 +186,7 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
                   {isAdmin && (
                     <div className="flex gap-1.5">
                       <button
-<<<<<<< Updated upstream
-                        onClick={() => handleDownload(f.item, f.deviceName)}
-=======
                         onClick={() => download(f)}
->>>>>>> Stashed changes
                         className="rounded border border-ink-500 px-2 py-0.5 text-[11px] text-slate-300 hover:border-argo-cyan hover:text-fg"
                       >
                         ↓ Download

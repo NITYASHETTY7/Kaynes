@@ -44,15 +44,6 @@ export default function ImageViewer({ isOpen, item, deviceName, serial, onClose 
           </button>
         </div>
 
-<<<<<<< Updated upstream
-        {/* Image Content */}
-        <div className="flex flex-1 items-center justify-center overflow-hidden bg-black p-2 min-h-[300px]">
-          <img
-            src={(item as any).url || getDeviceImageUrl(deviceName, item.seed, item.label)}
-            alt={item.label}
-            className="max-h-full max-w-full rounded object-contain"
-          />
-=======
         {/* Media Content */}
         <div className="flex flex-1 items-center justify-center overflow-hidden bg-black min-h-[300px]">
           {item.kind === 'image' ? (
@@ -69,7 +60,6 @@ export default function ImageViewer({ isOpen, item, deviceName, serial, onClose 
               className="max-h-full max-w-full"
             />
           )}
->>>>>>> Stashed changes
         </div>
 
         {/* Metadata Footer */}

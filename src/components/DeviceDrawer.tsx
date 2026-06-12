@@ -11,7 +11,6 @@ import {
     storagePct,
 } from '../data/devices'
 import CaptureThumb from './CaptureThumb'
-import { getDeviceImageUrl } from '../lib/deviceImageMapper'
 import Gauge from './Gauge'
 import Sparkline from './Sparkline'
 import ImageViewer from './ImageViewer'
@@ -125,25 +124,6 @@ export default function DeviceDrawer({
     flash('Device metadata updated.');
   }
 
-<<<<<<< Updated upstream
-  async function download(item: MediaItem) {
-    flash(`Downloading "${item.label}"…`);
-    try {
-      const url = (item as any).url || getDeviceImageUrl(d.name, item.seed, item.label);
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = objectUrl;
-      link.download = `${item.label.replace(/\s+/g, '_')}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(objectUrl);
-    } catch (err) {
-      flash(`Failed to download "${item.label}"`);
-    }
-=======
   function download(item: MediaItem) {
     let mediaUrl = (item as any).url;
     if (!mediaUrl || mediaUrl.startsWith('blob:') && item.kind === 'video') {
@@ -169,7 +149,6 @@ export default function DeviceDrawer({
   function handleOTAUpdate() {
     updateFirmware(d.id);
     flash('Firmware update command sent to device.');
->>>>>>> Stashed changes
   }
 
   function remove(item: MediaItem) {
