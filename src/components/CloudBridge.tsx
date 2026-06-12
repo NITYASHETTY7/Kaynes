@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Radio, Database, Brain, Zap } from 'lucide-react';
+import { Radio, Database, Brain, Zap, type LucideIcon } from 'lucide-react';
 
 interface CloudService {
   name: string
@@ -8,7 +8,7 @@ interface CloudService {
   latency: string
   region: string
   description: string
-  icon: React.ElementType
+  icon: LucideIcon
   accentColor: string
 }
 

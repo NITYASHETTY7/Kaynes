@@ -187,7 +187,12 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
             }}
           >
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm"><stat.icon size={16} /></span>
+              <span className="text-sm">
+                {(() => {
+                  const Icon = stat.icon as React.ElementType;
+                  return <Icon size={16} />;
+                })()}
+              </span>
               <span
                 className="text-[9px] font-semibold uppercase tracking-widest"
                 style={{ color: 'rgb(var(--n-500))' }}
