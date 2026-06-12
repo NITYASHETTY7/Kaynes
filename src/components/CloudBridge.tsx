@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface CloudService {
   name: string
@@ -12,9 +12,9 @@ interface CloudService {
 }
 
 /* ── AWS cloud SVG icon ─────────────────────────────────────────────────── */
-function CloudIcon({ className }: { className?: string }) {
+function CloudIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg className={className} viewBox="0 0 40 28" fill="none">
+    <svg className={className} style={style} viewBox="0 0 40 28" fill="none">
       <path
         d="M32.5 11.5C32.5 11.5 32 7 27 7C22.5 7 21 10 21 10C21 10 19.5 8 16.5 8C12 8 10 12 10 12C10 12 6 12.5 6 17C6 21 9 22 9 22H32.5C32.5 22 37 21 37 17C37 13.5 34 11.5 32.5 11.5Z"
         stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
@@ -117,7 +117,7 @@ export default function CloudBridge() {
             className="flex h-9 w-9 items-center justify-center rounded-lg"
             style={{ background: 'rgba(255,153,0,0.12)', border: '1px solid rgba(255,153,0,0.2)' }}
           >
-            <CloudIcon className="h-5 w-5" style={{ color: '#FF9900' } as React.CSSProperties} />
+            <CloudIcon className="h-5 w-5" style={{ color: '#FF9900' }} />
           </div>
           <div>
             <h2 className="text-[13px] font-semibold font-display tracking-tight" style={{ color: 'rgb(var(--fg))' }}>

@@ -61,15 +61,11 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
 
   function download(f: FlatItem) {
     let mediaUrl = (f.item as any).url;
-    if (!mediaUrl || mediaUrl.startsWith('blob:') && f.item.kind === 'video') {
-      if (f.item.kind === 'video') {
-        mediaUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
-      } else {
-        mediaUrl = getDeviceImageUrl(f.serial || f.deviceName, f.item.seed, f.item.label);
-      }
+    if (!mediaUrl || mediaUrl.startsWith('blob:')) {
+      mediaUrl = getDeviceImageUrl(f.serial || f.deviceName, f.item.seed, f.item.label);
     }
     
-    const extension = f.item.kind === 'video' ? 'mp4' : 'jpg';
+    const extension = 'jpg';
     const link = document.createElement('a');
     link.href = mediaUrl;
     link.download = `${f.item.label.replace(/\s+/g, '_')}_${f.item.id.slice(0, 5)}.${extension}`;

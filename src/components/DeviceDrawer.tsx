@@ -10,11 +10,11 @@ import {
     needsFirmwareUpdate,
     storagePct,
 } from '../data/devices'
+import { getDeviceImageUrl } from '../lib/deviceImageMapper'
 import CaptureThumb from './CaptureThumb'
 import Gauge from './Gauge'
-import Sparkline from './Sparkline'
 import ImageViewer from './ImageViewer'
-import { getDeviceImageUrl } from '../lib/deviceImageMapper'
+import Sparkline from './Sparkline'
 
 interface Props {
   device: Device | null
@@ -132,15 +132,11 @@ export default function DeviceDrawer({
 
   function download(item: MediaItem) {
     let mediaUrl = (item as any).url;
-    if (!mediaUrl || mediaUrl.startsWith('blob:') && item.kind === 'video') {
-      if (item.kind === 'video') {
-        mediaUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
-      } else {
-        mediaUrl = getDeviceImageUrl(d.serial || d.name, item.seed, item.label);
-      }
+    if (!mediaUrl || mediaUrl.startsWith('blob:')) {
+      mediaUrl = getDeviceImageUrl(d.serial || d.name, item.seed, item.label);
     }
     
-    const extension = item.kind === 'video' ? 'mp4' : 'jpg';
+    const extension = 'jpg';
     const link = document.createElement('a');
     link.href = mediaUrl;
     link.download = `${item.label.replace(/\s+/g, '_')}_${item.id.slice(0, 5)}.${extension}`;

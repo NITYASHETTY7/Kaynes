@@ -13,14 +13,10 @@ export default function ImageViewer({ isOpen, item, deviceName, serial, onClose 
   if (!isOpen || !item) return null
 
   // If item has a valid URL (like a blob or Supabase URL), use it. 
-  // Otherwise, fallback to the deterministic image generator or sample video.
+  // Otherwise, fallback to the deterministic image generator.
   let mediaUrl = (item as any).url;
-  if (!mediaUrl || mediaUrl.startsWith('blob:') && item.kind === 'video') {
-    if (item.kind === 'video') {
-      mediaUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
-    } else {
-      mediaUrl = getDeviceImageUrl(serial || deviceName, item.seed, item.label);
-    }
+  if (!mediaUrl || mediaUrl.startsWith('blob:')) {
+    mediaUrl = getDeviceImageUrl(serial || deviceName, item.seed, item.label);
   }
 
   return (

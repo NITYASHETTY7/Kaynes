@@ -144,10 +144,6 @@ export default function App() {
   const isAdmin = currentUser.role === 'admin';
   const unacknowledgedCount = notifications.filter(n => !n.acknowledged).length;
 
-  /* ── Surface / border tokens ── */
-  const surface     = 'bg-ink-800 border-ink-600'
-  const surfaceDark = 'dark:bg-ink-800 dark:border-ink-600'
-
   const navItems = [
     { id: 'dashboard',    label: 'Dashboard',         icon: 'dashboard'    },
     { id: 'plants',       label: 'Plants & Tenants',  icon: 'plants',      adminOnly: true },

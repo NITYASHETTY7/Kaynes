@@ -136,8 +136,9 @@ export async function fetchDeviceImages(
 
   try {
     // Use Unsplash API (free tier: 50 requests/hour without auth)
+    const clientId = import.meta.env.VITE_UNSPLASH_CLIENT_ID;
     const response = await fetch(
-      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&count=${count}&orientation=landscape&client_id=tBTVrFMiIRKqVmREqHRPtmDEcNdCWU7CfC5DRyEHn10`
+      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&count=${count}&orientation=landscape&client_id=${clientId}`
     )
     
     if (!response.ok) {

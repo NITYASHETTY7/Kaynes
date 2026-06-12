@@ -31,7 +31,7 @@ export interface GoogleVisionResult {
 }
 
 // Provided API Key
-const GOOGLE_VISION_API_KEY = 'AIzaSyDWRdBOC5LDsP8ldCw9jZFCHsMDMP3s9HI';
+const GOOGLE_VISION_API_KEY = import.meta.env.VITE_GOOGLE_VISION_API_KEY;
 
 /**
  * Analyze image using Google Cloud Vision API
