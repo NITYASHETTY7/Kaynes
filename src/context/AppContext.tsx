@@ -32,6 +32,7 @@ export interface Tenant {
   name: string;
   subscription: 'Starter' | 'Professional' | 'Enterprise';
   status: 'active' | 'inactive';
+  users?: number;
   created_at: string;
 }
 
@@ -446,6 +447,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           name: t.name,
           subscription: t.subscription || 'Starter',
           status: t.status || 'active',
+          users: t.users || 0,
           created_at: t.created_at
         })));
       } else {
@@ -890,7 +892,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         id, 
         name: t.name, 
         subscription: t.subscription, 
-        status: t.status 
+        status: t.status,
+        users: t.users || 0
       });
       if (error) {
         console.error('Supabase addTenant error:', error);

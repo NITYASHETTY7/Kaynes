@@ -1,14 +1,14 @@
-import React, { useState, useMemo } from 'react';
-import { useApp, type Tenant, type Plant } from '../context/AppContext';
-import { 
-  Building2, 
-  Building, 
-  Search, 
-  MapPin, 
-  Pencil, 
-  Trash2, 
-  Plus 
+import {
+    Building,
+    Building2,
+    MapPin,
+    Pencil,
+    Plus,
+    Search,
+    Trash2
 } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { useApp, type Plant, type Tenant } from '../context/AppContext';
 
 export default function TenantsPlants() {
   const { tenants, plants, addTenant, updateTenant, deleteTenant, addPlant, updatePlant, deletePlant } = useApp();
@@ -27,6 +27,7 @@ export default function TenantsPlants() {
   const [tenantName, setTenantName] = useState('');
   const [tenantSub, setTenantSub] = useState<'Starter' | 'Professional' | 'Enterprise'>('Starter');
   const [tenantStatus, setTenantStatus] = useState<'active' | 'inactive'>('active');
+  const [tenantUsers, setTenantUsers] = useState<number>(0);
 
   const [plantName, setPlantName] = useState('');
   const [plantType, setPlantType] = useState('Manufacturing');
@@ -56,6 +57,7 @@ export default function TenantsPlants() {
     setTenantName('');
     setTenantSub('Starter');
     setTenantStatus('active');
+    setTenantUsers(0);
     setShowTenantModal(true);
   };
 
@@ -64,6 +66,7 @@ export default function TenantsPlants() {
     setTenantName(t.name);
     setTenantSub(t.subscription);
     setTenantStatus(t.status);
+    setTenantUsers((t as any).users || 0);
     setShowTenantModal(true);
   };
 
@@ -95,9 +98,9 @@ export default function TenantsPlants() {
     if (!tenantName.trim()) return;
 
     if (editingTenant) {
-      updateTenant(editingTenant.id, { name: tenantName, subscription: tenantSub, status: tenantStatus });
+      updateTenant(editingTenant.id, { name: tenantName, subscription: tenantSub, status: tenantStatus, users: tenantUsers });
     } else {
-      addTenant({ name: tenantName, subscription: tenantSub, status: tenantStatus });
+      addTenant({ name: tenantName, subscription: tenantSub, status: tenantStatus, users: tenantUsers });
     }
     setShowTenantModal(false);
   };
@@ -345,7 +348,7 @@ export default function TenantsPlants() {
                       <td className="px-5 py-3 font-mono text-xs" style={{ color: 'rgb(var(--n-500))' }}>
                         {new Date(t.created_at).toLocaleDateString()}
                       </td>
-                      <td className="px-5 py-3 font-bold" style={{ color: 'rgb(var(--n-400))' }}>128</td>
+                      <td className="px-5 py-3 font-bold" style={{ color: 'rgb(var(--n-400))' }}>{(t as any).users || 0}</td>
                       <td className="px-5 py-3 text-right">
                         <div className="flex justify-end gap-2">
                           <button 
@@ -502,6 +505,19 @@ export default function TenantsPlants() {
                         <option value="inactive">Inactive</option>
                       </select>
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'rgb(var(--n-500))' }}>Users</label>
+                    <input 
+                      type="number" 
+                      min="0"
+                      value={tenantUsers} 
+                      onChange={(e) => setTenantUsers(parseInt(e.target.value) || 0)}
+                      className="w-full rounded-lg px-4 py-2 text-sm outline-none"
+                      style={inputStyle}
+                      onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
+                      onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
+                    />
                   </div>
                 </>
               )}
