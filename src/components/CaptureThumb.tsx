@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { type MediaItem } from '../data/devices'
 import { getDeviceImageUrl } from '../lib/deviceImageMapper'
 
@@ -19,21 +19,36 @@ export default function CaptureThumb({
   onImageClick,
   onImageError
 }: Props) {
+  const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
   
   // Get real image URL based on device type and seed, or use Supabase URL if available
   const imageUrl = (item as any).url || getDeviceImageUrl(serial || deviceName, item.seed, item.label)
+
+  // Reset state when image URL changes
+  useEffect(() => {
+    setImageLoaded(false)
+    setImageError(false)
+  }, [imageUrl])
 
   return (
     <div 
       className={`relative overflow-hidden rounded-lg bg-black group cursor-pointer transition-transform hover:scale-105 ${className ?? ''}`}
       onClick={onImageClick}
     >
+      {/* Loading placeholder */}
+      {!imageLoaded && !imageError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
+          <div className="w-4 h-4 border-2 border-slate-600 border-t-cyan-400 rounded-full animate-spin" />
+        </div>
+      )}
+      
       {/* Real image or fallback */}
       <img
         src={imageUrl}
         alt={item.label}
-        className="h-full w-full object-cover"
+        className={`h-full w-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+        onLoad={() => setImageLoaded(true)}
         onError={() => {
           setImageError(true);
           onImageError?.();
@@ -41,7 +56,7 @@ export default function CaptureThumb({
         loading="lazy"
       />
       
-      {/* Loading/Error overlay */}
+      {/* Error overlay */}
       {imageError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-slate-700 to-black">
           <span className="text-center text-[10px] text-slate-400">Image unavailable</span>

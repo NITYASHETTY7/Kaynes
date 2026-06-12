@@ -478,7 +478,8 @@ export default function DeviceDrawer({
                   >
                     <CaptureThumb 
                       item={m} 
-                      deviceName={d.name} 
+                      deviceName={d.name}
+                      serial={d.serial}
                       className="h-16 w-24 shrink-0" 
                       onImageClick={() => setViewer({ isOpen: true, item: m })}
                     />
