@@ -94,7 +94,7 @@ export default function Users() {
             onClick={openCreate}
             className="rounded-lg px-4 py-2 text-xs font-semibold shadow-md hover:brightness-110 self-start sm:self-auto transition-all"
             style={{
-              background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+              background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
               color: '#0D0F15',
             }}
           >
@@ -155,7 +155,7 @@ export default function Users() {
           >
             Line Operators
           </span>
-          <span className="block text-2xl font-bold mt-1" style={{ color: '#FF9900' }}>
+          <span className="block text-2xl font-bold mt-1" style={{ color: '#577E89' }}>
             {activeUsers.filter(u=>u.role==='operator').length}
           </span>
         </div>
@@ -201,7 +201,7 @@ export default function Users() {
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     <td className="py-3 font-semibold" style={{ color: 'rgb(var(--fg))' }}>
-                      {u.name} {isSelf && <span className="text-[10px]" style={{ color: '#FF9900' }}>(You)</span>}
+                      {u.name} {isSelf && <span className="text-[10px]" style={{ color: '#577E89' }}>(You)</span>}
                     </td>
                     <td className="py-3 font-mono" style={{ color: 'rgb(var(--n-400))' }}>{u.email}</td>
                     <td className="py-3">
@@ -229,7 +229,7 @@ export default function Users() {
                         <button 
                           onClick={() => openEdit(u)}
                           className="mr-3 hover:underline transition-colors"
-                          style={{ color: '#FF9900' }}
+                          style={{ color: '#577E89' }}
                         >
                           Edit Profile
                         </button>
@@ -279,7 +279,7 @@ export default function Users() {
                 background: 'rgb(var(--s-700))',
                 color: 'rgb(var(--n-200))',
               }}
-              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(87,126,137,0.5)')}
               onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
             />
 
@@ -296,7 +296,7 @@ export default function Users() {
                 background: 'rgb(var(--s-700))',
                 color: 'rgb(var(--n-200))',
               }}
-              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(87,126,137,0.5)')}
               onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
             />
 
@@ -313,7 +313,7 @@ export default function Users() {
                 background: 'rgb(var(--s-700))',
                 color: 'rgb(var(--n-200))',
               }}
-              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(87,126,137,0.5)')}
               onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
             />
 
@@ -329,7 +329,7 @@ export default function Users() {
                     background: 'rgb(var(--s-700))',
                     color: 'rgb(var(--n-200))',
                   }}
-                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(87,126,137,0.5)')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                 >
                   <option value="admin">Admin</option>
@@ -348,7 +348,7 @@ export default function Users() {
                     background: 'rgb(var(--s-700))',
                     color: 'rgb(var(--n-200))',
                   }}
-                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(87,126,137,0.5)')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                 >
                   <option value="active">Active</option>
@@ -369,7 +369,7 @@ export default function Users() {
                     background: 'rgb(var(--s-700))',
                     color: 'rgb(var(--n-200))',
                   }}
-                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(87,126,137,0.5)')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                 >
                   {tenants.map(t => (
@@ -388,7 +388,7 @@ export default function Users() {
                     background: 'rgb(var(--s-700))',
                     color: 'rgb(var(--n-200))',
                   }}
-                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(87,126,137,0.5)')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                 >
                   <option value="none">Unassigned (Global)</option>
@@ -421,7 +421,7 @@ export default function Users() {
                 type="submit"
                 className="rounded-lg px-4 py-2 text-xs font-semibold hover:brightness-110 transition-all"
                 style={{
-                  background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                  background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                   color: '#0D0F15',
                 }}
               >

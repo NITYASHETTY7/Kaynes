@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Satellite, Brain, Cloud, Lock, AlertTriangle, CheckCircle2, Database, Server, Cpu, Layers, Globe, Network, Radio, Zap } from 'lucide-react';
 
 /* ── AWS-style architecture SVG background nodes ─────────────────────────── */
 function ArchBackground() {
+  const icons = [
+    // Left side (pushed further to the edge and shifted up)
+    { Icon: Cloud, cx: '3%', cy: '5%', size: 56, label: 'IoT Core', delay: 0 },
+    { Icon: Radio, cx: '2%', cy: '25%', size: 48, label: 'SNS', delay: 1.8 },
+    { Icon: Brain, cx: '4%', cy: '50%', size: 52, label: 'SageMaker', delay: 2.2 },
+    { Icon: Network, cx: '3%', cy: '75%', size: 64, label: 'VPC', delay: 0.5 },
+    // Right side (pushed further to the edge and shifted up)
+    { Icon: Database, cx: '94%', cy: '5%', size: 48, label: 'S3', delay: 0.8 },
+    { Icon: Globe, cx: '96%', cy: '25%', size: 54, label: 'CloudFront', delay: 2.5 },
+    { Icon: Server, cx: '92%', cy: '50%', size: 48, label: 'EC2', delay: 1.5 },
+    { Icon: Zap, cx: '95%', cy: '75%', size: 52, label: 'Lambda', delay: 1.2 },
+  ];
+
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
       {/* Ambient glows */}
@@ -11,7 +25,7 @@ function ArchBackground() {
         animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
         transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
         className="absolute -top-32 -left-32 h-[28rem] w-[28rem] rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(255,153,0,0.08) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, rgba(87,126,137,0.08) 0%, transparent 70%)' }}
       />
       <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
@@ -35,35 +49,17 @@ function ArchBackground() {
       </svg>
 
       {/* AWS service node constellation */}
-      {[
-        { cx: '15%', cy: '20%', r: 22, label: 'IoT Core', delay: 0 },
-        { cx: '80%', cy: '15%', r: 18, label: 'S3',       delay: 0.8 },
-        { cx: '88%', cy: '70%', r: 20, label: 'Lambda',   delay: 1.2 },
-        { cx: '10%', cy: '78%', r: 16, label: 'SNS',      delay: 1.8 },
-        { cx: '50%', cy: '8%',  r: 14, label: 'SageMaker',delay: 2.2 },
-      ].map((node) => (
+      {icons.map((node, i) => (
         <motion.div
-          key={node.label}
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: [0.5, 0.85, 0.5], scale: [0.95, 1.05, 0.95] }}
-          transition={{ duration: 4, repeat: Infinity, delay: node.delay, ease: 'easeInOut' }}
-          className="absolute flex flex-col items-center"
-          style={{ left: node.cx, top: node.cy, transform: 'translate(-50%, -50%)' }}
+          key={i}
+          initial={{ opacity: 0, scale: 0.5, y: 0 }}
+          animate={{ opacity: [0.3, 0.6, 0.3], scale: [0.95, 1.05, 0.95], y: [-10, 10, -10] }}
+          transition={{ duration: 6 + (i % 3), repeat: Infinity, delay: node.delay, ease: 'easeInOut' }}
+          className="absolute flex flex-col items-center justify-center"
+          style={{ left: node.cx, top: node.cy, transform: 'translate(-50%, -50%)', color: 'rgba(87,126,137,0.3)' }}
         >
-          <div
-            className="flex items-center justify-center rounded-lg font-mono font-bold"
-            style={{
-              width: node.r * 2.2,
-              height: node.r * 2.2,
-              background: 'rgba(255,153,0,0.12)',
-              border: '1px solid rgba(255,153,0,0.25)',
-              fontSize: 8,
-              color: 'rgba(255,153,0,0.8)',
-            }}
-          >
-            AWS
-          </div>
-          <span style={{ fontSize: 7, color: 'rgba(255,255,255,0.25)', marginTop: 3, whiteSpace: 'nowrap' }}>
+          <node.Icon size={node.size} strokeWidth={1.2} />
+          <span style={{ fontSize: 9, color: 'rgba(87,126,137,0.4)', marginTop: 6, fontWeight: 600, letterSpacing: '0.05em' }}>
             {node.label}
           </span>
         </motion.div>
@@ -117,8 +113,8 @@ function KaynesLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
       style={{
         width: dim,
         height: dim,
-        background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
-        boxShadow: '0 4px 14px rgba(255,153,0,0.35)',
+        background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
+        boxShadow: '0 4px 14px rgba(87,126,137,0.35)',
         fontSize: dim * 0.38,
         letterSpacing: '-0.03em',
       }}
@@ -220,13 +216,13 @@ export default function Login() {
           {/* AWS-style orange vertical accent bar */}
           <div
             className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full"
-            style={{ background: 'linear-gradient(to bottom, #FF9900, #FFB833, transparent)' }}
+            style={{ background: 'linear-gradient(to bottom, #577E89, #74A1B0, transparent)' }}
           />
 
           {/* Decorative corner glow */}
           <div
             className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
-            style={{ background: 'radial-gradient(ellipse at top right, rgba(255,153,0,0.08) 0%, transparent 60%)' }}
+            style={{ background: 'radial-gradient(ellipse at top right, rgba(87,126,137,0.08) 0%, transparent 60%)' }}
           />
 
           {/* Brand top */}
@@ -239,7 +235,7 @@ export default function Login() {
                 </div>
                 <div
                   className="text-[10px] font-semibold uppercase tracking-widest mt-0.5"
-                  style={{ color: '#FF9900' }}
+                  style={{ color: '#577E89' }}
                 >
                   IoT Fleet Console
                 </div>
@@ -248,14 +244,14 @@ export default function Login() {
 
             <div
               className="mb-2 text-[10px] font-semibold uppercase tracking-widest"
-              style={{ color: 'rgba(255,153,0,0.7)' }}
+              style={{ color: 'rgba(87,126,137,0.7)' }}
             >
               Powered by Kaynes AI
             </div>
 
             <h1 className="text-2xl font-bold font-display leading-snug text-white mb-3">
               Enterprise Smart<br />
-              <span style={{ color: '#FF9900' }}>Glasses Command</span><br />
+              <span style={{ color: '#577E89' }}>Glasses Command</span><br />
               Platform
             </h1>
             <p className="text-[11px] leading-relaxed text-white/55 max-w-xs">
@@ -266,10 +262,10 @@ export default function Login() {
 
           {/* Feature list */}
           <ul className="relative pl-4 space-y-3">
-            <FeatureItem icon="🛰" label="Centralized multi-plant asset & device mapping" />
-            <FeatureItem icon="🧠" label="AWS SageMaker optical AI defect analysis" />
-            <FeatureItem icon="☁" label="AWS IoT Core · S3 · Lambda telemetry bridge" />
-            <FeatureItem icon="🔒" label="Role-based access with audit & compliance logs" />
+            <FeatureItem icon={<Satellite size={16} />} label="Centralized multi-plant asset & device mapping" />
+            <FeatureItem icon={<Brain size={16} />} label="AWS SageMaker optical AI defect analysis" />
+            <FeatureItem icon={<Cloud size={16} />} label="AWS IoT Core · S3 · Lambda telemetry bridge" />
+            <FeatureItem icon={<Lock size={16} />} label="Role-based access with audit & compliance logs" />
           </ul>
 
           {/* Footer */}
@@ -291,7 +287,7 @@ export default function Login() {
             <KaynesLogo size="sm" />
             <div>
               <div className="text-sm font-bold font-display leading-tight" style={{ color: 'rgb(var(--fg))' }}>Argo Glasses</div>
-              <div className="text-[10px] font-semibold uppercase tracking-widest mt-0.5" style={{ color: '#FF9900' }}>
+              <div className="text-[10px] font-semibold uppercase tracking-widest mt-0.5" style={{ color: '#577E89' }}>
                 IoT Fleet Console
               </div>
             </div>
@@ -312,7 +308,7 @@ export default function Login() {
                 <div>
                   <div
                     className="text-[10px] font-semibold uppercase tracking-widest mb-1"
-                    style={{ color: '#FF9900' }}
+                    style={{ color: '#577E89' }}
                   >
                     Kaynes Technology
                   </div>
@@ -332,7 +328,7 @@ export default function Login() {
                     className="flex items-start gap-2 rounded-xl p-3 text-xs font-medium"
                     style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#dc2626' }}
                   >
-                    <span className="shrink-0 mt-0.5">⚠</span>
+                    <AlertTriangle className="shrink-0 mt-0.5" size={14} />
                     {error}
                   </motion.div>
                 )}
@@ -363,7 +359,7 @@ export default function Login() {
                       type="button"
                       onClick={() => switchView('forgot')}
                       className="text-[10px] font-medium transition-colors hover:underline"
-                      style={{ color: '#FF9900' }}
+                      style={{ color: '#577E89' }}
                     >
                       Forgot password?
                     </button>
@@ -395,9 +391,9 @@ export default function Login() {
                   disabled={loading}
                   className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
                   style={{
-                    background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                    background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                     color: '#0D0F15',
-                    boxShadow: '0 4px 18px rgba(255,153,0,0.35)',
+                    boxShadow: '0 4px 18px rgba(87,126,137,0.35)',
                   }}
                 >
                   {loading ? <><Spinner /> Authenticating…</> : 'Sign In to Console'}
@@ -452,7 +448,7 @@ export default function Login() {
                 <div>
                   <div
                     className="text-[10px] font-semibold uppercase tracking-widest mb-1"
-                    style={{ color: '#FF9900' }}
+                    style={{ color: '#577E89' }}
                   >
                     Account Recovery
                   </div>
@@ -469,7 +465,7 @@ export default function Login() {
                     className="flex items-start gap-2 rounded-xl p-3 text-xs font-medium"
                     style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}
                   >
-                    <span className="shrink-0 mt-0.5">⚠</span>{error}
+                    <AlertTriangle className="shrink-0 mt-0.5" size={14} />{error}
                   </div>
                 )}
                 {message && (
@@ -477,7 +473,7 @@ export default function Login() {
                     className="flex items-start gap-2 rounded-xl p-3 text-xs font-medium"
                     style={{ background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.25)', color: '#34d399' }}
                   >
-                    <span className="shrink-0 mt-0.5">✓</span>{message}
+                    <CheckCircle2 className="shrink-0 mt-0.5" size={14} />{message}
                   </div>
                 )}
 
@@ -512,9 +508,9 @@ export default function Login() {
                     disabled={loading}
                     className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-70"
                     style={{
-                      background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                      background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                       color: '#0D0F15',
-                      boxShadow: '0 4px 14px rgba(255,153,0,0.3)',
+                      boxShadow: '0 4px 14px rgba(87,126,137,0.3)',
                     }}
                   >
                     {loading ? <Spinner /> : 'Send Reset Link'}
@@ -537,7 +533,7 @@ export default function Login() {
                 <div>
                   <div
                     className="text-[10px] font-semibold uppercase tracking-widest mb-1"
-                    style={{ color: '#FF9900' }}
+                    style={{ color: '#577E89' }}
                   >
                     New Credentials
                   </div>
@@ -554,7 +550,7 @@ export default function Login() {
                     className="flex items-start gap-2 rounded-xl p-3 text-xs font-medium"
                     style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', color: '#f87171' }}
                   >
-                    <span>⚠</span>{error}
+                    <AlertTriangle className="inline" size={14} />{error}
                   </div>
                 )}
                 {message && (
@@ -562,7 +558,7 @@ export default function Login() {
                     className="flex items-start gap-2 rounded-xl p-3 text-xs font-medium"
                     style={{ background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.25)', color: '#34d399' }}
                   >
-                    <span>✓</span>{message}
+                    <CheckCircle2 className="inline" size={14} />{message}
                   </div>
                 )}
 
@@ -621,9 +617,9 @@ export default function Login() {
                     disabled={loading}
                     className="flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-semibold transition-all hover:scale-[1.02] disabled:opacity-70"
                     style={{
-                      background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                      background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                       color: '#0D0F15',
-                      boxShadow: '0 4px 14px rgba(255,153,0,0.3)',
+                      boxShadow: '0 4px 14px rgba(87,126,137,0.3)',
                     }}
                   >
                     {loading ? <Spinner /> : 'Update Password'}

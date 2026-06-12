@@ -204,10 +204,10 @@ async function runClarifaiAuthenticated(imageUrl: string, startTime: number): Pr
 export function formatClarifaiResults(result: ClarifaiResult): string {
   const lines = [
     `⏱️ Processing Time: ${result.processingTime}ms`,
-    `🎯 Concepts Detected: ${result.concepts.length}`,
-    `🔍 Objects Found: ${result.detections.length}`,
-    `⚠️ Potential Defects: ${result.defectsFound}`,
-    `📊 Average Confidence: ${(result.confidence * 100).toFixed(1)}%`,
+    `Concepts Detected: ${result.concepts.length}`,
+    `Objects Found: ${result.detections.length}`,
+    `Potential Defects: ${result.defectsFound}`,
+    `Average Confidence: ${(result.confidence * 100).toFixed(1)}%`,
     '',
     'Top Concepts:',
   ]

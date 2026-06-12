@@ -51,9 +51,9 @@ function Check({
       <div
         className="flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-all duration-150"
         style={checked ? {
-          background: '#FF9900',
-          borderColor: '#FF9900',
-          boxShadow: '0 0 8px rgba(255,153,0,0.25)',
+          background: '#577E89',
+          borderColor: '#577E89',
+          boxShadow: '0 0 8px rgba(87,126,137,0.25)',
         } : {
           borderColor: 'rgb(var(--s-500))',
           background: 'rgb(var(--s-700))',
@@ -105,9 +105,9 @@ export default function FilterSidebar({ filters, setFilters, resultCount }: Prop
             <span
               className="rounded-lg px-2 py-1 text-[9px] font-semibold uppercase tracking-wider"
               style={{
-                background: 'rgba(255,153,0,0.1)',
-                color: '#FF9900',
-                border: '1px solid rgba(255,153,0,0.2)',
+                background: 'rgba(87,126,137,0.1)',
+                color: '#577E89',
+                border: '1px solid rgba(87,126,137,0.2)',
               }}
             >
               {resultCount}
@@ -118,7 +118,7 @@ export default function FilterSidebar({ filters, setFilters, resultCount }: Prop
         {isCollapsed && (
           <span
             className="rounded-lg px-1.5 py-1 text-[8px] font-bold"
-            style={{ background: 'rgba(255,153,0,0.1)', color: '#FF9900', border: '1px solid rgba(255,153,0,0.2)' }}
+            style={{ background: 'rgba(87,126,137,0.1)', color: '#577E89', border: '1px solid rgba(87,126,137,0.2)' }}
           >
             {resultCount}
           </span>
@@ -174,8 +174,8 @@ export default function FilterSidebar({ filters, setFilters, resultCount }: Prop
                   color: 'rgb(var(--n-200))',
                 }}
                 onFocus={e => {
-                  e.target.style.borderColor = 'rgba(255,153,0,0.5)'
-                  e.target.style.boxShadow = '0 0 0 3px rgba(255,153,0,0.1)'
+                  e.target.style.borderColor = 'rgba(87,126,137,0.5)'
+                  e.target.style.boxShadow = '0 0 0 3px rgba(87,126,137,0.1)'
                 }}
                 onBlur={e => {
                   e.target.style.borderColor = 'rgb(var(--s-500))'
@@ -217,7 +217,7 @@ export default function FilterSidebar({ filters, setFilters, resultCount }: Prop
                 color: 'rgb(var(--n-200))',
               }}
               onFocus={e => {
-                e.target.style.borderColor = 'rgba(255,153,0,0.5)'
+                e.target.style.borderColor = 'rgba(87,126,137,0.5)'
               }}
               onBlur={e => {
                 e.target.style.borderColor = 'rgb(var(--s-500))'
@@ -259,7 +259,7 @@ export default function FilterSidebar({ filters, setFilters, resultCount }: Prop
                 value={filters.minBattery}
                 onChange={(e) => setFilters((f) => ({ ...f, minBattery: Number(e.target.value) }))}
                 className="w-full h-1.5 rounded-lg appearance-none cursor-pointer"
-                style={{ background: 'rgb(var(--s-600))', accentColor: '#FF9900' }}
+                style={{ background: 'rgb(var(--s-600))', accentColor: '#577E89' }}
               />
               <div className="mt-2 flex justify-between text-[9px] font-mono font-semibold" style={{ color: 'rgb(var(--n-600))' }}>
                 <span>0%</span>

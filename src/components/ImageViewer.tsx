@@ -1,5 +1,6 @@
 import { type MediaItem } from '../data/devices'
 import { getDeviceImageUrl } from '../lib/deviceImageMapper'
+import { X } from 'lucide-react';
 
 interface Props {
   isOpen: boolean
@@ -42,7 +43,7 @@ export default function ImageViewer({ isOpen, item, deviceName, serial, onClose 
             className="rounded p-2 text-slate-400 hover:bg-ink-800 hover:text-fg"
             title="Close (Esc)"
           >
-            ✕
+            <X size={24} />
           </button>
         </div>
 

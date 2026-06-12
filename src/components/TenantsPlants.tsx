@@ -157,7 +157,7 @@ export default function TenantsPlants() {
             <button
               onClick={() => { setActiveTab('plants'); setSearchQuery(''); }}
               className="flex items-center gap-2 pb-3 pt-4 text-sm font-medium transition-all relative"
-              style={{ color: activeTab === 'plants' ? '#FF9900' : 'rgb(var(--n-400))' }}
+              style={{ color: activeTab === 'plants' ? '#577E89' : 'rgb(var(--n-400))' }}
             >
               <Building2 size={15} />
               Plants / facilities
@@ -165,20 +165,20 @@ export default function TenantsPlants() {
                 className="flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold"
                 style={
                   activeTab === 'plants'
-                    ? { background: 'rgba(255,153,0,0.12)', color: '#FF9900' }
+                    ? { background: 'rgba(87,126,137,0.12)', color: '#577E89' }
                     : { background: 'rgb(var(--s-700))', color: 'rgb(var(--n-500))' }
                 }
               >
                 {plants.length}
               </span>
               {activeTab === 'plants' && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: '#FF9900' }} />
+                <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: '#577E89' }} />
               )}
             </button>
             <button
               onClick={() => { setActiveTab('tenants'); setSearchQuery(''); }}
               className="flex items-center gap-2 pb-3 pt-4 text-sm font-medium transition-all relative"
-              style={{ color: activeTab === 'tenants' ? '#FF9900' : 'rgb(var(--n-400))' }}
+              style={{ color: activeTab === 'tenants' ? '#577E89' : 'rgb(var(--n-400))' }}
             >
               <Building size={15} />
               Tenant accounts
@@ -186,14 +186,14 @@ export default function TenantsPlants() {
                 className="flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold"
                 style={
                   activeTab === 'tenants'
-                    ? { background: 'rgba(255,153,0,0.12)', color: '#FF9900' }
+                    ? { background: 'rgba(87,126,137,0.12)', color: '#577E89' }
                     : { background: 'rgb(var(--s-700))', color: 'rgb(var(--n-500))' }
                 }
               >
                 {tenants.length}
               </span>
               {activeTab === 'tenants' && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: '#FF9900' }} />
+                <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: '#577E89' }} />
               )}
             </button>
           </div>
@@ -215,7 +215,7 @@ export default function TenantsPlants() {
                   background: 'rgb(var(--s-700))',
                   color: 'rgb(var(--n-200))',
                 }}
-                onFocus={e => (e.currentTarget.style.borderColor = '#FF9900')}
+                onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
                 onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-600))')}
               />
             </div>
@@ -224,9 +224,9 @@ export default function TenantsPlants() {
               onClick={activeTab === 'plants' ? openPlantCreate : openTenantCreate}
               className="h-[34px] flex items-center justify-center gap-2 rounded-md px-4 text-sm font-semibold transition-all hover:brightness-110 active:scale-[0.98]"
               style={{
-                background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                 color: '#0D0F15',
-                boxShadow: '0 4px 14px rgba(255,153,0,0.3)',
+                boxShadow: '0 4px 14px rgba(87,126,137,0.3)',
               }}
             >
               <Plus size={15} />
@@ -260,7 +260,7 @@ export default function TenantsPlants() {
                     return (
                       <tr
                         key={p.id}
-                        className="group transition-colors"
+                        className="group transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] relative z-0 hover:z-10"
                         style={{ borderTop: '1px solid rgb(var(--s-700))' }}
                         onMouseEnter={e => (e.currentTarget.style.background = 'rgb(var(--s-700))')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -278,7 +278,7 @@ export default function TenantsPlants() {
                         </td>
                         <td className="px-5 py-3" style={{ color: 'rgb(var(--n-400))' }}>{p.manager}</td>
                         <td className="px-5 py-3">
-                          <div className="font-mono font-semibold" style={{ color: '#FF9900' }}>
+                          <div className="font-mono font-semibold" style={{ color: '#577E89' }}>
                             {p.capacity}
                           </div>
                         </td>
@@ -311,7 +311,7 @@ export default function TenantsPlants() {
                   filteredTenants.map(t => (
                     <tr
                       key={t.id}
-                      className="group transition-colors"
+                      className="group transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] relative z-0 hover:z-10"
                       style={{ borderTop: '1px solid rgb(var(--s-700))' }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'rgb(var(--s-700))')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -410,7 +410,7 @@ export default function TenantsPlants() {
                       <input required type="text" value={plantName} onChange={(e) => setPlantName(e.target.value)}
                         className="w-full rounded-lg px-4 py-2 text-sm outline-none"
                         style={inputStyle}
-                        onFocus={e => (e.currentTarget.style.borderColor = '#FF9900')}
+                        onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
                         onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                       />
                     </div>
@@ -419,7 +419,7 @@ export default function TenantsPlants() {
                       <input required type="text" value={plantType} onChange={(e) => setPlantType(e.target.value)} placeholder="e.g. Manufacturing"
                         className="w-full rounded-lg px-4 py-2 text-sm outline-none"
                         style={inputStyle}
-                        onFocus={e => (e.currentTarget.style.borderColor = '#FF9900')}
+                        onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
                         onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                       />
                     </div>
@@ -429,7 +429,7 @@ export default function TenantsPlants() {
                     <select value={plantTenantId} onChange={(e) => setPlantTenantId(e.target.value)}
                       className="w-full rounded-lg px-4 py-2 text-sm outline-none"
                       style={inputStyle}
-                      onFocus={e => (e.currentTarget.style.borderColor = '#FF9900')}
+                      onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
                       onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                     >
                       {tenants.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -441,7 +441,7 @@ export default function TenantsPlants() {
                       <input type="text" value={plantLocation} onChange={(e) => setPlantLocation(e.target.value)}
                         className="w-full rounded-lg px-4 py-2 text-sm outline-none"
                         style={inputStyle}
-                        onFocus={e => (e.currentTarget.style.borderColor = '#FF9900')}
+                        onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
                         onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                       />
                     </div>
@@ -450,7 +450,7 @@ export default function TenantsPlants() {
                       <input type="text" value={plantManager} onChange={(e) => setPlantManager(e.target.value)}
                         className="w-full rounded-lg px-4 py-2 text-sm outline-none"
                         style={inputStyle}
-                        onFocus={e => (e.currentTarget.style.borderColor = '#FF9900')}
+                        onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
                         onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                       />
                     </div>
@@ -460,7 +460,7 @@ export default function TenantsPlants() {
                     <input type="text" value={plantCapacity} onChange={(e) => setPlantCapacity(e.target.value)} placeholder="e.g. 1.2M units/yr"
                       className="w-full rounded-lg px-4 py-2 text-sm outline-none"
                       style={inputStyle}
-                      onFocus={e => (e.currentTarget.style.borderColor = '#FF9900')}
+                      onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
                       onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                     />
                   </div>
@@ -472,7 +472,7 @@ export default function TenantsPlants() {
                     <input required type="text" value={tenantName} onChange={(e) => setTenantName(e.target.value)}
                       className="w-full rounded-lg px-4 py-2 text-sm outline-none"
                       style={inputStyle}
-                      onFocus={e => (e.currentTarget.style.borderColor = '#FF9900')}
+                      onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
                       onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                     />
                   </div>
@@ -482,7 +482,7 @@ export default function TenantsPlants() {
                       <select value={tenantSub} onChange={(e) => setTenantSub(e.target.value as any)}
                         className="w-full rounded-lg px-4 py-2 text-sm outline-none"
                         style={inputStyle}
-                        onFocus={e => (e.currentTarget.style.borderColor = '#FF9900')}
+                        onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
                         onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                       >
                         <option value="Starter">Starter</option>
@@ -495,7 +495,7 @@ export default function TenantsPlants() {
                       <select value={tenantStatus} onChange={(e) => setTenantStatus(e.target.value as any)}
                         className="w-full rounded-lg px-4 py-2 text-sm outline-none"
                         style={inputStyle}
-                        onFocus={e => (e.currentTarget.style.borderColor = '#FF9900')}
+                        onFocus={e => (e.currentTarget.style.borderColor = '#577E89')}
                         onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
                       >
                         <option value="active">Active</option>
@@ -522,9 +522,9 @@ export default function TenantsPlants() {
                   type="submit"
                   className="rounded-md px-6 py-2 text-sm font-bold shadow-sm hover:brightness-110"
                   style={{
-                    background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                    background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                     color: '#0D0F15',
-                    boxShadow: '0 4px 14px rgba(255,153,0,0.3)',
+                    boxShadow: '0 4px 14px rgba(87,126,137,0.3)',
                   }}
                 >Save Record</button>
               </div>

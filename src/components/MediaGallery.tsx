@@ -4,6 +4,7 @@ import { type Device, type MediaItem } from '../data/devices'
 import { getDeviceImageUrl } from '../lib/deviceImageMapper'
 import CaptureThumb from './CaptureThumb'
 import ImageViewer from './ImageViewer'
+import { Save, Package, Cloud, Globe, FolderOpen, Trash2 } from 'lucide-react';
 
 interface Props {
   devices: Device[]
@@ -89,7 +90,7 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
         <div>
           <div
             className="text-[10px] font-semibold uppercase tracking-widest mb-1"
-            style={{ color: '#FF9900' }}
+            style={{ color: '#577E89' }}
           >
             Amazon S3 · ap-south-1
           </div>
@@ -125,9 +126,9 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
                 onClick={() => setKind(k)}
                 className="rounded-lg px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all"
                 style={kind === k ? {
-                  background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                  background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                   color: '#0D0F15',
-                  boxShadow: '0 2px 8px rgba(255,153,0,0.25)',
+                  boxShadow: '0 2px 8px rgba(87,126,137,0.25)',
                 } : {
                   color: 'rgb(var(--n-500))',
                 }}
@@ -147,7 +148,7 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
               background: 'rgb(var(--s-800))',
               color: 'rgb(var(--n-300))',
             }}
-            onFocus={e => { e.target.style.borderColor = 'rgba(255,153,0,0.5)' }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(87,126,137,0.5)' }}
             onBlur={e => { e.target.style.borderColor = 'rgb(var(--s-600))' }}
           >
             <option value="all">All Devices</option>
@@ -163,10 +164,10 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
       {/* ── Cloud Stats Bar ─────────────────────────────────────────── */}
       <div className="mb-7 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
-          { label: 'Storage Used', value: `${Math.round(all.reduce((acc, f) => acc + f.item.sizeMb, 0))}`, unit: 'MB',  icon: '💾', accent: '#38bdf8' },
-          { label: 'Total Objects', value: all.length,  unit: 'Items', icon: '📦', accent: '#a78bfa' },
-          { label: 'Sync Status',   value: '100',       unit: '%',     icon: '☁',  accent: '#34d399' },
-          { label: 'AWS Region',    value: 'AP-SOUTH-1',unit: '',      icon: '🌐', accent: '#FF9900' },
+          { label: 'Storage Used', value: `${Math.round(all.reduce((acc, f) => acc + f.item.sizeMb, 0))}`, unit: 'MB',  icon: Save, accent: '#38bdf8' },
+          { label: 'Total Objects', value: all.length,  unit: 'Items', icon: Package, accent: '#a78bfa' },
+          { label: 'Sync Status',   value: '100',       unit: '%',     icon: Cloud,  accent: '#34d399' },
+          { label: 'AWS Region',    value: 'AP-SOUTH-1',unit: '',      icon: Globe, accent: '#577E89' },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -213,7 +214,7 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
           className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed text-center"
           style={{ borderColor: 'rgb(var(--s-500))', background: 'rgb(var(--s-700) / 0.4)' }}
         >
-          <div className="text-3xl mb-3">📂</div>
+          <FolderOpen className="mb-3 mx-auto" size={30} />
           <p className="text-[12px] font-semibold" style={{ color: 'rgb(var(--n-500))' }}>
             No media matches the current filter.
           </p>
@@ -231,7 +232,7 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
               }}
               onMouseEnter={e => {
                 (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card-hover)'
-                ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,153,0,0.35)'
+                ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(87,126,137,0.35)'
               }}
               onMouseLeave={e => {
                 (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)'
@@ -326,7 +327,7 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
                           ;(e.currentTarget as HTMLElement).style.color = 'rgb(var(--n-400))'
                         }}
                       >
-                        🗑
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   )}

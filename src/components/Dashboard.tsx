@@ -1,15 +1,17 @@
 import { useState, useMemo } from 'react';
+import { CheckCircle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import Gauge from './Gauge';
 import CloudBridge from './CloudBridge';
+import { Package, Factory, Radio, AlertTriangle, Brain } from 'lucide-react';
 
 /* ── KPI config ────────────────────────────────────────────────────────── */
 const KPI_META = {
-  cyan:   { accent: '#38bdf8', glow: 'rgba(56,189,248,0.15)',  icon: '📦' },
-  teal:   { accent: '#2dd4bf', glow: 'rgba(45,212,191,0.15)',  icon: '🏭' },
-  green:  { accent: '#34d399', glow: 'rgba(52,211,153,0.15)',  icon: '📡' },
-  red:    { accent: '#f87171', glow: 'rgba(248,113,113,0.2)',   icon: '⚠' },
-  violet: { accent: '#a78bfa', glow: 'rgba(167,139,250,0.15)', icon: '🧠' },
+  cyan:   { accent: '#38bdf8', glow: 'rgba(56,189,248,0.15)',  icon: Package },
+  teal:   { accent: '#2dd4bf', glow: 'rgba(45,212,191,0.15)',  icon: Factory },
+  green:  { accent: '#34d399', glow: 'rgba(52,211,153,0.15)',  icon: Radio },
+  red:    { accent: '#f87171', glow: 'rgba(248,113,113,0.2)',   icon: AlertTriangle },
+  violet: { accent: '#a78bfa', glow: 'rgba(167,139,250,0.15)', icon: Brain },
 }
 
 /* ── Trend arrow ─────────────────────────────────────────────────────────── */
@@ -26,7 +28,7 @@ function TrendBadge({ value, label }: { value: number; label: string }) {
 
 /* ── Section card wrapper ──────────────────────────────────────────────── */
 function SectionCard({
-  accentColor = '#FF9900',
+  accentColor = '#577E89',
   children,
   className = '',
 }: {
@@ -101,7 +103,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
     >
       {/* Ambient background glows */}
       <div className="absolute top-0 left-1/3 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(255,153,0,0.04) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(87,126,137,0.04) 0%, transparent 70%)' }} />
       <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.04) 0%, transparent 70%)' }} />
 
@@ -111,7 +113,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
           <div className="flex items-center gap-2 mb-1">
             <span
               className="rounded px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest"
-              style={{ background: 'rgba(255,153,0,0.1)', color: '#FF9900', border: '1px solid rgba(255,153,0,0.2)' }}
+              style={{ background: 'rgba(87,126,137,0.1)', color: '#577E89', border: '1px solid rgba(87,126,137,0.2)' }}
             >
               Live Operations
             </span>
@@ -154,9 +156,9 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
             onClick={() => onNavigate('ai-pipeline')}
             className="flex items-center gap-1.5 rounded-xl px-5 py-2 text-[11px] font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]"
             style={{
-              background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+              background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
               color: '#0D0F15',
-              boxShadow: '0 4px 14px rgba(255,153,0,0.3)',
+              boxShadow: '0 4px 14px rgba(87,126,137,0.3)',
             }}
           >
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -247,7 +249,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
 
                 <div className="flex flex-col items-center justify-center xl:col-span-1 lg:col-span-1">
                   <div className="h-28 w-28 relative">
-                    <Gauge value={100 - defectRate} color="rgb(var(--argo-orange, 255 153 0))" />
+                    <Gauge value={100 - defectRate} color="rgb(var(--argo-orange, 87 126 137))" />
                   </div>
                   <span className="mt-3 text-[11px] font-semibold text-center" style={{ color: 'rgb(var(--fg))' }}>
                     Defect-Free Rate
@@ -356,8 +358,8 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
                         color: 'rgb(var(--n-200))',
                       }}
                       onFocus={e => {
-                        e.target.style.borderColor = 'rgba(255,153,0,0.5)';
-                        e.target.style.boxShadow = '0 0 0 3px rgba(255,153,0,0.1)';
+                        e.target.style.borderColor = 'rgba(87,126,137,0.5)';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(87,126,137,0.1)';
                       }}
                       onBlur={e => {
                         e.target.style.borderColor = 'rgb(var(--s-600))';
@@ -454,7 +456,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
                             <button
                               onClick={() => onNavigate('assets', asset.id)}
                               className="text-[10px] font-semibold transition-all hover:underline"
-                              style={{ color: '#FF9900' }}
+                              style={{ color: '#577E89' }}
                             >
                               View Details →
                             </button>
@@ -552,7 +554,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
                 <button
                   onClick={() => onNavigate('alerts')}
                   className="text-[10px] font-semibold uppercase tracking-widest hover:underline"
-                  style={{ color: '#FF9900' }}
+                  style={{ color: '#577E89' }}
                 >
                   View All
                 </button>
@@ -563,21 +565,19 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
                     className="flex flex-col items-center justify-center py-6 rounded-xl border border-dashed text-center"
                     style={{ borderColor: 'rgb(var(--s-600))', background: 'rgb(var(--s-700) / 0.4)' }}
                   >
-                    <span className="text-emerald-500 text-lg mb-1">✓</span>
+                    <CheckCircle className="text-emerald-500 mb-1" size={24} />
                     <p className="text-[10px] font-medium text-emerald-500">All systems nominal</p>
                   </div>
                 ) : (
                   notifications.filter(n => !n.acknowledged).slice(0, 4).map(notif => (
                     <div
                       key={notif.id}
-                      className="rounded-xl pl-4 pr-3 py-3 border-l-2"
+                      className="rounded-xl px-4 py-3"
                       style={{
-                        borderLeftColor: notif.severity === 'critical' ? '#f87171' : '#fbbf24',
                         background: notif.severity === 'critical'
-                          ? 'rgba(248,113,113,0.05)'
-                          : 'rgba(251,191,36,0.05)',
+                          ? 'linear-gradient(90deg, rgba(248,113,113,0.1) 0%, rgba(248,113,113,0.02) 100%)'
+                          : 'linear-gradient(90deg, rgba(251,191,36,0.1) 0%, rgba(251,191,36,0.02) 100%)',
                         border: `1px solid ${notif.severity === 'critical' ? 'rgba(248,113,113,0.15)' : 'rgba(251,191,36,0.15)'}`,
-                        borderLeft: `2px solid ${notif.severity === 'critical' ? '#f87171' : '#fbbf24'}`,
                       }}
                     >
                       <h3 className="text-[11px] font-semibold leading-tight mb-1 uppercase tracking-tight"

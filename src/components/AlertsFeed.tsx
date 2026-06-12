@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { type Device, type Alert, buildAlerts } from '../data/devices'
+import { BatteryWarning, WifiOff, HardDrive, Thermometer, AlertTriangle, CheckCircle } from 'lucide-react'
 
 interface Props {
   devices: Device[]
@@ -26,11 +27,11 @@ const SEV_BORDER: Record<Alert['severity'], string> = {
   normal:   'rgba(52,211,153,0.2)',
 }
 
-const TYPE_ICON: Record<string, string> = {
-  'Low battery':       '🔋',
-  'Device offline':    '📵',
-  'Storage near full': '💾',
-  'High temperature':  '🌡',
+const TYPE_ICON: Record<string, any> = {
+  'Low battery':       BatteryWarning,
+  'Device offline':    WifiOff,
+  'Storage near full': HardDrive,
+  'High temperature':  Thermometer,
 }
 
 export default function AlertsFeed({ devices, onOpenDevice }: Props) {
@@ -60,7 +61,7 @@ export default function AlertsFeed({ devices, onOpenDevice }: Props) {
       <div className="mb-6">
         <div
           className="text-[10px] font-semibold uppercase tracking-widest mb-1"
-          style={{ color: '#FF9900' }}
+          style={{ color: '#577E89' }}
         >
           Real-time Monitoring
         </div>
@@ -136,7 +137,7 @@ export default function AlertsFeed({ devices, onOpenDevice }: Props) {
           className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed text-center"
           style={{ borderColor: 'rgb(var(--s-500))', background: 'rgb(var(--s-700) / 0.4)' }}
         >
-          <div className="text-3xl mb-3">✓</div>
+          <div className="mb-3 text-emerald-500"><CheckCircle size={32} /></div>
           <p className="text-[12px] font-semibold text-emerald-500">No active alerts in this category</p>
           <p className="text-[10px] font-medium mt-1" style={{ color: 'rgb(var(--n-600))' }}>Fleet is healthy</p>
         </div>
@@ -150,9 +151,8 @@ export default function AlertsFeed({ devices, onOpenDevice }: Props) {
                 onClick={() => onOpenDevice(a.deviceId)}
                 className="group flex w-full items-start gap-4 rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5"
                 style={{
-                  background: SEV_BG[a.severity],
+                  background: `linear-gradient(90deg, ${c}12 0%, ${SEV_BG[a.severity]} 100%)`,
                   borderColor: SEV_BORDER[a.severity],
-                  borderLeft: `3px solid ${c}`,
                 }}
                 onMouseEnter={e => {
                   (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 20px ${c}18, var(--shadow-card-hover)`
@@ -164,9 +164,12 @@ export default function AlertsFeed({ devices, onOpenDevice }: Props) {
                 {/* Icon */}
                 <span
                   className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base"
-                  style={{ background: c + '18', border: `1px solid ${c}28` }}
+                  style={{ background: c + '18', border: `1px solid ${c}28`, color: c }}
                 >
-                  {TYPE_ICON[a.type] ?? '⚠'}
+                  {(() => {
+                    const Icon = TYPE_ICON[a.type] || AlertTriangle;
+                    return <Icon size={18} strokeWidth={2} />;
+                  })()}
                 </span>
 
                 {/* Content */}

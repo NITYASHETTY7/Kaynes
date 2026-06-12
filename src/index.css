@@ -29,7 +29,7 @@
   --fg:       2   6   23;    /* primary heading                  */
 
   /* ── Brand Accents ── */
-  --aws-orange:   255 153  0;    /* AWS official orange              */
+  --aws-orange:   87 126 137;    /* AWS official orange              */
   --aws-squid:     35  47  62;   /* AWS dark squid ink               */
   --sky-bright:    14 165 233;   /* sky-500  · info / links          */
   --sky-deep:      2  132 199;   /* sky-600  · hover                 */
@@ -41,7 +41,7 @@
   /* ── Shadows (light mode) ── */
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
   --shadow-card-hover: 0 8px 24px -4px rgb(0 0 0 / 0.10), 0 4px 8px -2px rgb(0 0 0 / 0.06);
-  --shadow-glow-orange: 0 0 24px 0 rgb(255 153 0 / 0.18);
+  --shadow-glow-orange: 0 0 24px 0 rgb(87 126 137 / 0.18);
   --shadow-glow-sky: 0 0 24px 0 rgb(14 165 233 / 0.18);
 }
 
@@ -71,7 +71,7 @@
   --fg:       241 245 249;   /* primary heading                  */
 
   /* ── Brand Accents (brighter in dark) ── */
-  --aws-orange:   255 165  20;   /* slightly brighter orange         */
+  --aws-orange:   87 126 137;    /* slightly brighter orange         */
   --aws-squid:    241 245 249;   /* inverted for dark                */
   --sky-bright:   56  189 248;   /* sky-400 brighter                 */
   --sky-deep:     14  165 233;   /* sky-500                          */
@@ -83,7 +83,7 @@
   /* ── Shadows (dark mode — glow based) ── */
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.3);
   --shadow-card-hover: 0 8px 32px -4px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(var(--s-500) / 0.5);
-  --shadow-glow-orange: 0 0 28px 0 rgb(255 165 20 / 0.22);
+  --shadow-glow-orange: 0 0 28px 0 rgb(87 126 137 / 0.22);
   --shadow-glow-sky: 0 0 28px 0 rgb(56 189 248 / 0.2);
 }
 
@@ -124,6 +124,7 @@ input[type='range'] { accent-color: rgb(var(--aws-orange)); }
   .k-card:hover {
     box-shadow: var(--shadow-card-hover);
     border-color: rgb(var(--s-500));
+    transform: translateY(-2px);
   }
 
   /* Top accent bar shared by all cards */
@@ -147,7 +148,7 @@ input[type='range'] { accent-color: rgb(var(--aws-orange)); }
   .k-btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold
            transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:outline-none;
-    background: linear-gradient(135deg, rgb(var(--aws-orange)), rgb(255 179 50));
+    background: linear-gradient(135deg, rgb(var(--aws-orange)), rgb(116 161 176));
     color: rgb(13 17 35);
     box-shadow: 0 4px 14px rgb(var(--aws-orange) / 0.3);
   }

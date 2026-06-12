@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { GoogleVisionResult, runGoogleVisionInference } from '../lib/googleVisionInference';
+import { Camera, Brain, CheckCircle2, Zap } from 'lucide-react';
 
 export default function AIPipeline() {
   const { images, assets, devices, uploadImageFile } = useApp();
@@ -204,7 +205,7 @@ export default function AIPipeline() {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <span className="text-2xl block mb-1" style={{ color: 'rgb(var(--n-500))' }}>📸</span>
+                <Camera className="mb-1 mx-auto" size={24} style={{ color: 'rgb(var(--n-500))' }} />
                 <span className="text-[11px] font-semibold block" style={{ color: 'rgb(var(--n-500))' }}>Click to select inspection capture</span>
               </div>
 
@@ -295,12 +296,12 @@ export default function AIPipeline() {
                 disabled={isUploading}
                 className="w-full rounded-lg py-2 text-xs font-semibold hover:brightness-110 disabled:opacity-40"
                 style={{
-                  background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                  background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                   color: '#0D0F15',
-                  boxShadow: '0 4px 14px rgba(255,153,0,0.3)',
+                  boxShadow: '0 4px 14px rgba(87,126,137,0.3)',
                 }}
               >
-                {isUploading ? 'Uploading to cloud...' : '📤 Upload & Mount Capture'}
+                {isUploading ? 'Uploading to cloud...' : 'Upload & Mount Capture'}
               </button>
             </form>
           </div>
@@ -348,7 +349,7 @@ export default function AIPipeline() {
               className="flex-1 rounded-xl p-8 flex flex-col items-center justify-center text-center"
               style={{ border: '1px solid rgb(var(--s-600))', background: 'rgb(var(--s-800))' }}
             >
-              <span className="text-5xl mb-4">🧠</span>
+              <Brain className="mb-4 mx-auto text-violet-500" size={48} />
               <h2 className="text-base font-bold" style={{ color: 'rgb(var(--fg))' }}>AI Inference Center</h2>
               <p className="text-xs max-w-sm mt-1.5 leading-relaxed" style={{ color: 'rgb(var(--n-500))' }}>Select an active image from the media pool or upload an original frame to customize and launch the defect-detection pipeline.</p>
             </div>
@@ -380,7 +381,7 @@ export default function AIPipeline() {
                       className="rounded-lg px-4 py-2 text-xs font-semibold text-white shadow-md hover:brightness-110 disabled:opacity-40"
                       style={{ background: 'linear-gradient(135deg, #38bdf8 0%, #a78bfa 100%)' }}
                     >
-                      {isProcessing ? 'AI Inference Executing...' : '⚡ Run Detection AI'}
+                      {isProcessing ? 'AI Inference Executing...' : 'Run Detection AI'}
                     </button>
                   </div>
                 </div>
@@ -431,9 +432,9 @@ export default function AIPipeline() {
                     <div className="h-full" style={{ width: '78%', background: 'linear-gradient(90deg, #38bdf8, #a78bfa)' }} />
                   </div>
                   <div className="mt-2.5 flex justify-between text-[10px] font-mono" style={{ color: 'rgb(var(--n-500))' }}>
-                    <span>[✓] Check Integrity</span>
-                    <span>[✓] Resize &amp; Rescale</span>
-                    <span>[✓] CLAHE contrast</span>
+                    <span className="flex items-center gap-1"><CheckCircle2 className="text-emerald-500" size={14} /> Check Integrity</span>
+                    <span className="flex items-center gap-1"><CheckCircle2 className="text-emerald-500" size={14} /> Resize &amp; Rescale</span>
+                    <span className="flex items-center gap-1"><CheckCircle2 className="text-emerald-500" size={14} /> CLAHE contrast</span>
                     <span style={{ color: '#38bdf8' }}>[...] Inference Model</span>
                   </div>
                 </div>
@@ -540,7 +541,7 @@ export default function AIPipeline() {
                     
                     {!realtimeResult ? (
                       <div className="flex-1 flex flex-col items-center justify-center py-6 text-center">
-                        <span className="text-2xl mb-1">⚡</span>
+                        <Zap className="mb-1 mx-auto text-amber-500" size={24} />
                         <p className="text-xs font-medium leading-normal" style={{ color: 'rgb(var(--n-500))' }}>Ready for Google Vision analysis. Click "Run Detection AI" above.</p>
                       </div>
                     ) : (

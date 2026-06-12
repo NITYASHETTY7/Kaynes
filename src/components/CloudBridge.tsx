@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Radio, Database, Brain, Zap } from 'lucide-react';
 
 interface CloudService {
   name: string
@@ -32,8 +33,8 @@ export default function CloudBridge() {
       latency: '18ms',
       region: 'ap-south-1',
       description: 'MQTT telemetry ingestion & device shadow management',
-      icon: '📡',
-      accentColor: '#FF9900',
+      icon: Radio,
+      accentColor: '#577E89',
     },
     {
       name: 'Amazon S3',
@@ -42,7 +43,7 @@ export default function CloudBridge() {
       latency: '45ms',
       region: 'ap-south-1',
       description: 'Secure media storage for ML training datasets',
-      icon: '🗄',
+      icon: Database,
       accentColor: '#38bdf8',
     },
     {
@@ -52,7 +53,7 @@ export default function CloudBridge() {
       latency: '120ms',
       region: 'ap-south-1',
       description: 'Real-time inference & automated model retraining',
-      icon: '🧠',
+      icon: Brain,
       accentColor: '#a78bfa',
     },
     {
@@ -62,7 +63,7 @@ export default function CloudBridge() {
       latency: '5ms',
       region: 'ap-south-1',
       description: 'Serverless event processing & SNS notifications',
-      icon: '⚡',
+      icon: Zap,
       accentColor: '#34d399',
     },
   ])
@@ -97,13 +98,13 @@ export default function CloudBridge() {
       {/* Top accent — AWS orange */}
       <div
         className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl"
-        style={{ background: 'linear-gradient(90deg, #FF9900 0%, #38bdf8 60%, transparent 100%)' }}
+        style={{ background: 'linear-gradient(90deg, #577E89 0%, #38bdf8 60%, transparent 100%)' }}
       />
 
       {/* Decorative glow */}
       <div
         className="absolute top-0 right-0 w-80 h-64 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at top right, rgba(255,153,0,0.04) 0%, transparent 60%)' }}
+        style={{ background: 'radial-gradient(ellipse at top right, rgba(87,126,137,0.04) 0%, transparent 60%)' }}
       />
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
@@ -115,9 +116,9 @@ export default function CloudBridge() {
           {/* AWS-style cloud icon */}
           <div
             className="flex h-9 w-9 items-center justify-center rounded-lg"
-            style={{ background: 'rgba(255,153,0,0.12)', border: '1px solid rgba(255,153,0,0.2)' }}
+            style={{ background: 'rgba(87,126,137,0.12)', border: '1px solid rgba(87,126,137,0.2)' }}
           >
-            <CloudIcon className="h-5 w-5" style={{ color: '#FF9900' }} />
+            <CloudIcon className="h-5 w-5" style={{ color: '#577E89' }} />
           </div>
           <div>
             <h2 className="text-[13px] font-semibold font-display tracking-tight" style={{ color: 'rgb(var(--fg))' }}>
@@ -129,7 +130,7 @@ export default function CloudBridge() {
               </span>
               <span
                 className="rounded px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wider"
-                style={{ background: 'rgba(255,153,0,0.1)', color: '#FF9900', border: '1px solid rgba(255,153,0,0.2)' }}
+                style={{ background: 'rgba(87,126,137,0.1)', color: '#577E89', border: '1px solid rgba(87,126,137,0.2)' }}
               >
                 AP-SOUTH-1
               </span>
@@ -195,7 +196,7 @@ export default function CloudBridge() {
                   className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm"
                   style={{ background: s.accentColor + '18', border: `1px solid ${s.accentColor}28` }}
                 >
-                  {s.icon}
+                  <s.icon size={20} />
                 </span>
                 <div className="min-w-0">
                   <div
@@ -290,7 +291,7 @@ export default function CloudBridge() {
         </div>
         <button
           className="shrink-0 text-[10px] font-semibold uppercase tracking-widest transition-colors hover:underline"
-          style={{ color: '#FF9900' }}
+          style={{ color: '#577E89' }}
         >
           View Architecture →
         </button>

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useApp, type Asset } from '../context/AppContext';
+import { Package, Brain } from 'lucide-react';
 
 export default function Assets({ selectedAssetId, onClearSelect }: { selectedAssetId: string | null; onClearSelect: () => void }) {
   const { assets, plants, devices, addAsset, updateAsset, mapDeviceToAsset, addAssetHistory, currentUser } = useApp();
@@ -223,7 +224,7 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
       >
         {!activeAsset ? (
           <div className="text-center p-6 max-w-sm">
-            <span className="text-4xl text-slate-600 block mb-3">📦</span>
+            <Package className="mb-3 mx-auto text-slate-600" size={36} />
             <h2 className="text-sm font-semibold text-fg">No Asset Selected</h2>
             <p className="text-xs text-slate-500 mt-1">Select an asset from the side explorer to view its diagnostic health log, timeline history, and mapped smart glasses.</p>
           </div>
@@ -280,7 +281,7 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
                 {/* AI Summary Card */}
                 <div className="rounded-xl border border-argo-cyan/30 bg-gradient-to-br from-argo-cyan/5 to-transparent p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-lg">🧠</span>
+                    <Brain className="inline" size={18} />
                     <h3 className="text-xs font-semibold uppercase tracking-wider text-argo-cyan">AI Core Diagnostics</h3>
                   </div>
                   <p className="text-xs leading-relaxed text-slate-300">{aiSummary}</p>

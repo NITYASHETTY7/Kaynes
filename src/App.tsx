@@ -1,4 +1,21 @@
 import { useMemo, useState } from 'react'
+import {
+  LayoutDashboard,
+  Factory,
+  Package,
+  Radio,
+  Brain,
+  Film,
+  Users as UsersIcon,
+  AlertTriangle,
+  BarChart2,
+  ChevronsLeft,
+  ChevronsRight,
+  Sun,
+  Moon,
+  Bell,
+  LogOut
+} from 'lucide-react'
 import AIPipeline from './components/AIPipeline'
 import Assets from './components/Assets'
 import Dashboard from './components/Dashboard'
@@ -23,38 +40,22 @@ type SidebarItem = 'dashboard' | 'plants' | 'assets' | 'fleet' | 'ai-pipeline' |
 function Icon({ name }: { name: string }) {
   const cls = 'h-[18px] w-[18px] shrink-0'
   switch (name) {
-    case 'dashboard':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-    case 'plants':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 21h18M6 21V9m0 0l6-6 6 6M6 9h12v12M10 13h4v8h-4z"/></svg>
-    case 'assets':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-    case 'fleet':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 0v10m0 0l3.5-3.5M12 12l-3.5-3.5"/></svg>
-    case 'ai-pipeline':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-    case 'media':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-    case 'users':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-    case 'alerts':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-    case 'reports':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-    case 'collapse':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7M21 19l-7-7 7-7"/></svg>
-    case 'expand':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M3 5l7 7-7 7"/></svg>
-    case 'sun':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path strokeLinecap="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-    case 'moon':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-    case 'bell':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-    case 'logout':
-      return <svg className={cls} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-    default:
-      return null
+    case 'dashboard': return <LayoutDashboard className={cls} />
+    case 'plants': return <Factory className={cls} />
+    case 'assets': return <Package className={cls} />
+    case 'fleet': return <Radio className={cls} />
+    case 'ai-pipeline': return <Brain className={cls} />
+    case 'media': return <Film className={cls} />
+    case 'users': return <UsersIcon className={cls} />
+    case 'alerts': return <AlertTriangle className={cls} />
+    case 'reports': return <BarChart2 className={cls} />
+    case 'collapse': return <ChevronsLeft className={cls} />
+    case 'expand': return <ChevronsRight className={cls} />
+    case 'sun': return <Sun className={cls} />
+    case 'moon': return <Moon className={cls} />
+    case 'bell': return <Bell className={cls} />
+    case 'logout': return <LogOut className={cls} />
+    default: return null
   }
 }
 
@@ -74,7 +75,7 @@ const PAGE_TITLES: Record<SidebarItem, string> = {
 /* ── Role colour pill ────────────────────────────────────────────────────── */
 function RolePill({ role }: { role: string }) {
   const map: Record<string, { bg: string; text: string }> = {
-    admin:    { bg: 'rgba(255,153,0,0.15)', text: '#FF9900' },
+    admin:    { bg: 'rgba(87,126,137,0.15)', text: '#577E89' },
     inspector:{ bg: 'rgba(56,189,248,0.15)', text: '#38bdf8' },
     operator: { bg: 'rgba(99,102,241,0.15)', text: '#818cf8' },
   }
@@ -167,73 +168,42 @@ export default function App() {
         bg-white dark:bg-ink-800 border-ink-600 dark:border-ink-600
         shadow-[0_1px_0_0_rgb(var(--s-600))] dark:shadow-[0_1px_0_0_rgb(var(--s-600))]`}
       >
-        {/* Brand */}
-        <div className="flex items-center gap-3 min-w-0">
-          {/* Logo mark */}
+        {/* Brand & Profile */}
+        <div className="flex items-center gap-4 min-w-0">
           <div
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-display font-bold text-sm text-white"
-            style={{ background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)', boxShadow: '0 2px 8px rgba(255,153,0,0.3)' }}
+            style={{ background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)', boxShadow: '0 2px 8px rgba(87,126,137,0.3)' }}
           >
             K
           </div>
-          <div className="hidden sm:block min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-[13px] font-bold tracking-tight text-slate-800 dark:text-slate-100 font-display">
-                Argo Glasses
+          <div className="hidden sm:flex flex-col min-w-0">
+            <span className="text-[13px] font-bold tracking-tight text-slate-800 dark:text-slate-100 font-display leading-tight">
+              Argo Glasses
+            </span>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 truncate max-w-[120px]">
+                {currentUser.name || 'Kaynes Admin'}
               </span>
-              <span
-                className="rounded px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider"
-                style={{ background: 'rgba(255,153,0,0.12)', color: '#FF9900', border: '1px solid rgba(255,153,0,0.2)' }}
-              >
-                Enterprise
+              <span className="text-[10px] text-slate-300 dark:text-slate-600">•</span>
+              <span className="text-[9px] font-bold uppercase tracking-wider text-[#577E89]">
+                {currentUser.role}
               </span>
-            </div>
-            <div className="text-[9px] font-medium text-slate-400 dark:text-slate-500 tracking-wider mt-0.5">
-              IoT Fleet Console · Kaynes Technology
             </div>
           </div>
         </div>
 
-        {/* Breadcrumb (center) */}
-        <div className="hidden md:flex items-center gap-2 flex-1 justify-center">
-          <span className="text-slate-300 dark:text-slate-600 text-xs">/</span>
-          <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
-            {PAGE_TITLES[activeMenu]}
-          </span>
+        {/* Center: Connection Status */}
+        <div className="hidden md:flex items-center gap-4 flex-1 justify-center">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 dark:bg-ink-800 border border-slate-200 dark:border-ink-600 shadow-sm">
+            <span className={`h-1.5 w-1.5 rounded-full ${isSupabaseConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+            <span className="text-[9px] uppercase tracking-widest text-slate-500 dark:text-slate-400 font-bold">
+              {isSupabaseConnected ? 'AWS Live' : 'Local'}
+            </span>
+          </div>
         </div>
 
         {/* Right controls */}
         <div className="flex items-center gap-3">
-          {/* Connection status */}
-          <div className="hidden sm:flex items-center gap-1.5">
-            <span className={`h-1.5 w-1.5 rounded-full ${isSupabaseConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-            <span className="text-[9px] uppercase tracking-widest text-slate-400 dark:text-slate-500 font-semibold">
-              {isSupabaseConnected ? 'AWS Live' : 'Local'}
-            </span>
-          </div>
-
-          <div className="h-5 w-px bg-ink-600 dark:bg-ink-600" />
-
-          {/* User info */}
-          <div className="hidden sm:flex flex-col items-end">
-            <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-200 leading-none">
-              {currentUser.name || 'Kaynes Admin'}
-            </span>
-            <div className="mt-1">
-              <RolePill role={currentUser.role} />
-            </div>
-          </div>
-
-          {/* Avatar */}
-          <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-            style={{ background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)' }}
-          >
-            {(currentUser.name || currentUser.email || 'A')[0].toUpperCase()}
-          </div>
-
-          <div className="h-5 w-px bg-ink-600 dark:bg-ink-600" />
-
           {/* Theme toggle */}
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -257,6 +227,8 @@ export default function App() {
               <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-ink-700 animate-pulseRing" />
             )}
           </button>
+
+          <div className="h-4 w-px bg-slate-200 dark:bg-ink-600 mx-1" />
 
           {/* Sign out */}
           <button
@@ -301,9 +273,9 @@ export default function App() {
                         : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-ink-700/60'
                       }`}
                     style={isActive ? {
-                      background: 'linear-gradient(135deg, rgba(255,153,0,0.18) 0%, rgba(255,153,0,0.08) 100%)',
-                      color: '#FF9900',
-                      boxShadow: 'inset 0 0 0 1px rgba(255,153,0,0.2)',
+                      background: 'linear-gradient(135deg, rgba(87,126,137,0.18) 0%, rgba(87,126,137,0.08) 100%)',
+                      color: '#577E89',
+                      boxShadow: 'inset 0 0 0 1px rgba(87,126,137,0.2)',
                     } : {}}
                     title={!isSidebarOpen ? item.label : undefined}
                   >
@@ -311,7 +283,7 @@ export default function App() {
                     {isActive && (
                       <span
                         className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full"
-                        style={{ background: '#FF9900' }}
+                        style={{ background: '#577E89' }}
                       />
                     )}
 
@@ -457,7 +429,7 @@ export default function App() {
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-fg'
                         }`}
                         style={fleetViewMode === m ? {
-                          background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                          background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                           color: '#0D0F15',
                         } : {}}
                       >

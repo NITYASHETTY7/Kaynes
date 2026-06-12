@@ -15,6 +15,7 @@ import CaptureThumb from './CaptureThumb'
 import Gauge from './Gauge'
 import ImageViewer from './ImageViewer'
 import Sparkline from './Sparkline'
+import { Edit2, X, Zap, Trash2, Sparkles } from 'lucide-react';
 
 interface Props {
   device: Device | null
@@ -209,7 +210,7 @@ export default function DeviceDrawer({
                       onChange={(e) => setDraftName(e.target.value)}
                       className="w-full rounded px-2 py-1 text-sm font-semibold outline-none"
                       style={{
-                        border: '1px solid #FF9900',
+                        border: '1px solid #577E89',
                         background: 'rgb(var(--s-700))',
                         color: 'rgb(var(--fg))',
                       }}
@@ -254,9 +255,9 @@ export default function DeviceDrawer({
                       onClick={saveMetadata}
                       className="rounded px-3 py-1 text-[11px] font-bold shadow-sm hover:brightness-110"
                       style={{
-                        background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                        background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                         color: '#0D0F15',
-                        boxShadow: '0 4px 14px rgba(255,153,0,0.3)',
+                        boxShadow: '0 4px 14px rgba(87,126,137,0.3)',
                       }}
                     >
                       Save Changes
@@ -339,7 +340,7 @@ export default function DeviceDrawer({
                 className="mt-2 rounded-md px-2 py-1.5 text-[11px]"
                 style={{ background: 'rgba(var(--s-base),0.5)', color: 'rgb(var(--n-300))' }}
               >
-                ⚡ An SNS notification would be dispatched to on-call operators (production).
+                <Zap className="inline mr-1 text-amber-500" size={14} /> An SNS notification would be dispatched to on-call operators (production).
               </p>
             </div>
           )}
@@ -530,7 +531,7 @@ export default function DeviceDrawer({
                             e.currentTarget.style.color = 'rgb(var(--n-300))';
                           }}
                         >
-                          🗑
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     )}
@@ -550,7 +551,7 @@ export default function DeviceDrawer({
           >
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#38bdf8' }}>
-                ✦ AI Device Diagnostic
+                <Sparkles className="inline mr-2" size={16} /> AI Device Diagnostic
               </h4>
               <button
                 onClick={runDiagnostic}

@@ -131,7 +131,7 @@ export default function Reports() {
                   background: 'rgb(var(--s-700))',
                   color: 'rgb(var(--n-200))',
                 }}
-                onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,153,0,0.5)')}
+                onFocus={e => (e.currentTarget.style.borderColor = 'rgba(87,126,137,0.5)')}
                 onBlur={e => (e.currentTarget.style.borderColor = 'rgb(var(--s-500))')}
               >
                 <option value="assets">Asset Health Summary</option>
@@ -155,17 +155,17 @@ export default function Reports() {
                   color: 'rgb(var(--n-200))',
                 }}
               >
-                {isExporting ? 'Compiling CSV...' : '📊 Export to Excel / CSV'}
+                {isExporting ? 'Compiling CSV...' : 'Export to Excel / CSV'}
               </button>
               <button 
                 onClick={handlePrintPDF}
                 className="w-full rounded-lg py-2 text-xs font-semibold hover:brightness-110 transition-all"
                 style={{
-                  background: 'linear-gradient(135deg, #FF9900 0%, #FFB833 100%)',
+                  background: 'linear-gradient(135deg, #577E89 0%, #74A1B0 100%)',
                   color: '#0D0F15',
                 }}
               >
-                🖨 Generate Print PDF
+                Generate Print PDF
               </button>
             </div>
           </div>
@@ -187,7 +187,7 @@ export default function Reports() {
             style={{ borderBottom: '2px solid rgba(var(--s-600), 0.5)' }}
           >
             <div>
-              <div className="text-[10px] uppercase tracking-wider font-bold font-mono" style={{ color: '#FF9900' }}>Kaynes Technology Limited</div>
+              <div className="text-[10px] uppercase tracking-wider font-bold font-mono" style={{ color: '#577E89' }}>Kaynes Technology Limited</div>
               <h2 className="text-lg font-bold font-display print:text-black mt-1 capitalize" style={{ color: 'rgb(var(--fg))' }}>{reportType} Diagnostic Report</h2>
               <p className="text-[10px] mt-1" style={{ color: 'rgb(var(--n-500))' }}>Generated: {new Date().toLocaleString()} · Target: Fleet Systems Console</p>
             </div>
@@ -220,7 +220,7 @@ export default function Reports() {
                     >
                       <td className="py-3 font-semibold print:text-black" style={{ color: 'rgb(var(--fg))' }}>{a.name}</td>
                       <td className="py-3 font-mono" style={{ color: 'rgb(var(--n-400))' }}>{a.serialNumber}</td>
-                      <td className="py-3 text-center font-mono font-bold" style={{ color: '#FF9900' }}>{a.healthScore}%</td>
+                      <td className="py-3 text-center font-mono font-bold" style={{ color: '#577E89' }}>{a.healthScore}%</td>
                       <td className="py-3 capitalize font-semibold" style={{ color: 'rgb(var(--n-200))' }}>{a.status}</td>
                       <td className="py-3 text-right font-mono text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>{a.lastServiced}</td>
                     </tr>
@@ -255,7 +255,7 @@ export default function Reports() {
                       <td className="py-3 font-semibold print:text-black" style={{ color: 'rgb(var(--fg))' }}>{d.name}</td>
                       <td className="py-3 font-mono" style={{ color: 'rgb(var(--n-400))' }}>{d.serial}</td>
                       <td className="py-3" style={{ color: 'rgb(var(--n-400))' }}>{d.site}</td>
-                      <td className="py-3 text-center font-mono font-bold" style={{ color: '#FF9900' }}>{d.battery}%</td>
+                      <td className="py-3 text-center font-mono font-bold" style={{ color: '#577E89' }}>{d.battery}%</td>
                       <td className="py-3" style={{ color: 'rgb(var(--n-300))' }}>{d.connection}</td>
                       <td className="py-3 text-right capitalize font-semibold" style={{ color: 'rgb(var(--n-200))' }}>{d.status}</td>
                     </tr>
@@ -287,8 +287,8 @@ export default function Reports() {
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
                       <td className="py-3 font-semibold print:text-black" style={{ color: 'rgb(var(--fg))' }}>{res.classification}</td>
-                      <td className="py-3 text-center font-mono font-bold" style={{ color: '#FF9900' }}>{res.confidence}%</td>
-                      <td className="py-3 font-semibold" style={{ color: 'rgb(var(--n-200))' }}>{res.defectDetected ? '⚠️ TRUE' : '✓ FALSE'}</td>
+                      <td className="py-3 text-center font-mono font-bold" style={{ color: '#577E89' }}>{res.confidence}%</td>
+                      <td className="py-3 font-semibold" style={{ color: 'rgb(var(--n-200))' }}>{res.defectDetected ? 'TRUE' : 'FALSE'}</td>
                       <td className="py-3 capitalize" style={{ color: 'rgb(var(--n-300))' }}>{res.severity}</td>
                       <td className="py-3 text-right font-mono text-[11px]" style={{ color: 'rgb(var(--n-500))' }}>{new Date(res.created_at).toLocaleDateString()}</td>
                     </tr>
@@ -321,7 +321,7 @@ export default function Reports() {
                       <td className="py-3 font-semibold print:text-black" style={{ color: 'rgb(var(--fg))' }}>{p.name}</td>
                       <td className="py-3" style={{ color: 'rgb(var(--n-400))' }}>{p.location}</td>
                       <td className="py-3 font-medium" style={{ color: 'rgb(var(--n-300))' }}>{p.manager}</td>
-                      <td className="py-3 text-right font-mono font-bold" style={{ color: '#FF9900' }}>{p.capacity}</td>
+                      <td className="py-3 text-right font-mono font-bold" style={{ color: '#577E89' }}>{p.capacity}</td>
                     </tr>
                   ))}
                 </tbody>

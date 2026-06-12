@@ -170,9 +170,9 @@ export function drawDetections(
 export function formatResults(result: AIInferenceResult): string {
   const lines = [
     `⏱️ Processing Time: ${result.processingTime}ms`,
-    `🎯 Objects Detected: ${result.detections.length}`,
-    `⚠️ Defects Found: ${result.defectsFound}`,
-    `📊 Average Confidence: ${(result.confidence * 100).toFixed(1)}%`,
+    `Objects Detected: ${result.detections.length}`,
+    `Defects Found: ${result.defectsFound}`,
+    `Average Confidence: ${(result.confidence * 100).toFixed(1)}%`,
     '',
     'Detected Objects:',
   ];

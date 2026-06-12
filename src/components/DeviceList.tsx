@@ -91,12 +91,10 @@ function Grid({ devices, onSelect }: Omit<Props, 'view'>) {
             variants={itemVars}
             key={d.id}
             onClick={() => onSelect(d)}
-            className={`group relative flex flex-col overflow-hidden rounded-[1.25rem] border p-5 text-left transition-all hover:-translate-y-1 hover:shadow-lg ${d.status === 'offline' ? 'opacity-80 hover:opacity-100' : ''}`}
-            style={{ borderColor: `${color}40`, boxShadow: `0 4px 20px -2px ${color}10`, background: 'rgb(var(--s-800))' }}
+            className={`k-card group relative flex flex-col overflow-hidden rounded-[1.25rem] border p-5 text-left ${d.status === 'offline' ? 'opacity-80 hover:opacity-100' : ''}`}
+            style={{ borderColor: `${color}40` }}
 
           >
-            {/* status accent bar + faint tint */}
-            <span className="absolute left-0 top-0 h-full w-1.5" style={{ background: color }} />
             <span
               className="pointer-events-none absolute inset-0"
               style={{
