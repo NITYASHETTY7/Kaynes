@@ -136,15 +136,15 @@ export default function Dashboard({ onNavigate }: { onNavigate: (tab: string, pa
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
               <div className="flex flex-col items-center justify-center lg:col-span-1">
                 <div className="h-28 w-28 relative flex items-center justify-center">
-                  <Gauge value={100 - defectRate} color="var(--argo-cyan)" />
+                  <Gauge value={100 - defectRate} color="rgb(var(--argo-cyan))" />
                 </div>
                 <span className="mt-3 text-[11px] font-black text-[#0F172A] dark:text-fg uppercase tracking-tight">Defect-Free Rate</span>
                 <span className="text-[9px] font-medium text-slate-400 mt-0.5">Inference pipeline status</span>
-              </div>
-              
-              <div className="flex flex-col items-center justify-center lg:col-span-1">
+                </div>
+
+                <div className="flex flex-col items-center justify-center lg:col-span-1">
                 <div className="h-28 w-28 relative flex items-center justify-center">
-                  <Gauge value={activeDevices > 0 ? Math.round((devices.filter(d=>d.status==='online').length / devices.length)*100) : 100} color="var(--argo-green)" />
+                  <Gauge value={activeDevices > 0 ? Math.round((devices.filter(d=>d.status==='online').length / devices.length)*100) : 100} color="rgb(var(--argo-green, 16 185 129))" />
                 </div>
                 <span className="mt-3 text-[11px] font-black text-[#0F172A] dark:text-fg uppercase tracking-tight">Device Availability</span>
                 <span className="text-[9px] font-medium text-slate-400 mt-0.5">Online glasses ratio</span>

@@ -126,9 +126,14 @@ export default function App() {
               {theme === 'dark' ? '☀' : '🌙'}
             </button>
             
-            <button className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 dark:hover:bg-ink-700 relative">
+            <button 
+              onClick={() => handleNavigate('alerts')}
+              className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 dark:hover:bg-ink-700 relative"
+            >
               🔔
-              <span className="absolute top-2 right-2 h-1.5 w-1.5 bg-red-500 rounded-full border border-white" />
+              {unacknowledgedCount > 0 && (
+                <span className="absolute top-2 right-2 h-1.5 w-1.5 bg-red-500 rounded-full border border-white" />
+              )}
             </button>
             <button
               onClick={logout}

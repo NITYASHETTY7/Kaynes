@@ -114,12 +114,12 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
     setShowHistoryModal(false);
   };
 
-  const handleMapDevice = (deviceId: number) => {
+  const handleMapDevice = (deviceId: string | number) => {
     if (!activeAsset) return;
     mapDeviceToAsset(deviceId, activeAsset.id);
   };
 
-  const handleUnmapDevice = (deviceId: number) => {
+  const handleUnmapDevice = (deviceId: string | number) => {
     mapDeviceToAsset(deviceId, null);
   };
 
@@ -329,7 +329,7 @@ export default function Assets({ selectedAssetId, onClearSelect }: { selectedAss
                         <button 
                           onClick={() => {
                             const select = document.getElementById('mapDeviceSelect') as HTMLSelectElement;
-                            if (select?.value) handleMapDevice(Number(select.value));
+                            if (select?.value) handleMapDevice(select.value);
                           }}
                           className="rounded-md bg-argo-cyan px-4 py-1.5 text-xs font-bold text-ink-900 hover:brightness-110 shrink-0 whitespace-nowrap"
                         >

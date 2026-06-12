@@ -24,30 +24,23 @@ export default function Gauge({ value, label, sublabel, color }: GaugeProps) {
   return (
     <div className="flex flex-col items-center">
       <svg width="180" height="104" viewBox="0 0 180 104">
-        {/* Filled Background Area - ONLY IN DARK MODE */}
-        <path
-          d="M 20 96 A 70 70 0 0 1 160 96 Z"
-          fill="none"
-          className="dark:fill-[#185FA512]" 
-        />
         {/* Background Arc */}
         <path
           d="M 20 96 A 70 70 0 0 1 160 96"
           fill="none"
-          stroke="rgb(var(--s-600))"
+          stroke="currentColor"
           strokeWidth="14"
           strokeLinecap="round"
+          className="text-slate-200 dark:text-slate-700"
         />
         {/* Foreground Arc */}
         <path
           d="M 20 96 A 70 70 0 0 1 160 96"
           fill="none"
-          stroke={stroke}
           strokeWidth="14"
           strokeLinecap="round"
           strokeDasharray={`${dash} ${circumference}`}
-          style={{ transition: 'stroke-dasharray 0.6s ease' }}
-          className="dark:!stroke-[#185FA5]"
+          style={{ stroke, transition: 'stroke-dasharray 0.6s ease' }}
         />
         <text
           x="90"
@@ -55,14 +48,14 @@ export default function Gauge({ value, label, sublabel, color }: GaugeProps) {
           textAnchor="middle"
           fontSize="30"
           fontWeight="700"
-          fill="rgb(var(--fg))"
-          className="dark:!fill-slate-200"
+          fill="currentColor"
+          className="text-slate-900 dark:text-slate-100"
         >
           {v}%
         </text>
       </svg>
-      {label && <div className="text-xs uppercase tracking-wider text-slate-400">{label}</div>}
-      {sublabel && <div className="text-[11px] text-slate-500">{sublabel}</div>}
+      {label && <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{label}</div>}
+      {sublabel && <div className="text-[10px] text-slate-400">{sublabel}</div>}
     </div>
   )
 }

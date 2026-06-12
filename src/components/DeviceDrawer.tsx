@@ -11,6 +11,7 @@ import {
     storagePct,
 } from '../data/devices'
 import CaptureThumb from './CaptureThumb'
+import { getDeviceImageUrl } from '../lib/deviceImageMapper'
 import Gauge from './Gauge'
 import Sparkline from './Sparkline'
 import ImageViewer from './ImageViewer'
@@ -71,7 +72,7 @@ export default function DeviceDrawer({
   onClose,
   onDeleteCapture,
 }: Props) {
-  const { updateDevice } = useApp();
+  const { updateDevice, updateFirmware } = useApp();
   const [diag, setDiag] = useState<Diagnostic | null>(null)
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -124,6 +125,7 @@ export default function DeviceDrawer({
     flash('Device metadata updated.');
   }
 
+<<<<<<< Updated upstream
   async function download(item: MediaItem) {
     flash(`Downloading "${item.label}"…`);
     try {
@@ -141,6 +143,33 @@ export default function DeviceDrawer({
     } catch (err) {
       flash(`Failed to download "${item.label}"`);
     }
+=======
+  function download(item: MediaItem) {
+    let mediaUrl = (item as any).url;
+    if (!mediaUrl || mediaUrl.startsWith('blob:') && item.kind === 'video') {
+      if (item.kind === 'video') {
+        mediaUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+      } else {
+        mediaUrl = getDeviceImageUrl(d.serial || d.name, item.seed, item.label);
+      }
+    }
+    
+    const extension = item.kind === 'video' ? 'mp4' : 'jpg';
+    const link = document.createElement('a');
+    link.href = mediaUrl;
+    link.download = `${item.label.replace(/\s+/g, '_')}_${item.id.slice(0, 5)}.${extension}`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    flash(`Downloading "${item.label}"…`);
+  }
+
+  function handleOTAUpdate() {
+    updateFirmware(d.id);
+    flash('Firmware update command sent to device.');
+>>>>>>> Stashed changes
   }
 
   function remove(item: MediaItem) {
@@ -371,7 +400,7 @@ export default function DeviceDrawer({
             </div>
             {isAdmin && needsFirmwareUpdate(d) && (
               <button
-                onClick={() => flash('OTA update queued (placeholder — Phase-2 AWS IoT Jobs).')}
+                onClick={handleOTAUpdate}
                 className="mt-3 w-full rounded-lg border border-ink-500 bg-ink-700 py-2 text-xs font-medium text-slate-200 hover:border-argo-cyan hover:text-fg"
               >
                 Push OTA update
@@ -496,6 +525,7 @@ export default function DeviceDrawer({
         isOpen={viewer.isOpen} 
         item={viewer.item} 
         deviceName={d.name} 
+        serial={d.serial}
         onClose={() => setViewer({ ...viewer, isOpen: false })}
       />
     </>

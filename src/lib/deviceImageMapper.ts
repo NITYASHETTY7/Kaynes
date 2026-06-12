@@ -168,78 +168,68 @@ export function getFallbackImages(deviceName: string, context?: string): string[
   
   const fallbacks: Record<string, string[]> = {
     'inspector': [
-      'https://images.unsplash.com/photo-1581092162562-40038f90a5bf?w=800&h=600&fit=crop', // PCB inspection
+      'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&h=600&fit=crop', // PCB inspection
       'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop', // Microchip
-      'https://images.unsplash.com/photo-1563770660941-20978e00a470?w=800&h=600&fit=crop', // Circuit board
-      'https://images.unsplash.com/photo-1518770665346-3836398402b5?w=800&h=600&fit=crop', // Electronics
-      'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=800&h=600&fit=crop', // Hardware
+      'https://images.unsplash.com/photo-1592659762303-90081d34b277?w=800&h=600&fit=crop', // Circuit board
+      'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop', // Electronics
       'https://images.unsplash.com/photo-1592659762303-90081d34b277?w=800&h=600&fit=crop', // Industrial electronics
     ],
     'qa': [
-      'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1581092162562-40038f90a5bf?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop', // Testing
+      'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&h=600&fit=crop', // Quality control
       'https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=800&h=600&fit=crop', // Engineering
     ],
     'line': [
-      'https://images.unsplash.com/photo-1562241023-c4ec87ff3c4d?w=800&h=600&fit=crop', // Factory
+      'https://images.unsplash.com/photo-1565514020179-026b92b84bb6?w=800&h=600&fit=crop', // Assembly
       'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop', // Production
-      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop', // Tech
-      'https://images.unsplash.com/photo-1504917595217-d4dc5eed6122?w=800&h=600&fit=crop', // Assembly
-      'https://images.unsplash.com/photo-1581091226821-35a11e4b7ca8?w=800&h=600&fit=crop', // Precision
+      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=600&fit=crop', // Precision
+      'https://images.unsplash.com/photo-1565514020179-026b92b84bb6?w=800&h=600&fit=crop', // Industrial
     ],
     'smt': [
-      'https://images.unsplash.com/photo-1581092162562-40038f90a5bf?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1563770660941-20978e00a470?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1592659762303-90081d34b277?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=600&fit=crop', // Cyber
-      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop', // Code/Hardware
     ],
     'aerospace': [
-      'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=800&h=600&fit=crop', // Aircraft
-      'https://images.unsplash.com/photo-1457364887197-9150188c8f0f?w=800&h=600&fit=crop', // Engine
-      'https://images.unsplash.com/photo-1517976487492-5750f3195933?w=800&h=600&fit=crop', // Rocket
-      'https://images.unsplash.com/photo-1526630570214-1115d9b73009?w=800&h=600&fit=crop', // Satellite
+      'https://images.unsplash.com/photo-1517976487492-5750f3195933?w=800&h=600&fit=crop', // Rocket/Aerospace
+      'https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=800&h=600&fit=crop', // Engine
+      'https://images.unsplash.com/photo-1517976487492-5750f3195933?w=800&h=600&fit=crop', // Satellite
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop', // Tech
     ],
     'harness': [
-      'https://images.unsplash.com/photo-1581092162562-40038f90a5bf?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1563770660941-20978e00a470?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?w=800&h=600&fit=crop', // Cables
+      'https://images.unsplash.com/photo-1592659762303-90081d34b277?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop', // Cables
+      'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&h=600&fit=crop',
     ],
     'connector': [
       'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1581092162562-40038f90a5bf?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1563770660941-20978e00a470?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1591405351990-4726e331f141?w=800&h=600&fit=crop', // Tech board
     ],
     'bench': [
       'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=800&h=600&fit=crop', // Lab
     ],
     'camera': [
-      'https://images.unsplash.com/photo-1606986628025-35d57e735ae0?w=800&h=600&fit=crop', // Camera
-      'https://images.unsplash.com/photo-1537468122592-b0a2e3a0d520?w=800&h=600&fit=crop', // Surveillance
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop', // Surveillance
       'https://images.unsplash.com/photo-1611532736579-6b16e2b50449?w=800&h=600&fit=crop', // Equipment
-      'https://images.unsplash.com/photo-1557855036-cd4812744412?w=800&h=600&fit=crop', // CCTV
+      'https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=800&h=600&fit=crop', // CCTV
     ],
     'safety': [
-      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop', // Safety
-      'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=600&fit=crop', // Meeting
-      'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800&h=600&fit=crop', // Teamwork
+      'https://images.unsplash.com/photo-1591405351990-4726e331f141?w=800&h=600&fit=crop', // Industrial safety
+      'https://images.unsplash.com/photo-1565514020179-026b92b84bb6?w=800&h=600&fit=crop', // Hard hat area
+      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop', // Safety gear
     ],
     'audit': [
-      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=600&fit=crop', // Analysis
       'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop', // Documents
-      'https://images.unsplash.com/photo-1454165833762-0265129b0021?w=800&h=600&fit=crop', // Analysis
+      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop',
     ],
     'default': [
-      'https://images.unsplash.com/photo-1562241023-c4ec87ff3c4d?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1565514020179-026b92b84bb6?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1485083269755-a7b559a4fe5e?w=800&h=600&fit=crop', // Industry
     ]
   }
@@ -248,13 +238,13 @@ export function getFallbackImages(deviceName: string, context?: string): string[
 }
 
 /**
- * Get a deterministic image URL for a device based on its name and a seed
- * This ensures the same device always shows the same image
+ * Get a deterministic image URL for a device based on a stable identity and a seed
+ * This ensures the same device always shows the same image, even if renamed
  */
-export function getDeviceImageUrl(deviceName: string, seed: number, context?: string): string {
-  const images = getFallbackImages(deviceName, context)
+export function getDeviceImageUrl(identity: string, seed: number, context?: string): string {
+  const images = getFallbackImages(identity, context)
   // Use a more complex index to avoid repetition when pool is small
-  const entropy = seed + deviceName.length + (context?.length || 0)
+  const entropy = seed + identity.length + (context?.length || 0)
   const index = entropy % images.length
   return images[index]
 }

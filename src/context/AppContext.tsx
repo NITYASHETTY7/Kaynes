@@ -232,7 +232,7 @@ const DEFAULT_ASSETS: Asset[] = [
     status: 'warning',
     category: 'Reflow Oven',
     lastServiced: '2026-05-15',
-    imageUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop&q=60',
+    imageUrl: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&auto=format&fit=crop&q=60',
     created_at: new Date().toISOString(),
     history: [
       { id: 'h-1', date: '2026-05-15', type: 'Maintenance', description: 'Replaced nozzle heating elements and calibrated heat chambers.', operator: 'K. Deshpande' },
@@ -252,7 +252,7 @@ const DEFAULT_ASSETS: Asset[] = [
     status: 'healthy',
     category: 'QA Jig',
     lastServiced: '2026-05-20',
-    imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=60',
+    imageUrl: 'https://images.unsplash.com/photo-1517976487492-5750f3195933?w=800&auto=format&fit=crop&q=60',
     created_at: new Date().toISOString(),
     history: [
       { id: 'h-3', date: '2026-05-20', type: 'Upgrade', description: 'Installed high-definition optical inspection sensors.', operator: 'S. Iyer' }
@@ -270,7 +270,7 @@ const DEFAULT_ASSETS: Asset[] = [
     status: 'healthy',
     category: 'Assembler',
     lastServiced: '2026-06-01',
-    imageUrl: null,
+    imageUrl: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&auto=format&fit=crop&q=60',
     created_at: new Date().toISOString(),
     history: [],
     timeline: []
@@ -886,26 +886,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const newTenant: Tenant = { ...t, id, created_at: new Date().toISOString() };
     
     if (isSupabaseConnected && supabase) {
-      await supabase.from('tenants').insert({ 
+      const { error } = await supabase.from('tenants').insert({ 
         id, 
         name: t.name, 
         subscription: t.subscription, 
-        subscription_status: t.status 
+        status: t.status 
       });
+      if (error) {
+        console.error('Supabase addTenant error:', error);
+        addNotification('Sync Error', `Failed to sync tenant "${t.name}" to cloud.`, 'warning');
+      }
     }
     setTenants(prev => [...prev, newTenant]);
   };
 
   const updateTenant = async (id: string, updates: Partial<Tenant>) => {
     if (isSupabaseConnected && supabase) {
-      await supabase.from('tenants').update(updates).eq('id', id);
+      const { error } = await supabase.from('tenants').update(updates).eq('id', id);
+      if (error) console.error('Supabase updateTenant error:', error);
     }
     setTenants(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
   };
 
   const deleteTenant = async (id: string) => {
     if (isSupabaseConnected && supabase) {
-      await supabase.from('tenants').delete().eq('id', id);
+      const { error } = await supabase.from('tenants').delete().eq('id', id);
+      if (error) console.error('Supabase deleteTenant error:', error);
     }
     setTenants(prev => prev.filter(t => t.id !== id));
   };
@@ -916,7 +922,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const newPlant: Plant = { ...p, id, created_at: new Date().toISOString() };
     
     if (isSupabaseConnected && supabase) {
-      await supabase.from('plants').insert({ 
+      const { error } = await supabase.from('plants').insert({ 
         id, 
         tenant_id: p.tenantId, 
         name: p.name, 
@@ -925,6 +931,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         capacity: p.capacity, 
         manager: p.manager 
       });
+      if (error) {
+        console.error('Supabase addPlant error:', error);
+        addNotification('Sync Error', `Failed to sync plant "${p.name}" to cloud.`, 'warning');
+      }
     }
     setPlants(prev => [...prev, newPlant]);
   };
@@ -938,21 +948,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.capacity) dbUp.capacity = updates.capacity;
       if (updates.manager) dbUp.manager = updates.manager;
       if (updates.tenantId) dbUp.tenant_id = updates.tenantId;
-      await supabase.from('plants').update(dbUp).eq('id', id);
+      const { error } = await supabase.from('plants').update(dbUp).eq('id', id);
+      if (error) console.error('Supabase updatePlant error:', error);
     }
     setPlants(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
   };
 
   const deletePlant = async (id: string) => {
     if (isSupabaseConnected && supabase) {
-      await supabase.from('plants').delete().eq('id', id);
+      const { error } = await supabase.from('plants').delete().eq('id', id);
+      if (error) console.error('Supabase deletePlant error:', error);
     }
     setPlants(prev => prev.filter(p => p.id !== id));
   };
 
   // Asset CRUD
   const addAsset = async (a: Omit<Asset, 'id' | 'created_at' | 'history' | 'timeline' | 'healthScore' | 'status'>) => {
-    const id = `asset-${Date.now()}`;
+    const id = generateUUID();
     const newAsset: Asset = {
       ...a,
       id,
@@ -964,17 +976,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
 
     if (isSupabaseConnected && supabase) {
-      await supabase.from('assets').insert({
+      const { error } = await supabase.from('assets').insert({
         id,
         plant_id: a.plantId,
         name: a.name,
         serial_number: a.serialNumber,
+        health_score: 100,
+        status: 'healthy',
         category: a.category,
-        last_serviced: newAsset.lastServiced,
+        last_serviced: a.lastServiced,
         image_url: a.imageUrl,
         history: newAsset.history,
         timeline: newAsset.timeline
       });
+      if (error) {
+        console.error('Supabase addAsset error:', error);
+        addNotification('Sync Error', `Failed to sync asset "${a.name}" to cloud.`, 'warning');
+      }
     }
 
     setAssets(prev => [...prev, newAsset]);
@@ -989,14 +1007,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.healthScore !== undefined) dbUp.health_score = updates.healthScore;
       if (updates.history) dbUp.history = updates.history;
       if (updates.timeline) dbUp.timeline = updates.timeline;
-      await supabase.from('assets').update(dbUp).eq('id', id);
+      if (updates.plantId) dbUp.plant_id = updates.plantId;
+      if (updates.serialNumber) dbUp.serial_number = updates.serialNumber;
+      if (updates.category) dbUp.category = updates.category;
+      if (updates.lastServiced) dbUp.last_serviced = updates.lastServiced;
+      if (updates.imageUrl !== undefined) dbUp.image_url = updates.imageUrl;
+
+      const { error } = await supabase.from('assets').update(dbUp).eq('id', id);
+      if (error) console.error('Supabase updateAsset error:', error);
     }
     setAssets(prev => prev.map(a => a.id === id ? { ...a, ...updates } : a));
   };
 
   const deleteAsset = async (id: string) => {
     if (isSupabaseConnected && supabase) {
-      await supabase.from('assets').delete().eq('id', id);
+      const { error } = await supabase.from('assets').delete().eq('id', id);
+      if (error) console.error('Supabase deleteAsset error:', error);
     }
     setAssets(prev => prev.filter(a => a.id !== id));
   };
@@ -1052,7 +1078,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addNotification('Device Registered', `Registered glasses serial "${d.serial}".`, 'info');
   };
 
-  const updateDevice = async (id: number, updates: Partial<ExtendedDevice>) => {
+  const updateDevice = async (id: string | number, updates: Partial<ExtendedDevice>) => {
     if (isSupabaseConnected && supabase) {
       const dbUp: any = {};
       if (updates.name) dbUp.name = updates.name;
@@ -1064,24 +1090,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (updates.plantId !== undefined) dbUp.plant_id = updates.plantId;
       if (updates.logs) dbUp.logs = updates.logs;
       
-      await supabase.from('devices').update(dbUp).eq('serial', devices.find(d => d.id === id)?.serial);
+      const target = devices.find(d => String(d.id) === String(id));
+      if (target) {
+        const { error } = await supabase.from('devices').update(dbUp).eq('serial', target.serial);
+        if (error) console.error('Supabase updateDevice error:', error);
+      }
     }
-    setDevices(prev => prev.map(d => d.id === id ? { ...d, ...updates } : d));
+    setDevices(prev => prev.map(d => String(d.id) === String(id) ? { ...d, ...updates } : d));
   };
 
-  const deleteDevice = async (id: number) => {
+  const deleteDevice = async (id: string | number) => {
     if (isSupabaseConnected && supabase) {
-      await supabase.from('devices').delete().eq('serial', devices.find(d => d.id === id)?.serial);
+      const target = devices.find(d => String(d.id) === String(id));
+      if (target) {
+        const { error } = await supabase.from('devices').delete().eq('serial', target.serial);
+        if (error) console.error('Supabase deleteDevice error:', error);
+      }
     }
-    setDevices(prev => prev.filter(d => d.id !== id));
+    setDevices(prev => prev.filter(d => String(d.id) !== String(id)));
   };
 
-  const mapDeviceToAsset = async (deviceId: number, assetId: string | null) => {
+  const mapDeviceToAsset = async (deviceId: string | number, assetId: string | null) => {
     const targetAsset = assets.find(a => a.id === assetId);
     const plantId = targetAsset ? targetAsset.plantId : null;
     const site = targetAsset ? plants.find(p => p.id === targetAsset.plantId)?.name || 'Central' : 'Unassigned';
     
-    const targetDev = devices.find(d => d.id === deviceId);
+    const targetDev = devices.find(d => String(d.id) === String(deviceId));
     if (targetDev) {
       const logs = [...targetDev.logs];
       logs.unshift({
@@ -1091,6 +1125,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         message: assetId ? `Mapped to Asset "${targetAsset?.name}" in ${site}.` : 'Unmapped from asset.'
       });
       await updateDevice(deviceId, { assetId, plantId, site, logs });
+    } else {
+      console.warn('mapDeviceToAsset: Device not found', deviceId);
     }
   };
 

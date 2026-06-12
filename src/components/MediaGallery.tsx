@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { type UserRole as Role } from '../context/AppContext'
 import { type Device, type MediaItem } from '../data/devices'
+import { getDeviceImageUrl } from '../lib/deviceImageMapper'
 import CaptureThumb from './CaptureThumb'
 import ImageViewer from './ImageViewer'
 import { getDeviceImageUrl } from '../lib/deviceImageMapper'
@@ -57,6 +58,28 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
   function flash(msg: string) {
     setToast(msg)
     window.setTimeout(() => setToast(null), 2200)
+  }
+
+  function download(f: FlatItem) {
+    let mediaUrl = (f.item as any).url;
+    if (!mediaUrl || mediaUrl.startsWith('blob:') && f.item.kind === 'video') {
+      if (f.item.kind === 'video') {
+        mediaUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+      } else {
+        mediaUrl = getDeviceImageUrl(f.serial || f.deviceName, f.item.seed, f.item.label);
+      }
+    }
+    
+    const extension = f.item.kind === 'video' ? 'mp4' : 'jpg';
+    const link = document.createElement('a');
+    link.href = mediaUrl;
+    link.download = `${f.item.label.replace(/\s+/g, '_')}_${f.item.id.slice(0, 5)}.${extension}`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    flash(`Downloading "${f.item.label}"…`);
   }
 
   const isAdmin = role === 'admin'
@@ -183,7 +206,11 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
                   {isAdmin && (
                     <div className="flex gap-1.5">
                       <button
+<<<<<<< Updated upstream
                         onClick={() => handleDownload(f.item, f.deviceName)}
+=======
+                        onClick={() => download(f)}
+>>>>>>> Stashed changes
                         className="rounded border border-ink-500 px-2 py-0.5 text-[11px] text-slate-300 hover:border-argo-cyan hover:text-fg"
                       >
                         ↓ Download
@@ -216,9 +243,9 @@ export default function MediaGallery({ devices, role, onDeleteCapture }: Props) 
         isOpen={viewer.isOpen} 
         item={viewer.item} 
         deviceName={viewer.deviceName} 
+        serial={all.find(a => a.item.id === viewer.item?.id)?.serial}
         onClose={() => setViewer({ ...viewer, isOpen: false })}
       />
     </div>
   )
 }
-

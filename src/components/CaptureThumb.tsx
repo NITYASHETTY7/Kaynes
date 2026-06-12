@@ -22,7 +22,7 @@ export default function CaptureThumb({
   const [imageError, setImageError] = useState(false)
   
   // Get real image URL based on device type and seed, or use Supabase URL if available
-  const imageUrl = (item as any).url || getDeviceImageUrl(deviceName, item.seed, item.label)
+  const imageUrl = (item as any).url || getDeviceImageUrl(serial || deviceName, item.seed, item.label)
 
   return (
     <div 
@@ -63,7 +63,15 @@ export default function CaptureThumb({
         </div>
       )}
       
+<<<<<<< Updated upstream
 
+=======
+      {item.kind === 'video' && item.durationSec != null && (
+        <div className="absolute bottom-1.5 right-1.5 rounded bg-black/60 px-1.5 py-0.5 font-mono text-[9px] text-white/80">
+          {Math.floor(item.durationSec / 60)}:{String(item.durationSec % 60).padStart(2, '0')}
+        </div>
+      )}
+>>>>>>> Stashed changes
       
       {/* Label on hover (image) */}
       {item.kind === 'image' && (
