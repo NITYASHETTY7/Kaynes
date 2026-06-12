@@ -8,7 +8,7 @@ interface CloudService {
   latency: string
   region: string
   description: string
-  icon: string
+  icon: React.ElementType
   accentColor: string
 }
 
@@ -196,7 +196,10 @@ export default function CloudBridge() {
                   className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm"
                   style={{ background: s.accentColor + '18', border: `1px solid ${s.accentColor}28` }}
                 >
-                  <s.icon size={20} />
+                  {(() => {
+                    const Icon = s.icon;
+                    return <Icon size={20} />;
+                  })()}
                 </span>
                 <div className="min-w-0">
                   <div

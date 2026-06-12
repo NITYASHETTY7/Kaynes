@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Satellite, Brain, Cloud, Lock, AlertTriangle, CheckCircle2, Database, Server, Cpu, Layers, Globe, Network, Radio, Zap } from 'lucide-react';
+import { Satellite, Brain, Cloud, Lock, AlertTriangle, CheckCircle2, Database, Server, Globe, Network, Radio, Zap } from 'lucide-react';
 
 /* ── AWS-style architecture SVG background nodes ─────────────────────────── */
 function ArchBackground() {

@@ -1,6 +1,6 @@
-import { defineConfig, loadEnv, type Connect } from 'vite'
 import react from '@vitejs/plugin-react'
-import type { IncomingMessage, ServerResponse } from 'node:http'
+import type { IncomingMessage, ServerResponse } from 'http'
+import { defineConfig, loadEnv } from 'vite'
 
 // Dev-only: run the serverless function(s) inside the Vite dev server so plain
 // `npm run dev` exercises the full AI flow without `vercel dev`. In production,
@@ -8,7 +8,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 function devApiPlugin() {
   return {
     name: 'dev-api',
-    async configureServer(server: { middlewares: Connect.Server }) {
+    async configureServer(server: { middlewares: any }) {
       // Imported lazily so a syntax error in a handler doesn't crash startup.
       const { default: analyze } = await import('./api/analyze.js')
       const { default: analyzeImage } = await import('./api/analyze-image.js')

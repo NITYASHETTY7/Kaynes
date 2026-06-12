@@ -15,7 +15,7 @@ import CaptureThumb from './CaptureThumb'
 import Gauge from './Gauge'
 import ImageViewer from './ImageViewer'
 import Sparkline from './Sparkline'
-import { Edit2, X, Zap, Trash2, Sparkles } from 'lucide-react';
+import { Zap, Trash2, Sparkles } from 'lucide-react';
 
 interface Props {
   device: Device | null

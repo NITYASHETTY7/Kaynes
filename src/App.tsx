@@ -59,37 +59,6 @@ function Icon({ name }: { name: string }) {
   }
 }
 
-/* ── Page title lookup ───────────────────────────────────────────────────── */
-const PAGE_TITLES: Record<SidebarItem, string> = {
-  dashboard:    'Operations Dashboard',
-  plants:       'Plants & Tenants',
-  assets:       'Industrial Assets',
-  fleet:        'Argo Glasses Fleet',
-  'ai-pipeline':'AI Inference Lab',
-  media:        'Media Repository',
-  users:        'Staff Identity',
-  alerts:       'Alarms & Alerts',
-  reports:      'Audit & Reports',
-}
-
-/* ── Role colour pill ────────────────────────────────────────────────────── */
-function RolePill({ role }: { role: string }) {
-  const map: Record<string, { bg: string; text: string }> = {
-    admin:    { bg: 'rgba(87,126,137,0.15)', text: '#577E89' },
-    inspector:{ bg: 'rgba(56,189,248,0.15)', text: '#38bdf8' },
-    operator: { bg: 'rgba(99,102,241,0.15)', text: '#818cf8' },
-  }
-  const style = map[role] || map.operator
-  return (
-    <span
-      className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider"
-      style={{ background: style.bg, color: style.text }}
-    >
-      {role}
-    </span>
-  )
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════ */
 export default function App() {
   const {
